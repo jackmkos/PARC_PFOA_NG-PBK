@@ -1,0 +1,390 @@
+---
+title: "PFOA Model"
+subtitle: "Conclusions on the kidney compartment"
+author: "Chrysanthi Pachoulide"
+toc: true
+number-sections: true
+format: 
+  html: 
+    code-fold: true
+  pdf: 
+    toc: true
+    number-sections: true
+    geometry: 
+      - top=30mm
+      - left=20mm
+editor: visual
+bibliography: references.bib
+---
+
+```{r}
+#| label: load-pakages
+#| code-summary: "Packages"
+#| message: false
+#| include: false
+
+library(ggplot2)
+library(deSolve)
+library(tidyverse)
+library(PKNCA)
+library(pracma)
+library(readxl)
+
+```
+
+```{r}
+#| label: Physiological parameters
+#| message: false
+#| include: false
+#| warnings: false
+
+Physio_params <- read_csv("C:/Users/pacho003/OneDrive - Wageningen University & Research/CP_L_R/PARC_PFAS_PBPKmodel/Codes_PFAS_models/Chrysanthi_Pachoulide_2024_PFOA_mechanistic/Input/PhysioVariables.csv", show_col_types = FALSE
+)
+
+Physio_params <- Physio_params %>% 
+  filter(age == 60) %>% # 60 years old adult, male
+  select(ends_with('_M')) %>% 
+  mutate(BloodFlowSum = rowSums(select(., starts_with("Q_")))) %>% # 0.9935; total blood flow as the sum of the fractional blood flows of all organs on which we have data
+  mutate(VolumesSum = rowSums(select(., starts_with("V_")))) # 0.96; total volume as the sum of the fractional organ volumes of all organs on which we have data
+
+BW <- Physio_params$BDW_M 
+QC <- Physio_params$CardOut_M # This is corrected for hematocrit already so it's plasma
+
+# Fractional organ volumes
+VAc <- Physio_params$V_adiposeFraction_M   
+MassAc <- Physio_params$AdiposeMass_M      #adipose mass
+VGc <- Physio_params$V_gutFraction_M
+VKc <- Physio_params$V_kidneyFraction_M
+VLc <- Physio_params$V_liverFraction_M
+VPc <- Physio_params$V_plasmaFraction_M
+Hct <- Physio_params$Hct_M
+VSkc <- Physio_params$V_skinFraction_M
+VTotc <- Physio_params$VolumesSum 
+
+# Body volumes (L)
+VA <- VAc * BW/0.9 + MassAc/0.9
+VG <- VGc * BW
+VK <- VKc * BW
+VL <- VLc * BW
+VP <- VPc * (1-Hct) * BW
+VSk <- VSkc * BW
+VR <- (VTotc*BW) - (VA + VG + VK + VL + VP + VSk)
+
+# Comment Chrysa about the below: it's it not clearly explained what it's meant by collecting system in ICRP. That could also be the collecting duct.
+# VFil <- VK * 0.05 # 0.01557415 Kidney filtrate compartment, corresponds to the volume of the collecting system in [ICRP 89 page 149] http://www.icrp.org/publication.asp?id=ICRP%20Publication%2089
+
+
+# Fractional organ blood flows
+QAc <- Physio_params$Q_adiposeFraction_M/Physio_params$BloodFlowSum
+QGc <- Physio_params$Q_gutFraction_M/Physio_params$BloodFlowSum 
+QKc <- Physio_params$Q_kidneyFraction_M/Physio_params$BloodFlowSum 
+QLc <- Physio_params$Q_liverFraction_M/Physio_params$BloodFlowSum 
+QSkc <- Physio_params$Q_skinFraction_M/Physio_params$BloodFlowSum 
+
+# Body flows (L/d)
+QA <- QAc * QC
+QG <- QGc * QC
+QK <- QKc * QC
+QL <- QLc * QC
+QSk <- QSkc * QC
+QR <- QC - (QA + QG + QK + QL + QSk)
+
+QUr = 0.022 * BW # L/d, Urine flow rate to the bladder 22 mL/kg BW/d [ICRP 89 page 161]
+GFR = 0.18 * QK # L/d, Glomerular filtration rate 18% of total renal plasma flow [ICRP 89 page 159] http://www.icrp.org/publication.asp?id=ICRP%20Publication%2089
+QT = 43.2*60*24/1000 # L/d; Tubular flow rate at the end of the PT 43.2 ml/min TFR from Scotcher et al. 2016 https://doi.org/10.1016/j.ejps.2016.03.018 and Pletz
+
+
+```
+
+As a more mechanistic kidney compartment is implemented in this model, the relevant physiological parameters were also modified accordingly. Those were derived from [@pletz2021], who initially suggested a multi-compartment kidney PBPK model for drugs. The updated kidney compartment in this model is divided in a tissue (vascular and cellular) and luminal (primary urine) sub-compartments, for the proximal tubule and the rest of the kidney.
+
+```{r}
+#| label: Physiological parameters for the mechanistic kidney
+#| message: false
+#| warning: false
+#| paged-print: true
+#| include: false
+
+# Fractional volumes ####
+# Recalculated from Pletz et al. 2020 
+fVGlom <- 0.0400  #Fractional volume of glomeruli to total kidney volume
+fVGlomB <- 0.6815 #Fractional volume of glomerular blood to the total glomeruli volume
+fVGlomL <- 0.3185 #Fractional volume of glomerular space(lumen) to the total glomeruli volume
+
+fVPT <- 0.3581  #Fractional volume of proximal tubule to total kidney volume
+fVPTB <- 0.0766 #Fractional volume of proximal tubule blood to proximal tubule volume
+fVPTC <- 0.5110 #Fractional volume of proximal tubule cell to proximal tubule volume
+fVPTL <- 0.4124 #Fractional volume of proximal tubule lumen to proximal tubule volume
+
+fVRK <- 1-fVPT-fVGlom # should be 0.6018,Fractional volume of rest of kidney to total kidney volume
+fVRKB <- 0.2019 #Fractional volume of rest of kidney blood to rest of kidney volume
+fVRKC <- 0.5154 #Fractional volume of rest of kidney cell to rest of kidney volume
+fVRKL <- 0.2826 #Fractional volume of rest of kidney lumen to rest of kidney volume
+
+# Actual volumes of mechanistic kidney ####
+VGlom <- fVGlom*VK  # L Volume of glomeruli
+VGlomB <- fVGlomB*VGlom # L Volume of glomerular blood
+VGlomL <- fVGlomL*VGlom # L Volume of glomerular space(lumen)
+
+VPT <- fVPT*VK  # L Volume of proximal tubule
+VPTB <- fVPTB*VPT # L Volume of proximal tubule
+VPTC <- fVPTC*VPT # L Volume of proximal tubule
+VPTL <- fVPTL*VPT # L Volume of proximal tubule
+
+VRK <- fVRK*VK # L Volume of rest of kidney
+VRKB <- fVRKB*VRK # L Volume of rest of kidney blood
+VRKC <- fVRKC*VRK # L Volume of rest of kidney cell
+VRKL <- fVRKL*VRK # L Volume of rest of kidney lumen
+
+# In the model currently ####
+VFil <- VGlomL+VPTL+VRKL # 0.1029505 Kidney Lumen compartment, 10 times higher than what we had before in the model
+VK <- VK-VFil # All but the filtrate
+
+```
+
+```{r}
+#| include: false
+
+MW <- 414.1
+pKa <- 1.886 # average of all the experimental values
+
+```
+
+```{r}
+#| include: false
+# Fraction unbound in plasma
+fup <- 0.061/100 # from Fischer et al (2024) https://doi.org/10.1021/acs.est.3c07415
+```
+
+# Renal clearance
+
+Mechanisms involved in the renal clearance of PFOA are mainly glomerular filtration, active tubular secretion and re-absorption and passibe permeability. Several studies have showed that PFOA is a substrate of organic anion transporters OAT1, OAT3, OAT4 and URAT1, while recently the intrinsic clearance of PFOA by these transporters was determined *in vitro*, using HEK293 cells transfected with the specific transporter [@yang2010; @louisse2024; @ryu2024]. PFOA can be actively secreted from the plasma to the primary urine by OAT1 and OAT3 transporters located in the proximal tubule and actively re-absorbed from the primary urine to the proximal tubule cells by OAT4 and URAT1 transporters. Active re-absorption by URAT1 was excluded from this study as both molecular docking simulations and *in vitro* transport studies showed a low affinity of PFOA for URAT [@yang2010; @louisse2022]. The available un-ionised PFOA can also freely diffuse between plasma, cells and the primary urine. The passive permeability of PFOA was recently derived *in vitro* and was extrapolated to an *in vivo* passive permeability clearance using equations @eq-CLpassive and @eq-Pint. As demonstrated in @fig-RenalClearance, active clearances greater than passive ones. One should also take into account that active reabsorption will actually be much higher as the fraction-unbound of PFOA in the filtrate is much higher than that in the plasma or tissues given the lower concentrations of albumin in the primary urine. Finally passive processes could be important in determining the half life of PFOA in specific populations, such as patients with chronic kidney disease (CKD), which has actually been linked to PFOA exposure. CKD leads to decreased GFR and changes in urinary pH, both of which alter the passive permeability of PFOA in the kidney [@huang2020]. This is interesting to model, especially for the assessment of the risk of PFOA exposure in that population.
+
+```{r}
+#| label: Renal Clearance
+#| include: false
+
+
+# Input Renal Clearance Data ####
+
+CL_OAT1 = 19*1e-6*60*24  # Clearance L/d/mg protein (scaled from uL/min/mg protein); Louisse et al. 2024 doi.org/10.1016/j.tox.2024.153961
+Vmax_OAT1 = 3.5*MW*1e-3*60*24 # ug/d/mg protein (nmol -> ug, min -> d) (scaled from nmol/min/mg protein); Louisse et al. 2024 doi.org/10.1016/j.tox.2024.153961
+Km_OAT1 = 185*MW # ug/L (scaled from uM); Louisse et al. 2024 doi.org/10.1016/j.tox.2024.153961
+
+CL_OAT3 = 17*1e-6*60*24  # Clearance L/d/mg protein (scaled from uL/min/mg protein); Louisse et al. 2024 doi.org/10.1016/j.tox.2024.153961
+Vmax_OAT3 = 1.5*MW*1e-3*60*24 # ug/d/mg protein (nmol -> ug, min -> d) (scaled from nmol/min/mg protein); Louisse et al. 2024 doi.org/10.1016/j.tox.2024.153961
+Km_OAT3 = 90*MW # ug/L (scaled from uM); Louisse et al. 2024 doi.org/10.1016/j.tox.2024.153961
+
+CL_OAT4 = 96*1e-6*60*24  # Clearance L/d/mg protein (scaled from uL/min/mg protein); Louisse et al. 2024 doi.org/10.1016/j.tox.2024.153961
+Vmax_OAT4 = 4.5*MW*1e-3*60*24   # ug/d/mg protein (nmol -> ug, min -> d) (scaled from nmol/min/mg protein); Louisse et al. 2024 doi.org/10.1016/j.tox.2024.153961
+Km_OAT4 = 47*MW # ug/L (scaled from uM); Louisse et al. 2024 doi.org/10.1016/j.tox.2024.153961
+# CL_OAT4 = 120*60*24 # Clearance L/d/mg protein (scaled from uL/min/mg protein); calculated from Yang et al. 2010 doi:10.1093/toxsci/kfq219; clearance not significantly different compared to the one from Louisse et al. 
+# Vmax_OAT4 = 37.4*MW*1e-3*60*24  # ug/d/mg protein (nmol -> ug, min -> d) (scaled from nmol/min/mg protein); Yang et al. 2010 doi:10.1093/toxsci/kfq219
+# Km_OAT4 = 310.3*MW # ug/L (scaled from uM); Yang et al. 2010 doi:10.1093/toxsci/kfq219; Louisse et al. 2024 doi.org/10.1016/j.tox.2024.153961
+
+Papp = 1.46*1e-6 # cm/d (scaled from *10e-6 cm/sec)
+
+
+# Scaling Renal Clearance Data ####
+
+REF <- 1 #Could be from 0.000001
+
+# Scaling Factor
+SF <- 10.9e-7 * 99.4e6 * 1e3 * (fVPTC*VPT) * REF #6.54 mgprotein/HEK293cell (ref: Han and Ni, 2004; Ho et al., 2004) * PTCPGK cells/g kidney * 1e3 as Vkidney is in Kg (could be 99.4e6 or 60e6 see below comment ref: Neuhoff et al., 2013), equation from: https://doi.org/10.1016/j.comtox.2021.100172 
+# Comment regarding PTCPGK: from Tang et al. 2024 https://doi.org/10.1021/acs.molpharmaceut.4c00504  a value of 60 million PTCPGKis commonly used but the observed value as high as 209 million PTCPGK has been reported. In this study, avalue of 99.4 million PTCPGK was applied based on the mostrecent meta-analysis.45 
+# SF <- 0.17 * 10e6 # 17% of kidney is protein [ICRP 89], 10e6 is scaling from mg protein to kg protein, double ref for 17% protein Ruark 2020: DOI: https://doi.org/10.1016/B978-0-12-818596-4.00006-0
+# These scaling factors have a 1e3 factor difference with scaling based on protein giving a higher value. Scaling based on protein gives 1.7e6, scaling for cells gives 6.2e3
+
+## Active ####
+# Secretion
+CL_PltPT <- (CL_OAT1 + CL_OAT3) * SF # L/d, corrected to proximal tubule volume only
+
+# Re-absorption
+CL_FiltPT <- CL_OAT4 * SF # L/d, corrected to proximal tubule volume only
+
+## Passive ####
+
+# pH at the different sections
+pH_KC <- 7    # pH of intracellular tissue water R&R 2004 DOI 10.1002/jps.20322
+pH_P <- 7.4   # pH of plasma
+pH_PTL <- 7   # pH of proximal tubule urine Huang and Isoherranen 2018 doi:10.1002/psp4.12321
+
+# fraction unionised of PFOA depending on the pH
+f.union_KC <- 1/(1 + 10^(pH_KC - pKa))   # in kidney cell (both proximal and rest of the kidney)
+f.union_P <- 1/(1 + 10^(pH_P - pKa))     # in plasma
+f.union_PTL <- 1/(1 + 10^(pH_PTL - pKa)) # in lumen
+f.ion_PTL <- 1 - f.union_PTL
+f.ion_P <- 1 - f.union_P
+
+# surface area of the different sections
+SA_PTL <- 611*30 # dm3 = L, lumen side correcting for the microvilli, as done by Huang and Isoherranen 2018 doi:10.1002/psp4.12321
+SA_PT <- 611     # dm3 = L, cell/plasma side
+f.union_exp <- f.union_P # as exp.pH=7.4 = plasma pH
+
+# Intrinsinc permeability, corrected for fraction unionised in the experiment
+Pint <- Papp/f.union_exp # cm/s 
+
+
+# Effective passive diffusion between either tubule and cell or cell and blood
+# In Huang and Isoherranen 2018 doi:10.1002/psp4.12321 they assume the same Peff (what they call CL_PD) for apical and basolateral sides except for the proximal tubule where apical side has 30 fold higher TSA than basolateral side, due to the presence of microvilli
+
+# Secretion: Proximal tubule cell to proximal tubule lumen
+CLdif_PTCtPTL <- (Pint*SA_PT*f.union_KC/1000)*60*60*24   # L/d; cm/s = L/s /1000 = L/d *60*60*24
+
+# Secretion: Proximal tubule plasma to proximal tubule cell
+CLdif_PTPtPTC <- (Pint*SA_PT*f.union_P/1000)*60*60*24    # L/d; cm/s = L/s /1000 = L/d *60*60*24
+
+# Re-absorption: Proximal tubule lumen to proximal tubule cell
+CLdif_PTLtPTC <- (Pint*SA_PTL*f.union_PTL/1000)*60*60*24 # L/d; cm/s = L/s /1000 = L/d *60*60*24
+
+# Re-absorption: Proximal tubule cell to proximal tubule plasma
+CLdif_PTCtPTP <- (Pint*SA_PT*f.union_KC/1000)*60*60*24   # L/d; cm/s = L/s /1000 = L/d *60*60*24
+
+## Fraction un-bound ####
+
+# To calculate fraction unbound in tissue based on the Poulin and Theil equation
+# R is the ratio of average albumin and lipoprotein in tissue / plasma
+
+# Albumin concentrations
+# From Akihiro Tojo and Satoshi Kinugasa 2012 doi:10.1155/2012/481520
+# Calb_GlomL <- 22.9 #ug/ml bowmans capsule
+# Calb_PT <- 14.4 #ug/ml proximal tubule 
+# Calb_DT <- 1.3 #ug/ml distal tubule
+# Calb_Ur <- 0.7 #ug/ml urine
+# In the same paper: the proximal tubule reabsorbes 71% of albumin, while LoH and DT 23% and the collecting duct 3%
+Calb_P <- 37.0      #mg/ml plasma
+Calb_L <- 0.00864   #mg/ml filtrate (kidney lumen)
+Calb_PTL <- 14.4e-3 #mg/ml proximal tubule 
+Calb_RKL <- 2.88e-3 #mg/ml rest of kidney tubule, as the PT is filtering 71%, then the concentration of albumin leaving the PT is 6.641ul/ml, in the urine it's 0.7ul/ml, therefore I'm doing the average here
+Calb_exp <- 1e-10   #albumin, or protein concentration not reported in the experiments, therefore assuming a very low number
+
+# Albumin ratio
+R_T <- 0.5 #albumin and lipoprotein ratio between the tissue interstitial fluid and plasma
+R_Fil <- Calb_L/Calb_P  # or 0.00062
+R_PTL <- Calb_PTL/Calb_P 
+R_RKL <- Calb_RKL/Calb_P
+R_exp <- Calb_exp/Calb_P
+
+# Fraction unbound
+fuT <- 1/(1 + ((1 - fup)/fup) * R_T)     # Poulin and Theil, 2009, below Table 6
+fuFil <- 1/(1 + ((1 - fup)/fup) * R_Fil)
+fuPTL <- 1/(1 + ((1 - fup)/fup) * R_PTL)
+fuRKL <- 1/(1 + ((1 - fup)/fup) * R_RKL)
+fuexp <- 1/(1 + ((1 - fup)/fup) * R_exp) # is actually 1
+```
+
+## *In vitro* to *in vivo* extrapolation
+
+Equations @eq-CLreabsorption and @eq-CLsecretion were used for the *in vitro* to *in vivo* extrapolation of the renal clearances. A scaling factor (SF) was used to correct for the amount of proteins per cell and the amount of cells per gram kidney, as previously done [@eq-SF; @tan2024; @pletz2021].
+
+One should take into consideration uncertainties inherent to the *in vitro* data. The HEK293 cells used to determine the active clearances were over-expressing the transporters. Exact transporter protein expression in the cells was not reported, which could lead to an overestimation of those clearances in the model. Usually a relative expression factor (REF) or relative activity factor (RAF) is also used to correct for the differences in transporter protein expression between the cell system and the tissue, however this was not possible as this information was not provided in the studies where the intrinsic clearance data was taken from. Optimisation of the scaling factor could be used to correct for that.
+
+$$ CLsecretion = (CLintOAT1 + CLintOAT3) * SF$$ {#eq-CLsecretion}
+
+$$ CLreabsorption = CLintOAT4 * SF$$ {#eq-CLreabsorption}
+
+$$ SF = mgprotein.HEKcell * PTC.gKidney * REF * VPT$$ {#eq-SF}
+
+$$ CLpassive = Pint * SA * f.unionised.primary.urine$$ {#eq-CLpassive}
+
+$$ Pint = Papp * f.unionised.experiment$$ {#eq-Pint}
+
+```{r}
+#| echo: false
+#| label: fig-RenalClearance
+#| fig-cap: "Renal Clearance Parameters"
+#| fig-subcap: "Values not corrected for the fraction unbound in the different matrices"
+
+
+Renal_Clearance.params <- tibble(
+  Parameter = c("Active_Secretion", "Active_Reabsorption", "Passive_Secretion", "Passive_Reabsorption", "Passive_Filtration"),
+  Abbreviation = c("CL_PltPT", "CL_FiltPT", "CLdif_PTCtPTL", "CLdif_PTLtPTC", "GFR"),
+  # Value = c(CL_PltPT*fup, CL_FiltPT*fuFil, CLdif_PTCtPTL*fuT, CLdif_PTLtPTC*fuFil, GFR*fup),
+  Value = c(CL_PltPT, CL_FiltPT, CLdif_PTCtPTL, CLdif_PTLtPTC, GFR),
+  Unit = c("L/d", "L/d", "L/d", "L/d", "L/d")
+) %>% 
+  separate(Parameter, c("Parameter", "Direction"), remove = TRUE)
+
+
+Renal_Clearance.plot <- Renal_Clearance.params %>%
+  ggplot(aes(x = Parameter, y = Value, fill = Direction)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  ) +
+  scale_fill_manual(values = c("#542788", "#f1a340", "#a1d76a")) +
+  ylab("Clearance (L/d)")+
+  xlab("") +
+  scale_y_continuous(trans='log10')
+Renal_Clearance.plot
+
+```
+
+{{< pagebreak >}}
+
+# Modelling approach and outcomes
+
+I started with the most complex version of the kidney. That being:
+
+-   Proximal tubule Plasma - Cell - Lumen
+    -   active secretion between plasma and cell
+    -   active reabsorption from lumen to cell
+    -   passive permeability between plasma/cell/lumen
+-   Rest of kidney Plasma - Lumen
+
+The AUC was at **29.75072** ug.day/L and the half life at **3.51** years. Most of PFOA stays in the proximal tubule cell as passive permeability back to the plasma is very slow compared to the active secretion.
+
+![](images/clipboard-3319694067.png){width="312"} ![](images/clipboard-2695888055.png){width="312"} ![](images/clipboard-2278906151.png){width="312"} ![](images/clipboard-502054234.png){width="312"}
+
+The distribution of PFOA in kidney tissue has not been explored and there's no indication of PFOA accumulation in kidney cells in literature. The predicted AUC seems to be quite low compared to the experimental one, therefore one could assume that either the active secretion from the plasma to the tissue is overestimated or that the passive permeability underestimated. I therefore tried to test a decreased active secretion by a factor 1e6. It did increase the AUC but still most of PFOA stays in the proximal tubule cells
+
+![](images/clipboard-941815624.png){width="312"} ![](images/clipboard-3063472549.png){width="312"} ![](images/clipboard-1513618346.png){width="312"}
+
+I also tried increasing the passive permeability by a factor of 10 and that increased the AUC to **95** ug.day/L and decreased the half life to **2.02** years.
+
+![](images/clipboard-1450947478.png){width="312"} ![](images/clipboard-3818905646.png){width="312"} ![](images/clipboard-1687259873.png){width="312"} ![](images/clipboard-685849692.png){width="312"}
+
+The above simulation is quite close to the experimental data, however given the low confidence in all the above mentioned mechanisms, another approach could be to simplify the model and decrease the uncertainties. One could also re-compartmentalise the model when more data regarding the exact mechanisms involved in the distribution of PFOA between kidney plasma and kidney tissue are available.
+
+Therefore the kidney was simplified to:
+
+-   Proximal tubule tissue - Lumen
+
+    -   active reabsorption from lumen to tissue
+    -   passive permeability between tissue/lumen
+
+-   Rest of kidney tissue - Lumen
+
+With this approach the kidney model describes the mechanisms for which we are most confident about (i.e reabsorption from filtrate back to the proximal tubule). The predictions were an AUC of **170.05** and a half life of **3.25** years.
+
+![](images/clipboard-2948566541.png){width="312"} ![](images/clipboard-1282975824.png){width="312"}
+
+One could also simplify the kidney even more by only dividing it to kidney tissue and kidney filtrate (lumen). However this is overestimating the re-absorption, as it assumes no flow out of the proximal tubule lumen other than the daily urinary excretion flow (1ml/min). This indeed predicts an AUC of **193.20** and a half life of **53.91.** In reality tubular fluid flow is an important aspect of kidney physiology and it's regulated by the GFR and urinary pH. The physiological tubular flow at the end of the proximal tubule is at 43.2 ml/min [@scotcher2016; @huang2020].
+
+![](images/clipboard-2281072355.png){width="312"} ![](images/clipboard-4079678327.png){width="312"}
+
+So the best approach to modelling the kidney, based on the currently available *in vitro* and physiological data is:
+
+-   Proximal tubule tissue - Lumen
+
+    -   active reabsorption from lumen to tissue
+    -   passive permeability between tissue/lumen
+
+-   Rest of kidney tissue - Lumen
+
+Active reabsorption clearance was transformed to Vmax/Km to account for transporter saturation. The updated AUC was at **169** and half life at **3.24** years.
+
+![](images/clipboard-2124753294.png){width="312"} ![](images/clipboard-1314773932.png){width="312"}
+
+Regarding the first part of the kinetics, predicted absorption to the plasma is much quicker in the model.
+
+![](images/clipboard-3808099951.png){width="312"}
+
+# Modelling CKD
+
+TBC.. Add here model predictions for patients with CKD, I think that would be interesting to show using the model.
+
+{{< pagebreak >}}
+
+# References

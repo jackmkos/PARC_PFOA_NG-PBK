@@ -9,7 +9,8 @@ rm(list=ls()) # to clear out the global environment
 
 # Set working directory
 
-HOME = "C:/Users/pacho003/OneDrive - Wageningen University & Research/C Channel/R/PARC_PFAS_PBPKmodel/Codes_PFAS_models/Chrysanthi_Pachoulide_2024_PFOA_oral_dermal_blood"
+HOME = "C:/Users/pacho003/OneDrive - Wageningen University & Research/CP_L_R/PARC_PFOA_mechanistic"
+
 # HOME = "/home/westerj"
 setwd(HOME)
 
@@ -39,7 +40,7 @@ showtext_auto()
 # ------------------------------------------------------ #
 
 ## Calculate partition coefficients based on tissue matrix distribution experimental data ####
-Physio.data <- read_csv("C:/Users/pacho003/OneDrive - Wageningen University & Research/C Channel/R/PARC_PFAS_PBPKmodel/Codes_PFAS_models/Chrysanthi_Pachoulide_2024_PFOA_oral_dermal_blood/Input/TissueComposition.csv")
+Physio.data <- read_csv("C:/Users/pacho003/OneDrive - Wageningen University & Research/CP_L_R/PARC_PFOA_mechanistic/Input/TissueComposition.csv")
 
 # PFOA Matrix/Water Distribution Coefficients
 
@@ -621,8 +622,8 @@ write.csv(Variables_df, "PhysioVariables.csv", row.names = FALSE)
 # PHYSIOLOGICAL, PHYSICOCHEMICAL and BIOKINETIC PARAMETERS ####
 # ------------------------------------------------------ #
 # To directly call .csv files instead of re-running the life-stage code below everytime
-PhysioVariables_M_df = read_csv("C:/Users/pacho003/OneDrive - Wageningen University & Research/C Channel/R/PARC_PFAS_PBPKmodel/Codes_PFAS_models/Chrysanthi_Pachoulide_2024_PFOA_oral_dermal_blood/Input/2024-11-14/PhysioVariablesMale.csv") %>% as.data.frame()
-# PhysioVariables_F_df = read_csv("C:/Users/pacho003/OneDrive - Wageningen University & Research/C Channel/R/PARC_PFAS_PBPKmodel/Codes_PFAS_models/Chrysanthi_Pachoulide_2024_PFOA_oral_dermal_blood/Input/2024-11-14/PhysioVariablesFemale.csv") %>% as.data.frame()
+PhysioVariables_M_df = read_csv("C:/Users/pacho003/OneDrive - Wageningen University & Research/CP_L_R/PARC_PFOA_mechanistic/Input/2024-11-14/PhysioVariablesMale.csv") %>% as.data.frame()
+# PhysioVariables_F_df = read_csv("C:/Users/pacho003/OneDrive - Wageningen University & Research/CP_L_R/PARC_PFOA_mechanistic/Input/2024-11-14/PhysioVariablesFemale.csv") %>% as.data.frame()
 
 # PFOA
 MW = 414.07
@@ -644,7 +645,7 @@ PSk = 0.1  # Plasma/skin partition coefficient; Rat tissue data (Kudo et al. 200
 PR = 0.12  # Plasma/rest of the body partition coefficient; Rat tissue data (Kudo et al. 2007
 
 # Calculated partition coefficients
-Kp.df <- read_csv("C:/Users/pacho003/OneDrive - Wageningen University & Research/C Channel/R/PARC_PFAS_PBPKmodel/Codes_PFAS_models/Chrysanthi_Pachoulide_2024_PFOA_oral_dermal_blood/Input/PFOAPBK.PartCoefs.csv")
+Kp.df <- read_csv("C:/Users/pacho003/OneDrive - Wageningen University & Research/CP_L_R/PARC_PFOA_mechanistic/Input/PFOAPBK.PartCoefs.csv")
   
 KpAd = Kp.df$KpAd
 KpGu = Kp.df$KpGu
@@ -821,8 +822,8 @@ write.csv(Final_variables_F_df, "Final_variables_F.csv", row.names = FALSE)
 
 # PFAS MODEL SPECIFIC PHYSIOLOGICAL DATA ####
 # Call .csv files instead of re-running the life-stage code below everytime
-MaleVariables_df <- read_csv("C:/Users/pacho003/OneDrive - Wageningen University & Research/C Channel/R/PARC_PFAS_PBPKmodel/Codes_PFAS_models/Chrysanthi_Pachoulide_2024_PFOA_oral_dermal_blood/Input/2024-11-12/MaleVariables.csv") %>% as.data.frame()
-FemaleVariables_df <- read_csv("C:/Users/pacho003/OneDrive - Wageningen University & Research/C Channel/R/PARC_PFAS_PBPKmodel/Codes_PFAS_models/Chrysanthi_Pachoulide_2024_PFOA_oral_dermal_blood/Input/2024-11-12/FemaleVariables.csv") %>% as.data.frame()
+MaleVariables_df <- read_csv("C:/Users/pacho003/OneDrive - Wageningen University & Research/CP_L_R/PARC_PFOA_mechanistic/Input/2024-11-12/MaleVariables.csv") %>% as.data.frame()
+FemaleVariables_df <- read_csv("C:/Users/pacho003/OneDrive - Wageningen University & Research/CP_L_R/PARC_PFOA_mechanistic/Input/2024-11-12/FemaleVariables.csv") %>% as.data.frame()
 
 # Model compartments: Skin (Barrier and Skin -to become Plasma and Tissue-), Kidney (Plasma, Tissue, Filtrate), Gut, Liver, Plasma, Adipose
 

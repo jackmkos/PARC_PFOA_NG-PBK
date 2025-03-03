@@ -7,7 +7,7 @@
   rm(list=ls()) # to clear out the global environment
   
   # Set working directory
-  HOME <- "C:/Users/pacho003/OneDrive - Wageningen University & Research/CP_L_R/PARC_PFAS_PBPKmodel/Codes_PFAS_models/Chrysanthi_Pachoulide_2024_PFOA_mechanistic"
+  HOME <- "C:/Users/pacho003/OneDrive - Wageningen University & Research/CP_L_R/PARC_PFOA_mechanistic/Chrysanthi_Pachoulide_2024_PFOA_mechanistic"
   # HOME <- "/home/westerj"
   setwd(HOME)
   
@@ -60,10 +60,10 @@
   
   # Input variables
   # Calculated variables from: "PARC PFOA PBK input: file ../Script/PARC PFOA PBK input.R
-  # Final_variables_M_df <- read_csv("C:/Users/pacho003/OneDrive - Wageningen University & Research/CP_L_R/PARC_PFAS_PBPKmodel/Codes_PFAS_models/Chrysanthi_Pachoulide_2024_PFOA_mechanistic/Input/2024-11-18/Final_variables_M.csv") %>% as.data.frame()
-  # Final_variables_M_df <- read_csv("C:/Users/pacho003/OneDrive - Wageningen University & Research/CP_L_R/PARC_PFAS_PBPKmodel/Codes_PFAS_models/Chrysanthi_Pachoulide_2024_PFOA_mechanistic/Input/2024-11-18/Final_variables_MVolunteer.csv")
-  Physio_params <- read_csv("C:/Users/pacho003/OneDrive - Wageningen University & Research/CP_L_R/PARC_PFAS_PBPKmodel/Codes_PFAS_models/Chrysanthi_Pachoulide_2024_PFOA_mechanistic/Input/PhysioVariables.csv")
-  PFOA_params <- read_csv("C:/Users/pacho003/OneDrive - Wageningen University & Research/CP_L_R/PARC_PFAS_PBPKmodel/Codes_PFAS_models/Chrysanthi_Pachoulide_2024_PFOA_mechanistic/Input/PFOAParams.csv")
+  # Final_variables_M_df <- read_csv("C:/Users/pacho003/OneDrive - Wageningen University & Research/CP_L_R/PARC_PFOA_mechanistic/Chrysanthi_Pachoulide_2024_PFOA_mechanistic/Input/2024-11-18/Final_variables_M.csv") %>% as.data.frame()
+  # Final_variables_M_df <- read_csv("C:/Users/pacho003/OneDrive - Wageningen University & Research/CP_L_R/PARC_PFOA_mechanistic/Chrysanthi_Pachoulide_2024_PFOA_mechanistic/Input/2024-11-18/Final_variables_MVolunteer.csv")
+  Physio_params <- read_csv("C:/Users/pacho003/OneDrive - Wageningen University & Research/CP_L_R/PARC_PFOA_mechanistic/Chrysanthi_Pachoulide_2024_PFOA_mechanistic/Input/PhysioVariables.csv")
+  PFOA_params <- read_csv("C:/Users/pacho003/OneDrive - Wageningen University & Research/CP_L_R/PARC_PFOA_mechanistic/Chrysanthi_Pachoulide_2024_PFOA_mechanistic/Input/PFOAParams.csv")
   
   
   # EXPOSURE SCENARIO ####
@@ -685,7 +685,7 @@
   HalfLife <- half_life$half.life/365 #halflife in years
   
   # Experimental
-  ExpData <- read_csv("C:/Users/pacho003/OneDrive - Wageningen University & Research/CP_L_R/PARC_PFAS_PBPKmodel/Codes_PFAS_models/Chrysanthi_Pachoulide_2024_PFOA_mechanistic/Input/HalfLifes.csv")
+  ExpData <- read_csv("C:/Users/pacho003/OneDrive - Wageningen University & Research/CP_L_R/PARC_PFOA_mechanistic/Chrysanthi_Pachoulide_2024_PFOA_mechanistic/Input/HalfLifes.csv")
   
   Exp_HalfLifes <- ExpData %>%
     filter(species == "human",
@@ -724,7 +724,7 @@
   
   
   # Experimental Vs Simulated Plasma concentrations ####
-  ExpPlasma <- read_excel("C:/Users/pacho003/OneDrive - Wageningen University & Research/CP_L_R/PARC_PFAS_PBPKmodel/Codes_PFAS_models/Chrysanthi_Pachoulide_2024_PFOA_mechanistic/Input/Experimental.Plasma.PFOA.xlsx", 
+  ExpPlasma <- read_excel("C:/Users/pacho003/OneDrive - Wageningen University & Research/CP_L_R/PARC_PFOA_mechanistic/Chrysanthi_Pachoulide_2024_PFOA_mechanistic/Input/Experimental.Plasma.PFOA.xlsx", 
                           col_types = c("numeric", "numeric"))
   
   

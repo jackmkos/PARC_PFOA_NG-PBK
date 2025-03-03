@@ -9,9 +9,9 @@ rm(list=ls()) # to clear out the global environment
 
 # Set working directory
 
-HOME <- "C:/Users/pacho003/OneDrive - Wageningen University & Research/C Channel/CP_L_R/PARC_PFAS_PBPKmodel/Codes_PFAS_models/Chrysanthi_Pachoulide_2024_PFOA_oral_dermal_blood"
+HOME <- "C:/Users/pacho003/OneDrive - Wageningen University & Research/CP_L_R/PARC_PFOA_mechanistic"
 # HOME <- "/home/westerj"
-setwd(HOME)
+# setwd(HOME)
 
 
 # Set output storage directory
@@ -39,8 +39,8 @@ library(PKNCA)
 
 ### Constants ####
 #### Physiological  ####
-Physio_params <- read_csv("C:/Users/pacho003/OneDrive - Wageningen University & Research/C Channel/CP_L_R/PARC_PFAS_PBPKmodel/Codes_PFAS_models/Chrysanthi_Pachoulide_2024_PFOA_oral_dermal_blood/Input/PhysioVariables.csv")
-
+Physio_params <- read_csv("C:/Users/pacho003/OneDrive - Wageningen University & Research/CP_L_R/PARC_PFOA_mechanistic/Input/PhysioVariables.csv")
+ 
 # 50 years old adult, male
 Physio_params <- Physio_params %>% 
         filter(age == 50) %>% 
@@ -72,7 +72,8 @@ QSkc <- Physio_params$Q_skinFraction_M/Physio_params$BloodFlowSum
 
 
 #### Chemical Specific ####
-PFOA_params <- read_csv("C:/Users/pacho003/OneDrive - Wageningen University & Research/C Channel/CP_L_R/PARC_PFAS_PBPKmodel/Codes_PFAS_models/Chrysanthi_Pachoulide_2024_PFOA_oral_dermal_blood/Input/PFOAParams.csv")
+PFOA_params <- read_csv("C:/Users/pacho003/OneDrive - Wageningen University & Research/CP_L_R/PARC_PFOA_mechanistic/Input/PFOAParams.csv")
+
 
 MW <- PFOA_params$MW 
 
