@@ -10,7 +10,6 @@ rm(list=ls()) # to clear out the global environment
 HOME <- "C:/Users/pacho003/OneDrive - Wageningen University & Research/CP_L_R/PARC_PFOA_mechanistic"
 # HOME <- "/home/westerj"
 setwd(HOME)
-PARC_PFOA_mechanistic\Script\Archive
 
 # Set output storage directory
 workingtime <- gsub(":", "-", Sys.time())
@@ -430,7 +429,7 @@ PBPKmodPFOA_M <- function(t, state, parameters){
     ## Concentrations ----
     
     # Organ concentrations (ug/L); these are TOTAL concentrations
-    CP <- AP/VP  # Concentration in plasma (ug/L)
+    # CP <- AP/VP  # Concentration in plasma (ug/L)
 	Cart <- Aart/Vart # Concentration in arterial plasma (ug/L)
 	Cven <- Aven/Vven # Concentration in venous plasma (ug/L)
     
