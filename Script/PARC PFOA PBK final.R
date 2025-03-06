@@ -137,17 +137,17 @@
   R = (1.75+1)/2                    # cm, (adult of 70kg mean value) Willmann2004 doi: 10.1021/jm030999b
   VGL = pi*L*(R^2)/1000             # L, cm3/1000 #Value is the same as Punt et al. 2021 https://dx.doi.org/10.1021/acs.chemrestox.0c00307
   
-  L_up = 124                        # cm, (adult of 70kg) (duodenum 20, jejunum 104 cm) Willmann2004 doi: 10.1021/jm030999b
-  R_up = 1.75                       # cm
-  VGL_up = pi*L_up*(R_up^2)/1000    # L, cm3/1000
-
-  L_low = 156                       # cm, (adult of 70kg) ileum
-  R_low = 1                         # cm, Willmann2004 doi: 10.1021/jm030999b
-  VGL_low = pi*L_low*(R_low^2)/1000 # L, cm3/1000
-
-  L_col = 1.5/100                   # cm, (1.5m/100) Willmann2004 doi: 10.1021/jm030999b
-  R_col = 3.5                       # cm, Willmann2004 doi: 10.1021/jm030999b
-  VGL_col = pi*L_col*(R_col^2)/1000 # L, cm3/1000
+  # L_up = 124                        # cm, (adult of 70kg) (duodenum 20, jejunum 104 cm) Willmann2004 doi: 10.1021/jm030999b
+  # R_up = 1.75                       # cm
+  # VGL_up = pi*L_up*(R_up^2)/1000    # L, cm3/1000
+  # 
+  # L_low = 156                       # cm, (adult of 70kg) ileum
+  # R_low = 1                         # cm, Willmann2004 doi: 10.1021/jm030999b
+  # VGL_low = pi*L_low*(R_low^2)/1000 # L, cm3/1000
+  # 
+  # L_col = 1.5/100                   # cm, (1.5m/100) Willmann2004 doi: 10.1021/jm030999b
+  # R_col = 3.5                       # cm, Willmann2004 doi: 10.1021/jm030999b
+  # VGL_col = pi*L_col*(R_col^2)/1000 # L, cm3/1000
 
   SA_SI = 2*pi*R*L*25               # cm2, amplification factor of 25 for the microvilli in the intestinal lumen, Willmann2004 doi: 10.1021/jm030999b
   
@@ -192,10 +192,10 @@
   GFR = 113.7*60*24/1000      # The measured GFR of the subject in Abraham et al. 2024 https://doi.org/10.1016/j.envint.2024.109047Physio_params$Hct_M  or 0.18 * QK # L/d 18% of total renal plasma flow [ICRP 89 page 159] http://www.icrp.org/publication.asp?id=ICRP%20Publication%2089
   QT = 43.2*60*24/1000        # L/d, Tubular flow rate at the end of the proximal tubule, 43.2 ml/min TFR from Scotcher et al. 2016 https://doi.org/10.1016/j.ejps.2016.03.018 and Pletz
   
-  tge = 2*24                  #/d (24*/h) or 30min (10-60min), gastric emptying rate, fasted Willmann2004 doi: 10.1021/jm030999b, Punt et al 2021 https://dx.doi.org/10.1021/acs.chemrestox.0c00307
+  # tge = 2*24                  #/d (24*/h) or 30min (10-60min), gastric emptying rate, fasted Willmann2004 doi: 10.1021/jm030999b, Punt et al 2021 https://dx.doi.org/10.1021/acs.chemrestox.0c00307
   tsi = 0.3*24                #/d (24*/h) or 4h (2-6 h), intestinal transit time, Willmann2004 doi: 10.1021/jm030999b (#transit time duodenum 14min, jejunum 71min, ileum 114min B. Agoram et al. 2001), Punt et al 2021 https://dx.doi.org/10.1021/acs.chemrestox.0c00307
-  tsi_up = 0.7*24             #/d (24*/h) 1.417 h, transit time from duodenum and jejunoum ,14+17 min (duodenum 14min, jejunum 71min, from B. Agoram et al. 2001), Punt et al 2021 https://dx.doi.org/10.1021/acs.chemrestox.0c00307
-  tsi_low = 1.9*24            #/d (24*/h) 1.9 h, transit time of ileum ,114 min from B. Agoram et al. 2001, Punt et al 2021 https://dx.doi.org/10.1021/acs.chemrestox.0c00307
+  # tsi_up = 0.7*24             #/d (24*/h) 1.417 h, transit time from duodenum and jejunoum ,14+17 min (duodenum 14min, jejunum 71min, from B. Agoram et al. 2001), Punt et al 2021 https://dx.doi.org/10.1021/acs.chemrestox.0c00307
+  # tsi_low = 1.9*24            #/d (24*/h) 1.9 h, transit time of ileum ,114 min from B. Agoram et al. 2001, Punt et al 2021 https://dx.doi.org/10.1021/acs.chemrestox.0c00307
   tco = 0.09*24               #/d (24*/h) or 7h willmann2004 doi: 10.1021/jm030999b
   
   
@@ -294,22 +294,23 @@
   ## Active transport
   
   # Input data, in vitro clearance
-  Vmax_OAT1c = 3.5                 # nmol/min/mg protein, Louisse et al. 2024 doi.org/10.1016/j.tox.2024.153961
-  Vmax_OAT3c = 1.5                 # nmol/min/mg protein, Louisse et al. 2024 doi.org/10.1016/j.tox.2024.153961
+  # Vmax_OAT1c = 3.5                 # nmol/min/mg protein, Louisse et al. 2024 doi.org/10.1016/j.tox.2024.153961
+  # Vmax_OAT3c = 1.5                 # nmol/min/mg protein, Louisse et al. 2024 doi.org/10.1016/j.tox.2024.153961
   Vmax_OAT4c = 4.5                 # nmol/min/mg protein, Louisse et al. 2024 doi.org/10.1016/j.tox.2024.153961
   
-  Km_OAT1 = 185*MW                 # ug/L, scaled from uM, Louisse et al. 2024 doi.org/10.1016/j.tox.2024.153961
-  Km_OAT3 = 90*MW                  # ug/L, scaled from uM, Louisse et al. 2024 doi.org/10.1016/j.tox.2024.153961
+  # Km_OAT1 = 185*MW                 # ug/L, scaled from uM, Louisse et al. 2024 doi.org/10.1016/j.tox.2024.153961
+  # Km_OAT3 = 90*MW                  # ug/L, scaled from uM, Louisse et al. 2024 doi.org/10.1016/j.tox.2024.153961
   Km_OAT4 = 47*MW                  # ug/L, scaled from uM, Louisse et al. 2024 doi.org/10.1016/j.tox.2024.153961
   
-  CL_OAT1 = 19*1e-6*60*24          # L/d/mg protein, initial ul/min/mg protein, Louisse et al. 2024
-  CL_OAT3 = 17*1e-6*60*24          # L/d/mg protein, initial ul/min/mg protein, Louisse et al. 2024
+  # CL_OAT1 = 19*1e-6*60*24          # L/d/mg protein, initial ul/min/mg protein, Louisse et al. 2024
+  # CL_OAT3 = 17*1e-6*60*24          # L/d/mg protein, initial ul/min/mg protein, Louisse et al. 2024
   CL_OAT4 = 96*1e-6*60*24          # L/d/mg protein, initial ul/min/mg protein,Louisse et al. 2024
   
   # Relative expression factor
+  # REF_OAT1 <- 1 #PFOA_params$REF_OAT1 #
+  # REF_OAT3 <- 1 #PFOA_params$REF_OAT3 #
   REF_OAT4 <- 1 #PFOA_params$REF_OAT4 # is equal to 1, as we don't have data on the in vitro expression of OAT4
-  REF_OAT1 <- 1 #PFOA_params$REF_OAT1 #
-  REF_OAT3 <- 1 #PFOA_params$REF_OAT3 #
+  
   
   # SF_OAT <- 0.17 * 10e6 # 17% of kidney is protein [ICRP 89], 10e6 is scaling from mg protein to kg protein, double ref for 17% protein Ruark 2020: DOI: https://doi.org/10.1016/B978-0-12-818596-4.00006-0
   SF_OAT <- 10.9e-7 * 99.4e6 * 1e3 * VPT #6.54 mgprotein/HEK293cell (ref: Han and Ni, 2004, Ho et al., 2004) * PTCPGK cells/g kidney * 1e3 as Vkidney is in Kg (could be 99.4e6 or 60e6 see below comment ref: Neuhoff et al., 2013), equation from: https://doi.org/10.1016/j.comtox.2021.100172 
@@ -317,27 +318,27 @@
   
   
   # Scaled clearances for active transport
-  CL_FiltPT <- CL_OAT4 * REF_OAT4 * SF_OAT                            # L/d, reabsorption
-  CL_PltPT <- ((CL_OAT1 * REF_OAT1) + (CL_OAT3 * REF_OAT3)) * SF_OAT  # L/d, excretion
+  # CL_FiltPT <- CL_OAT4 * REF_OAT4 * SF_OAT                            # L/d, reabsorption
+  # CL_PltPT <- ((CL_OAT1 * REF_OAT1) + (CL_OAT3 * REF_OAT3)) * SF_OAT  # L/d, excretion
   
-  Vmax_OAT1 = Vmax_OAT1c*MW*1e-3*60*24*SF_OAT # ug/d (nmol -> ug, min -> d)
-  Vmax_OAT3 = Vmax_OAT3c*MW*1e-3*60*24*SF_OAT # ug/d (nmol -> ug, min -> d)
+  # Vmax_OAT1 = Vmax_OAT1c*MW*1e-3*60*24*SF_OAT # ug/d (nmol -> ug, min -> d)
+  # Vmax_OAT3 = Vmax_OAT3c*MW*1e-3*60*24*SF_OAT # ug/d (nmol -> ug, min -> d)
   Vmax_OAT4 = Vmax_OAT4c*MW*1e-3*60*24*SF_OAT # ug/d (nmol -> ug, min -> d)
   
   
   ## Passive permeability
   
   # Input data, in vitro apparent permeability
-  Papp_PT <- 1.46*1e-6                       # cm/s, In vitro permeability at apical compartment pH 7.4, PFAS were added to the donor wells and transport buffer containing 0.4% BSA was added to the receiver wells
-  Pint_PT <- Papp_PT/f.union_exp             # cm/s, Intrinsic permeability, corrected for fraction unionised in the experiment
+  # Papp_PT <- 1.46*1e-6                       # cm/s, In vitro permeability at apical compartment pH 7.4, PFAS were added to the donor wells and transport buffer containing 0.4% BSA was added to the receiver wells
+  # Pint_PT <- Papp_PT/f.union_exp             # cm/s, Intrinsic permeability, corrected for fraction unionised in the experiment
   
   # Final clearance for passive permeability (what is called effective passive diffusion)
   # Equations from  Huang and Isoherranen 2018, what it's called effective passive diffusion doi:10.1002/psp4.12321
   # In Huang and Isoherranen, it is assumed the same Peff (what they call CL_PD) for apical and basolateral sides except for the proximal tubule where apical side has 30 fold higher TSA than basolateral side, due to the presence of microvilli
-  CLdif_PTLtPTC <- (Pint_PT*SA_PTL*f.union_PTL/1000)*60*60*24 # L/d, Proximal tubule lumen to proximal tubule cell (calculations: cm/s = L/s /1000 = L/d *60*60*24)
-  CLdif_PTCtPTP <- (Pint_PT*SA_PT*f.union_KC/1000)*60*60*24   # L/d, Proximal tubule cell to proximal tubule plasma (calculations: cm/s = L/s /1000 = L/d *60*60*24)
-  CLdif_PTCtPTL <- (Pint_PT*SA_PT*f.union_KC/1000)*60*60*24   # L/d, Proximal tubule cell to proximal tubule lumen (calculations: cm/s = L/s /1000 = L/d *60*60*24)
-  CLdif_PTPtPTC <- (Pint_PT*SA_PT*f.union_P/1000)*60*60*24    # L/d, Proximal tubule plasma to proximal tubule cell (calculations: cm/s = L/s /1000 = L/d *60*60*24), 
+  # CLdif_PTLtPTC <- (Pint_PT*SA_PTL*f.union_PTL/1000)*60*60*24 # L/d, Proximal tubule lumen to proximal tubule cell (calculations: cm/s = L/s /1000 = L/d *60*60*24)
+  # CLdif_PTCtPTP <- (Pint_PT*SA_PT*f.union_KC/1000)*60*60*24   # L/d, Proximal tubule cell to proximal tubule plasma (calculations: cm/s = L/s /1000 = L/d *60*60*24)
+  # CLdif_PTCtPTL <- (Pint_PT*SA_PT*f.union_KC/1000)*60*60*24   # L/d, Proximal tubule cell to proximal tubule lumen (calculations: cm/s = L/s /1000 = L/d *60*60*24)
+  # CLdif_PTPtPTC <- (Pint_PT*SA_PT*f.union_P/1000)*60*60*24    # L/d, Proximal tubule plasma to proximal tubule cell (calculations: cm/s = L/s /1000 = L/d *60*60*24), 
   
   
   ### Uptake from gut -------------------------
@@ -347,8 +348,8 @@
   Pint_SI <- Papp_SI/f.union_exp # cm/s, Intrinsic permeability, corrected for fraction unionised in the experiment
   
   # The ka way
-  log_Peff = 0.4926*log10(Papp_SI) - 0.1454   # Equation for passively and actively absorbed compounds, Hou, Zhang et al. 2004
-  ka = 10^(log_Peff)*2/R * 3600 * 24          # /d, (24*/h), Yu and Amidon 1999
+  # log_Peff = 0.4926*log10(Papp_SI) - 0.1454   # Equation for passively and actively absorbed compounds, Hou, Zhang et al. 2004
+  # ka = 10^(log_Peff)*2/R * 3600 * 24          # /d, (24*/h), Yu and Amidon 1999
   
   # The Clearance way
   CL_GLtG <- (Pint_SI*SA_SI*f.union_GT/1000)*60*60*24 # L/d, Gut lumen to gut cell (calculations: cm/s = L/s /1000 = L/d *60*60*24) 
@@ -381,7 +382,7 @@
   ### Biliary clearance -------------------------
   
   # Initial value, from in vivo study
-  CLbiliary <- PFOA_params$CLbiliaryc * BW       # L/d, Biliary clearance, Fujii et al 2015 
+  # CLbiliary <- PFOA_params$CLbiliaryc * BW       # L/d, Biliary clearance, Fujii et al 2015 
   
   # Input data, in vitro clearance
   VmaxBSEPc <- 7.1                               # umol/min/mg BSEP, Average active transport of bile acids, assuming that the maximum velocity of PFOA transport by BSEP corresponds to that of bile acids 
@@ -396,7 +397,7 @@
   
   ### Fecal clearance -------------------------
   
-  CLfecal <- PFOA_params$CLfaecesc * BW          # L/d, Fecal clearance, Fujii et al 2015 
+  # CLfecal <- PFOA_params$CLfaecesc * BW          # L/d, Fecal clearance, Fujii et al 2015 
   
 
   
@@ -407,9 +408,9 @@
                                VRK,
                                VRKL,
                                VGL,
-                               VGL_up,
-                               VGL_low,
-                               VGL_col,
+                               # VGL_up,
+                               # VGL_low,
+                               # VGL_col,
                                VL_ec,
                                VL_ic,
                                VSk,
@@ -427,8 +428,8 @@
                                QUr,
                                GFR,
                                QT,
-                               tsi_up,
-                               tsi_low,
+                               # tsi_up,
+                               # tsi_low,
                                tco,
                                PA, 
                                PG, 
@@ -439,25 +440,25 @@
                                fup,
                                fuT,
                                fuPTL,
-                               fuRKL,
-                               fuexp, 
+                               # fuRKL,
+                               # fuexp, 
                                fuL_ec,
-                               CL_PltPT,
-                               CL_FiltPT,
-                               CLdif_PTLtPTC,
-                               CLdif_PTCtPTP,
-                               CLdif_PTCtPTL,
-                               CLdif_PTPtPTC,
+                               # CL_PltPT,
+                               # CL_FiltPT,
+                               # CLdif_PTLtPTC,
+                               # CLdif_PTCtPTP,
+                               # CLdif_PTCtPTL,
+                               # CLdif_PTPtPTC,
                                Vmax_OAT4, 
-                               Vmax_OAT3,
-                               Vmax_OAT1,
+                               # Vmax_OAT3,
+                               # Vmax_OAT1,
                                Km_OAT4,
-                               Km_OAT3,
-                               Km_OAT1,
+                               # Km_OAT3,
+                               # Km_OAT1,
                                VmaxBSEP,
                                KmBSEP, 
                                CL_GLtG,
-                               ka,
+                               # ka,
                                Vmax_OATP1B1,
                                Km_OATP1B1,
                                Vmax_OATP1B3,
@@ -491,9 +492,9 @@
       CVSk <- CSk/PSk              # ug/L, Skin venous 
       
       CGL <- AGL/VGL               # ug/L, Gut lumen
-      CGL_up <- AGL_up/VGL_up      # ug/L, Gut lumen, duodenum + jejunum
-      CGL_low <- AGL_low/VGL_low   # ug/L, Gut lumen, ileum
-      CGL_col <- AGL_col/VGL_col   # ug/L, Gut lumen, colon
+      # CGL_up <- AGL_up/VGL_up      # ug/L, Gut lumen, duodenum + jejunum
+      # CGL_low <- AGL_low/VGL_low   # ug/L, Gut lumen, ileum
+      # CGL_col <- AGL_col/VGL_col   # ug/L, Gut lumen, colon
       CG <- AG/VG                  # ug/L, Gut 
       CVG <- CG/PG                 # ug/L, Gut venous
       
@@ -535,9 +536,9 @@
       dAGL <- + D - tco*AGL - CL_GLtG*CGL + 
         + (VmaxBSEP/(KmBSEP + (CL_ic*fuT)))*CL_ic*fuT          # ug/d, Gut lumen 
       
-      dAGL_up <- 0 #D - CL_GLtG*CGL_up + (VmaxBSEP/(KmBSEP + (CL_ic*fuT)))*CL_ic*fuT - tsi_up*AGL_up
-      dAGL_low <- 0 #tsi_up*AGL_up - CL_GLtG*CGL_low - tsi_low*AGL_low
-      dAGL_col <- 0 #tsi_low*AGL_low - CL_GLtG*CGL_col - tco*AGL_col
+      # dAGL_up <- 0 #D - CL_GLtG*CGL_up + (VmaxBSEP/(KmBSEP + (CL_ic*fuT)))*CL_ic*fuT - tsi_up*AGL_up
+      # dAGL_low <- 0 #tsi_up*AGL_up - CL_GLtG*CGL_low - tsi_low*AGL_low
+      # dAGL_col <- 0 #tsi_low*AGL_low - CL_GLtG*CGL_col - tco*AGL_col
       
       dAG <- QG*(CP - CVG) + CL_GLtG*CGL                       # ug/d, Gut
       
@@ -566,7 +567,7 @@
       # Mass Balance
       Atot <- D + APT + APTL + ARK + ARKL + AUr +
         ASk +
-        AG + AGL + AGL_up + AGL_low + AGL_col + AFe + 
+        AG + AGL + #AGL_up + AGL_low + AGL_col + AFe + 
         AL_ec + AL_ic +
         AA + AR +
         AP 
@@ -584,9 +585,9 @@
              dAUr,
              dASk, 
              dAGL,
-             dAGL_up, 
-             dAGL_low, 
-             dAGL_col,
+             # dAGL_up, 
+             # dAGL_low, 
+             # dAGL_col,
              dAG, 
              dAFe,
              dAL_ec,
@@ -601,9 +602,9 @@
              CRKL = CRKL,
              CSk = CSk, 
              CGL = CGL,
-             CGL_up = CGL_up, 
-             CGL_low = CGL_low, 
-             CGL_col = CGL_col,
+             # CGL_up = CGL_up, 
+             # CGL_low = CGL_low, 
+             # CGL_col = CGL_col,
              CG = CG, CVG = CVG, 
              CL_ec = CL_ec,
              CL_ic = CL_ic,
@@ -611,7 +612,8 @@
              CA = CA, CVA = CVA,
              CR = CR, CVR = CVR,
              CP = CP, 
-             Atot = Atot,MB = MB
+             Atot = Atot, 
+             MB = MB
              )
            )
     })
@@ -627,9 +629,9 @@
               AUr = 0,
               ASk = 0, 
               AGL = 0,
-              AGL_up = 0, 
-              AGL_low = 0, 
-              AGL_col = 0,
+              # AGL_up = 0, 
+              # AGL_low = 0, 
+              # AGL_col = 0,
               AG = 0,
               AFe = 0,
               AL_ec = 0,
