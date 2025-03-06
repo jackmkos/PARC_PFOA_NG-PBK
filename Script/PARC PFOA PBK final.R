@@ -58,10 +58,6 @@
   # INPUT ####
   # ------------------------------------------------------ #
   
-  # Input variables
-  # Calculated variables from: "PARC PFOA PBK input: file ../Script/PARC PFOA PBK input.R
-  # Final_variables_M_df <- read_csv("C:/Users/pacho003/OneDrive - Wageningen University & Research/CP_L_R/PARC_PFOA_mechanistic/Input/2024-11-18/Final_variables_M.csv") %>% as.data.frame()
-  # Final_variables_M_df <- read_csv("C:/Users/pacho003/OneDrive - Wageningen University & Research/CP_L_R/PARC_PFOA_mechanistic/Input/2024-11-18/Final_variables_MVolunteer.csv")
   Physio_params <- read_csv("C:/Users/pacho003/OneDrive - Wageningen University & Research/CP_L_R/PARC_PFOA_mechanistic/Input/PhysioVariables.csv")
   PFOA_params <- read_csv("C:/Users/pacho003/OneDrive - Wageningen University & Research/CP_L_R/PARC_PFOA_mechanistic/Input/PFOAParams.csv")
   
