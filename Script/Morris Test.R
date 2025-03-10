@@ -725,16 +725,14 @@ bsup <- unlist(c(data.frame(BW = BW*1.5,
 # # Define the PBPK model
 # Define the function to call your PBPK model
 PBPKmodPFOA_M_function <- function(parms) {
-  # Initial state (you can adjust this as needed)
   A_init <- A_init
   
-  # Solve the system with the current parameters (use 'lsoda' or any solver you are using)
-  output_PFOA <- lsoda(y = A_init, 
+  PFOA.model <- lsoda(y = A_init, 
                        times = TIME, 
                        func = PBPKmodPFOA_M, 
                        parms = parms)
   
-  output.PFOA.df <- as.data.frame(output_PFOA)
+  output.PFOA.df <- as.data.frame(PFOA.model)
   
   return(output.PFOA.df$CP)
 }
@@ -742,19 +740,21 @@ PBPKmodPFOA_M_function <- function(parms) {
 # Perform Morris sensitivity analysis
 Morris <- morris(model = PBPKmodPFOA_M_function, 
                         factors = factors, 
-                        r = 4, 
+                        r = 10, 
                         design = list(type = "oat", levels = 5, grid.jump = 3), 
                         binf = binf, 
                         bsup = bsup, 
                         scale = TRUE)
 
 design <- Morris$X
-y <- apply(design, 1, PBPKmodPFOA_M_function)
+y <- apply(design, 1, PBPKmodPFOA_M_function) #Runs 4 repetitions*(param+1) simulations * 34 model outputs * 4501 (the model outputs per time, we have 4501 timepoints) 
 tell(Morris, y)
 # Calculate the mean absolute effects (mu.star) and standard deviations (sigma)
+mu <- apply(Morris$ee, 2, mean)
 mu.star <- apply(Morris$ee, 2, function(Morris) mean(abs(Morris)))
 sigma <- apply(Morris$ee, 2, sd)
 plot(Morris)
+print(Morris)
 
 
 
@@ -844,6 +844,6 @@ parm_names <- c(
 )
 
 
-plot(mu.star, sigma, xlab = expression(mu^"*"), ylab = expression(sigma), pch = 20)
+plot(mu.star, sigma, xlab = expression(mu), ylab = expression(sigma), pch = 20)
 
 text(mu.star, sigma, labels = parm_names, pos = 4, cex = 0.7)
