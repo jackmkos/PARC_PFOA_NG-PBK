@@ -88,7 +88,7 @@ Physio_params <- Physio_params %>%
 
 BW <- 82                         # L (kg), The body weight of the subject in Abraham et al. 2024 https://doi.org/10.1016/j.envint.2024.109047 Physio_params$BDW_M 
 QC <- Physio_params$CardOut_M    # L/d, This is corrected for hematocrit already so it's plasma
-Hct <- 46.7/100                  # The hematocrit of the subject in Abraham et al. 2024 https://doi.org/10.1016/j.envint.2024.109047Physio_params$Hct_M
+Hct <- 46.7/100                  # The hematocrit of the subject in Abraham et al. 2024 https://doi.org/10.1016/j.envint.2024.109047 Physio_params$Hct_M
 
 
 ### Organ volumes -------------------------
@@ -191,7 +191,7 @@ QT = 43.2*60*24/1000        # L/d, Tubular flow rate at the end of the proximal 
 # tge = 2*24                  #/d (24*/h) or 30min (10-60min), gastric emptying rate, fasted Willmann2004 doi: 10.1021/jm030999b, Punt et al 2021 https://dx.doi.org/10.1021/acs.chemrestox.0c00307
 tsi = 0.3*24                #/d (24*/h) or 4h (2-6 h), intestinal transit time, Willmann2004 doi: 10.1021/jm030999b (#transit time duodenum 14min, jejunum 71min, ileum 114min B. Agoram et al. 2001), Punt et al 2021 https://dx.doi.org/10.1021/acs.chemrestox.0c00307
 # tsi_up = 0.7*24             #/d (24*/h) 1.417 h, transit time from duodenum and jejunoum ,14+17 min (duodenum 14min, jejunum 71min, from B. Agoram et al. 2001), Punt et al 2021 https://dx.doi.org/10.1021/acs.chemrestox.0c00307
-# tsi_low = 1.9*24            #/d (24*/h) 1.9 h, transit time of ileum ,114 min from B. Agoram et al. 2001, Punt et al 2021 https://dx.doi.org/10.1021/acs.chemrestox.0c00307
+# tsi_low = 0.5*24            #/d (24*/h) 1.9 h, transit time of ileum ,114 min from B. Agoram et al. 2001, Punt et al 2021 https://dx.doi.org/10.1021/acs.chemrestox.0c00307
 tco = 0.09*24               #/d (24*/h) or 7h willmann2004 doi: 10.1021/jm030999b
 
 
@@ -355,10 +355,10 @@ CL_GLtG <- (Pint_SI*SA_SI*f.union_GT/1000)*60*60*24 # L/d, Gut lumen to gut cell
 
 # Input data, in vitro clearance
 Vmax_OATP1B1c = 2.305 * 1e-6                # umol/min/mg protein, 2.305± 0.295 pmol/min/mg protein [@lin2023]
-Km_OATP1B1 = 52.65                          # 52.65 ± 23.28 uM [@lin2023]
+Km_OATP1B1 = 52.65*MW                          # ug/L, 52.65 ± 23.28 uM [@lin2023]
 
 Vmax_OATP1B3c = 2.694 * 1e-6                # umol/min/mg protein, 2.694± 0.470 pmol/min/mg protein [@lin2023]
-Km_OATP1B3 = 91.61                          # 91.61 ± 47.70 uM [@lin2023]
+Km_OATP1B3 = 91.61*MW                          # ug/L, 91.61 ± 47.70 uM [@lin2023]
 
 
 # Relative expression factors
@@ -382,7 +382,7 @@ Vmax_OATP1B3 = Vmax_OATP1B3c*REF_OATP1B3
 
 # Input data, in vitro clearance
 VmaxBSEPc <- 7.1                               # umol/min/mg BSEP, Average active transport of bile acids, assuming that the maximum velocity of PFOA transport by BSEP corresponds to that of bile acids 
-KmBSEP <- 16.4                                 # uM, Average affinity constant of bile acids to BSEP, following the above assumption
+KmBSEP <- 16.4*MW                                 # ug/L, uM, Average affinity constant of bile acids to BSEP, following the above assumption
 
 # Scaling factor
 SF_BSEP <- 0.839*140000 * 99 * 1e-9 * 1e3 * VL # Scaling factor for BSEP mediated hepatic efflux for GCA and GCDC De Bruijn et al. 2024 (calculation: SF_BSEP = aBSEP_all*MWBSEP_all * Hep_all * 1e-9 * 1e3 * VL )
@@ -442,8 +442,6 @@ parms <- unlist(c(data.frame(BW,
                              Vmax_OATP1B3,
                              Km_OATP1B3
 )))
-
-parms
 
 
 # PBK MODEL ####
@@ -626,17 +624,103 @@ output.PFOA.df <- output.PFOA.df %>%
   # mutate(time = time/365) %>% 
   rename(Days = time)
 
+# AUC <- trapz(output_PFOA[ , "time"], output_PFOA[ , "CP"])   # ug*day/L
+
+
 # SENSITIVITY ANALYSIS ####
 # ---------------------------------------------------------------------------- #
 
 ## Morris test ####
-# Define the number of factors (input parameters)
-factors <- length(parms)  # Automatically determine based on 'parms'
+factors <- length(parms)  
 
-# Define lower and upper bounds for the parameters
-binf <- parms * 0.9  # 10% lower bound (original - 10%)
-bsup <- parms * 1.1  # 10% upper bound (original + 10%)
+binf <- unlist(c(data.frame(BW = BW/1.5, 
+                             VPT = VPT/1.5,
+                             VPTL = VPTL/1.5,
+                             VRK = VRK/1.5,
+                             VRKL = VRKL/1.5,
+                             VGL = VGL/1.5,
+                             VL_ec = VL_ec/1.5,
+                             VL_ic = VL_ic/1.5,
+                             VSk = VSk/1.5,
+                             VG = VG/1.5, 
+                             VL = VL/1.5, 
+                             VA = VA/1.5, 
+                             VP = VP/1.5, 
+                             VR = VR/1.5, 
+                             QK = QK/1.15, #QC is already on the lower part of the physiological values
+                             QSk = QSk/1.15,
+                             QG = QG/1.15,  
+                             QL = QL/1.15, 
+                             QA = QA/1.15, 
+                             QR = QR/1.15, 
+                             QUr = QUr/1.15,
+                             GFR = GFR/1.15,
+                             QT = QT/1.15,
+                             tco = tco/1.15, #tco is /h so to decrease it we multiply, increased the residence time to 13 hours
+                             PA = PA - (PA*0.3), 
+                             PG = PG - (PG*0.3), 
+                             PK = PK - (PK*0.3), 
+                             PL = PL - (PL*0.3), 
+                             PSk = PSk - (PSk*0.3),
+                             PR = PR - (PR*0.3), 
+                             fup = fup/10, #lowest value was 3.548e-05 Qin
+                             fuT = fuT/10, #based on fup
+                             fuPTL = fuPTL/10,
+                             fuL_ec = fuL_ec/10,
+                             Vmax_OAT4 = Vmax_OAT4 - (0.5*MW*1e-3*60*24*SF_OAT/SF_OAT), #0.5 is the std from Luisse et al. SF = 1
+                             Km_OAT4 = Km_OAT4 - (15*MW),
+                             VmaxBSEP = 5.8*60*24*MW*SF_BSEP/SF_BSEP, #5.8, from deBruin et al, /20 for a SF = 1
+                             KmBSEP = 4.3*MW, #from deBruin et al
+                             CL_GLtG = pmax(CL_GLtG - (0.43/f.union_exp*SA_SI*f.union_GT/1000)*60*60*24, 0.00001),
+                             Vmax_OATP1B1 = pmax(Vmax_OATP1B1 - (0.295*REF_OATP1B1/REF_OATP1B1), 0.00001),#/16 for a REF = 1
+                             Km_OATP1B1 = Km_OATP1B1 - (23.28*MW),
+                             Vmax_OATP1B3 = pmax(Vmax_OATP1B3 - (0.470*REF_OATP1B3/REF_OATP1B3), 0.00001),
+                             Km_OATP1B3 = Km_OATP1B3 - (47.70*MW))))
 
+
+bsup <- unlist(c(data.frame(BW = BW*1.5, 
+                            VPT = VPT*1.5,
+                            VPTL = VPTL*1.5,
+                            VRK = VRK*1.5,
+                            VRKL = VRKL*1.5,
+                            VGL = VGL*1.5,
+                            VL_ec = VL_ec*1.5,
+                            VL_ic = VL_ic*1.5,
+                            VSk = VSk*1.5,
+                            VG = VG*1.5, 
+                            VL = VL*1.5, 
+                            VA = VA*1.5, 
+                            VP = VP*1.5, 
+                            VR = VR*1.5, 
+                            QK = QK*1.15, #QC is already on the lower part of the physiological values
+                            QSk = QSk*1.15,
+                            QG = QG*1.15,  
+                            QL = QL*1.15, 
+                            QA = QA*1.15, 
+                            QR = QR*1.15, 
+                            QUr = QUr*1.15,
+                            GFR = GFR*1.15,
+                            QT = QT*1.15,
+                            tco = tco*1.15, #tco is *h so to decrease it we multiply, increased the residence time to 13 hours
+                            PA = PA + (PA*0.3), 
+                            PG = PG + (PG*0.3), 
+                            PK = PK + (PK*0.3), 
+                            PL = PL + (PL*0.3), 
+                            PSk = PSk + (PSk*0.3),
+                            PR = PR + (PR*0.3), 
+                            fup = fup*100, #lowest value was 3.548e-05 Qin
+                            fuT = fuT*100, #based on fup
+                            fuPTL = fuPTL*100,
+                            fuL_ec = fuL_ec*100,
+                            Vmax_OAT4 = Vmax_OAT4 + (0.5*MW*1e+3*60*24*SF_OAT*10), #0.5 is the std from Luisse et al. SF = 1
+                            Km_OAT4 = Km_OAT4 + (15*MW),
+                            VmaxBSEP = 8.4*60*24*MW*SF_BSEP*10, #8.4, from deBruin et al, /20 for a SF = 1
+                            KmBSEP = 25.9*MW, #from deBruin et al
+                            CL_GLtG = CL_GLtG + (0.43/(f.union_exp/f.union_exp)*SA_SI*(f.union_GT/f.union_GT)/1000)*60*60*24, #canceling out the fraction unionised as well
+                            Vmax_OATP1B1 = Vmax_OATP1B1 + (0.295*REF_OATP1B1*10),#/16 for a REF = 1
+                            Km_OATP1B1 = Km_OATP1B1 + (23.28*MW),
+                            Vmax_OATP1B3 = Vmax_OATP1B3 + (0.470*REF_OATP1B3*10),
+                            Km_OATP1B3 = Km_OATP1B3 + (47.70*MW))))
 
 # # Define the PBPK model
 # Define the function to call your PBPK model
@@ -650,12 +734,13 @@ PBPKmodPFOA_M_function <- function(parms) {
                        func = PBPKmodPFOA_M, 
                        parms = parms)
   
-  # Return the results (or any specific output you want to analyze)
-  return(output_PFOA)
+  output.PFOA.df <- as.data.frame(output_PFOA)
+  
+  return(output.PFOA.df$CP)
 }
 
 # Perform Morris sensitivity analysis
-Morris_result <- morris(model = PBPKmodPFOA_M_function, 
+Morris <- morris(model = PBPKmodPFOA_M_function, 
                         factors = factors, 
                         r = 4, 
                         design = list(type = "oat", levels = 5, grid.jump = 3), 
@@ -663,23 +748,102 @@ Morris_result <- morris(model = PBPKmodPFOA_M_function,
                         bsup = bsup, 
                         scale = TRUE)
 
-
-
-# Run the model for each design point
-design <- Morris_result$X
-y <- numeric(nrow(design))
-
-for (i in 1:nrow(Morris_result$X)) {
-  parms_i <- Morris_result$X[i, ]
-  # Use the PBPK model to simulate the output based on the parameters
-  output <- PBPKmodPFOA_M(parms = parms_i)
-  # You can either use the total amount (Atot) or any other output you are interested in
-  y[i] <- output$Atot[1]  # Assuming 'Atot' is returned as part of the output
-}
-
+design <- Morris$X
+y <- apply(design, 1, PBPKmodPFOA_M_function)
+tell(Morris, y)
 # Calculate the mean absolute effects (mu.star) and standard deviations (sigma)
-mu.star <- apply(Morris_result$ee, 2, function(Morris) mean(abs(Morris)))
-sigma <- apply(Morris_result$ee, 2, sd)
+mu.star <- apply(Morris$ee, 2, function(Morris) mean(abs(Morris)))
+sigma <- apply(Morris$ee, 2, sd)
+plot(Morris)
 
-# Plot the results
-plot(Morris_result)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+parm_names <- c(
+  "BW",                             
+                             "VPT", 
+                             "VPTL",
+                             "VRK", 
+                             "VRKL", 
+                             "VGL",
+                             "VL_ec",
+                             "VL_ic",
+                             "VSk",
+                             "VG", 
+                             "VL", 
+                             "VA", 
+                             "VP", 
+                             "VR", 
+                             "QK", 
+                             "QSk",
+                             "QG",  
+                             "QL", 
+                             "QA", 
+                             "QR", 
+                             "QUr",
+                             "GFR",
+                             "QT",
+                             "tco",
+                             "PA", 
+                             "PG", 
+                             "PK", 
+                             "PL", 
+                             "PSk",
+                             "PR", 
+                             "fup",
+                             "fuT",
+                             "fuPTL",
+                             "fuL_ec",
+                             "Vmax_OAT4", 
+                             "Km_OAT4",
+                             "VmaxBSEP",
+                             "KmBSEP", 
+                             "CL_GLtG",
+                             "Vmax_OATP1B1",
+                             "Km_OATP1B1",
+                             "Vmax_OATP1B3",
+                             "Km_OATP1B3"
+)
+
+
+plot(mu.star, sigma, xlab = expression(mu^"*"), ylab = expression(sigma), pch = 20)
+
+text(mu.star, sigma, labels = parm_names, pos = 4, cex = 0.7)
