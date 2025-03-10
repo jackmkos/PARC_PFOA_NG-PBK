@@ -359,10 +359,10 @@
   
   # Input data, in vitro clearance
   Vmax_OATP1B1c = 2.305 * 1e-6                # umol/min/mg protein, 2.305± 0.295 pmol/min/mg protein [@lin2023]
-  Km_OATP1B1 = 52.65                          # 52.65 ± 23.28 uM [@lin2023]
+  Km_OATP1B1 = 52.65 * MW                     # ug/L, 52.65 ± 23.28 uM [@lin2023]
   
   Vmax_OATP1B3c = 2.694 * 1e-6                # umol/min/mg protein, 2.694± 0.470 pmol/min/mg protein [@lin2023]
-  Km_OATP1B3 = 91.61                          # 91.61 ± 47.70 uM [@lin2023]
+  Km_OATP1B3 = 91.61 * MW                     # ug/L 91.61 ± 47.70 uM [@lin2023]
   
 
   # Relative expression factors
@@ -386,7 +386,7 @@
   
   # Input data, in vitro clearance
   VmaxBSEPc <- 7.1                               # umol/min/mg BSEP, Average active transport of bile acids, assuming that the maximum velocity of PFOA transport by BSEP corresponds to that of bile acids 
-  KmBSEP <- 16.4                                 # uM, Average affinity constant of bile acids to BSEP, following the above assumption
+  KmBSEP <- 16.4 * MW                            # ug/L, uM, Average affinity constant of bile acids to BSEP, following the above assumption
   
   # Scaling factor
   SF_BSEP <- 0.839*140000 * 99 * 1e-9 * 1e3 * VL # Scaling factor for BSEP mediated hepatic efflux for GCA and GCDC De Bruijn et al. 2024 (calculation: SF_BSEP = aBSEP_all*MWBSEP_all * Hep_all * 1e-9 * 1e3 * VL )
