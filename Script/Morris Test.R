@@ -59,23 +59,6 @@ Physio_params <- read_csv("C:/Users/pacho003/OneDrive - Wageningen University & 
 PFOA_params <- read_csv("C:/Users/pacho003/OneDrive - Wageningen University & Research/CP_L_R/PARC_PFOA_mechanistic/Input/PFOAParams.csv")
 
 
-# EXPOSURE SCENARIO ####
-# ------------------------------------------------------ #
-
-# exposure_stop <-  50*365      # days
-sim_stop <- 450                 # days Abraham study follow-up time  
-
-TSTART <- 0
-TSTOP <- sim_stop               # days
-DT <- 1/10                    # days
-TIME <- seq(TSTART,TSTOP,by=DT)
-
-
-Oraldose <- 3.96 # ug https://doi.org/10.1016/j.envint.2024.109047
-# Oralconc <- 0.000187 # ug/kg/day [EFSA 2020, page 143] 3.96ug
-# Dermconc <- 0.000542 # ug/kg/day, mean of #as.numeric(SumExpPFOA_LB_val[i,14])
-
-
 # PBK MODEL PARAMETERS ####
 # ---------------------------------------------------------------------------- #
 
@@ -543,13 +526,13 @@ PBPKmodPFOA_M <- function(t, state, parameters){
     # Mass Balance
     Atot <- D + APT + APTL + ARK + ARKL + AUr +
       ASk +
-      AG + AGL + #AGL_up + AGL_low + AGL_col + AFe + 
+      AG + AGL + AFe + #AGL_up + AGL_low + AGL_col + AFe + 
       AL_ec + AL_ic +
       AA + AR +
       AP 
     
     # dInput <- Oraldose + Dermaldose
-    MB = Oraldose - Atot + 1
+    # MB = Oraldose - Atot + 1
     
     # End
     
@@ -582,49 +565,12 @@ PBPKmodPFOA_M <- function(t, state, parameters){
       CA = CA, CVA = CVA,
       CR = CR, CVR = CVR,
       CP = CP, 
-      Atot = Atot, 
-      MB = MB
+      Atot = Atot #, 
+      #MB = MB
     )
     )
   })
 }
-
-## Initials ####
-
-A_init <- c(D = Oraldose,
-            APT = 0,
-            APTL = 0,
-            ARK = 0,
-            ARKL = 0,
-            AUr = 0,
-            ASk = 0, 
-            AGL = 0,
-            AG = 0,
-            AFe = 0,
-            AL_ec = 0,
-            AL_ic = 0,
-            AA = 0, 
-            AR = 0, 
-            AP = 0
-)
-
-
-## Solving the model ####
-output_PFOA <- lsoda(y = A_init, 
-                     times = TIME, 
-                     func = PBPKmodPFOA_M, 
-                     parms = parms)
-output.PFOA.df <- as.data.frame(output_PFOA) 
-
-
-# RESULTS ####
-# ---------------------------------------------------------------------------- #
-
-output.PFOA.df <- output.PFOA.df %>% 
-  # mutate(time = time/365) %>% 
-  rename(Days = time)
-
-# AUC <- trapz(output_PFOA[ , "time"], output_PFOA[ , "CP"])   # ug*day/L
 
 
 # SENSITIVITY ANALYSIS ####
@@ -632,103 +578,120 @@ output.PFOA.df <- output.PFOA.df %>%
 
 ## Morris test ####
 factors <- length(parms)  
+binf <- parms * 0.9
+bsup <- parms * 1.1
 
-binf <- unlist(c(data.frame(BW = BW/1.5, 
-                             VPT = VPT/1.5,
-                             VPTL = VPTL/1.5,
-                             VRK = VRK/1.5,
-                             VRKL = VRKL/1.5,
-                             VGL = VGL/1.5,
-                             VL_ec = VL_ec/1.5,
-                             VL_ic = VL_ic/1.5,
-                             VSk = VSk/1.5,
-                             VG = VG/1.5, 
-                             VL = VL/1.5, 
-                             VA = VA/1.5, 
-                             VP = VP/1.5, 
-                             VR = VR/1.5, 
-                             QK = QK/1.15, #QC is already on the lower part of the physiological values
-                             QSk = QSk/1.15,
-                             QG = QG/1.15,  
-                             QL = QL/1.15, 
-                             QA = QA/1.15, 
-                             QR = QR/1.15, 
-                             QUr = QUr/1.15,
-                             GFR = GFR/1.15,
-                             QT = QT/1.15,
-                             tco = tco/1.15, #tco is /h so to decrease it we multiply, increased the residence time to 13 hours
-                             PA = PA - (PA*0.3), 
-                             PG = PG - (PG*0.3), 
-                             PK = PK - (PK*0.3), 
-                             PL = PL - (PL*0.3), 
-                             PSk = PSk - (PSk*0.3),
-                             PR = PR - (PR*0.3), 
-                             fup = fup/10, #lowest value was 3.548e-05 Qin
-                             fuT = fuT/10, #based on fup
-                             fuPTL = fuPTL/10,
-                             fuL_ec = fuL_ec/10,
-                             Vmax_OAT4 = Vmax_OAT4 - (0.5*MW*1e-3*60*24*SF_OAT/SF_OAT), #0.5 is the std from Luisse et al. SF = 1
-                             Km_OAT4 = Km_OAT4 - (15*MW),
-                             VmaxBSEP = 5.8*60*24*MW*SF_BSEP/SF_BSEP, #5.8, from deBruin et al, /20 for a SF = 1
-                             KmBSEP = 4.3*MW, #from deBruin et al
-                             CL_GLtG = pmax(CL_GLtG - (0.43/f.union_exp*SA_SI*f.union_GT/1000)*60*60*24, 0.00001),
-                             Vmax_OATP1B1 = pmax(Vmax_OATP1B1 - (0.295*REF_OATP1B1/REF_OATP1B1), 0.00001),#/16 for a REF = 1
-                             Km_OATP1B1 = Km_OATP1B1 - (23.28*MW),
-                             Vmax_OATP1B3 = pmax(Vmax_OATP1B3 - (0.470*REF_OATP1B3/REF_OATP1B3), 0.00001),
-                             Km_OATP1B3 = Km_OATP1B3 - (47.70*MW))))
+# binf <- unlist(c(data.frame(BW = BW/1.5, 
+#                              VPT = VPT/1.5,
+#                              VPTL = VPTL/1.5,
+#                              VRK = VRK/1.5,
+#                              VRKL = VRKL/1.5,
+#                              VGL = VGL/1.5,
+#                              VL_ec = VL_ec/1.5,
+#                              VL_ic = VL_ic/1.5,
+#                              VSk = VSk/1.5,
+#                              VG = VG/1.5, 
+#                              VL = VL/1.5, 
+#                              VA = VA/1.5, 
+#                              VP = VP/1.5, 
+#                              VR = VR/1.5, 
+#                              QK = QK/1.15, #QC is already on the lower part of the physiological values
+#                              QSk = QSk/1.15,
+#                              QG = QG/1.15,  
+#                              QL = QL/1.15, 
+#                              QA = QA/1.15, 
+#                              QR = QR/1.15, 
+#                              QUr = QUr/1.15,
+#                              GFR = GFR/1.15,
+#                              QT = QT/1.15,
+#                              tco = tco/1.15, #tco is /h so to decrease it we multiply, increased the residence time to 13 hours
+#                              PA = PA - (PA*0.3), 
+#                              PG = PG - (PG*0.3), 
+#                              PK = PK - (PK*0.3), 
+#                              PL = PL - (PL*0.3), 
+#                              PSk = PSk - (PSk*0.3),
+#                              PR = PR - (PR*0.3), 
+#                              fup = fup/10, #lowest value was 3.548e-05 Qin
+#                              fuT = fuT/10, #based on fup
+#                              fuPTL = fuPTL/10,
+#                              fuL_ec = fuL_ec/10,
+#                              Vmax_OAT4 = Vmax_OAT4 - (0.5*MW*1e-3*60*24*SF_OAT/SF_OAT), #0.5 is the std from Luisse et al. SF = 1
+#                              Km_OAT4 = Km_OAT4 - (15*MW),
+#                              VmaxBSEP = 5.8*60*24*MW*SF_BSEP/SF_BSEP, #5.8, from deBruin et al, /20 for a SF = 1
+#                              KmBSEP = 4.3*MW, #from deBruin et al
+#                              CL_GLtG = pmax(CL_GLtG - (0.43/f.union_exp*SA_SI*f.union_GT/1000)*60*60*24, 0.00001),
+#                              Vmax_OATP1B1 = pmax(Vmax_OATP1B1 - (0.295*REF_OATP1B1/REF_OATP1B1), 0.00001),#/16 for a REF = 1
+#                              Km_OATP1B1 = Km_OATP1B1 - (23.28*MW),
+#                              Vmax_OATP1B3 = pmax(Vmax_OATP1B3 - (0.470*REF_OATP1B3/REF_OATP1B3), 0.00001),
+#                              Km_OATP1B3 = Km_OATP1B3 - (47.70*MW))))
+# 
+# 
+# bsup <- unlist(c(data.frame(BW = BW*1.5, 
+#                             VPT = VPT*1.5,
+#                             VPTL = VPTL*1.5,
+#                             VRK = VRK*1.5,
+#                             VRKL = VRKL*1.5,
+#                             VGL = VGL*1.5,
+#                             VL_ec = VL_ec*1.5,
+#                             VL_ic = VL_ic*1.5,
+#                             VSk = VSk*1.5,
+#                             VG = VG*1.5, 
+#                             VL = VL*1.5, 
+#                             VA = VA*1.5, 
+#                             VP = VP*1.5, 
+#                             VR = VR*1.5, 
+#                             QK = QK*1.15, #QC is already on the lower part of the physiological values
+#                             QSk = QSk*1.15,
+#                             QG = QG*1.15,  
+#                             QL = QL*1.15, 
+#                             QA = QA*1.15, 
+#                             QR = QR*1.15, 
+#                             QUr = QUr*1.15,
+#                             GFR = GFR*1.15,
+#                             QT = QT*1.15,
+#                             tco = tco*1.15, #tco is *h so to decrease it we multiply, increased the residence time to 13 hours
+#                             PA = PA + (PA*0.3), 
+#                             PG = PG + (PG*0.3), 
+#                             PK = PK + (PK*0.3), 
+#                             PL = PL + (PL*0.3), 
+#                             PSk = PSk + (PSk*0.3),
+#                             PR = PR + (PR*0.3), 
+#                             fup = fup*100, #lowest value was 3.548e-05 Qin
+#                             fuT = fuT*100, #based on fup
+#                             fuPTL = fuPTL*100,
+#                             fuL_ec = fuL_ec*100,
+#                             Vmax_OAT4 = Vmax_OAT4 + (0.5*MW*1e+3*60*24*SF_OAT*10), #0.5 is the std from Luisse et al. SF = 1
+#                             Km_OAT4 = Km_OAT4 + (15*MW),
+#                             VmaxBSEP = 8.4*60*24*MW*SF_BSEP*10, #8.4, from deBruin et al, /20 for a SF = 1
+#                             KmBSEP = 25.9*MW, #from deBruin et al
+#                             CL_GLtG = CL_GLtG + (0.43/(f.union_exp/f.union_exp)*SA_SI*(f.union_GT/f.union_GT)/1000)*60*60*24, #canceling out the fraction unionised as well
+#                             Vmax_OATP1B1 = Vmax_OATP1B1 + (0.295*REF_OATP1B1*10),#/16 for a REF = 1
+#                             Km_OATP1B1 = Km_OATP1B1 + (23.28*MW),
+#                             Vmax_OATP1B3 = Vmax_OATP1B3 + (0.470*REF_OATP1B3*10),
+#                             Km_OATP1B3 = Km_OATP1B3 + (47.70*MW))))
 
 
-bsup <- unlist(c(data.frame(BW = BW*1.5, 
-                            VPT = VPT*1.5,
-                            VPTL = VPTL*1.5,
-                            VRK = VRK*1.5,
-                            VRKL = VRKL*1.5,
-                            VGL = VGL*1.5,
-                            VL_ec = VL_ec*1.5,
-                            VL_ic = VL_ic*1.5,
-                            VSk = VSk*1.5,
-                            VG = VG*1.5, 
-                            VL = VL*1.5, 
-                            VA = VA*1.5, 
-                            VP = VP*1.5, 
-                            VR = VR*1.5, 
-                            QK = QK*1.15, #QC is already on the lower part of the physiological values
-                            QSk = QSk*1.15,
-                            QG = QG*1.15,  
-                            QL = QL*1.15, 
-                            QA = QA*1.15, 
-                            QR = QR*1.15, 
-                            QUr = QUr*1.15,
-                            GFR = GFR*1.15,
-                            QT = QT*1.15,
-                            tco = tco*1.15, #tco is *h so to decrease it we multiply, increased the residence time to 13 hours
-                            PA = PA + (PA*0.3), 
-                            PG = PG + (PG*0.3), 
-                            PK = PK + (PK*0.3), 
-                            PL = PL + (PL*0.3), 
-                            PSk = PSk + (PSk*0.3),
-                            PR = PR + (PR*0.3), 
-                            fup = fup*100, #lowest value was 3.548e-05 Qin
-                            fuT = fuT*100, #based on fup
-                            fuPTL = fuPTL*100,
-                            fuL_ec = fuL_ec*100,
-                            Vmax_OAT4 = Vmax_OAT4 + (0.5*MW*1e+3*60*24*SF_OAT*10), #0.5 is the std from Luisse et al. SF = 1
-                            Km_OAT4 = Km_OAT4 + (15*MW),
-                            VmaxBSEP = 8.4*60*24*MW*SF_BSEP*10, #8.4, from deBruin et al, /20 for a SF = 1
-                            KmBSEP = 25.9*MW, #from deBruin et al
-                            CL_GLtG = CL_GLtG + (0.43/(f.union_exp/f.union_exp)*SA_SI*(f.union_GT/f.union_GT)/1000)*60*60*24, #canceling out the fraction unionised as well
-                            Vmax_OATP1B1 = Vmax_OATP1B1 + (0.295*REF_OATP1B1*10),#/16 for a REF = 1
-                            Km_OATP1B1 = Km_OATP1B1 + (23.28*MW),
-                            Vmax_OATP1B3 = Vmax_OATP1B3 + (0.470*REF_OATP1B3*10),
-                            Km_OATP1B3 = Km_OATP1B3 + (47.70*MW))))
-
-# # Define the PBPK model
-# Define the function to call your PBPK model
 PBPKmodPFOA_M_function <- function(parms) {
-  A_init <- A_init
+
+  A_init <- c(D = 3.96, #Oraldose <- 3.96 # ug https://doi.org/10.1016/j.envint.2024.109047
+              APT = 0,
+              APTL = 0,
+              ARK = 0,
+              ARKL = 0,
+              AUr = 0,
+              ASk = 0, 
+              AGL = 0,
+              AG = 0,
+              AFe = 0,
+              AL_ec = 0,
+              AL_ic = 0,
+              AA = 0, 
+              AR = 0, 
+              AP = 0
+  )  
   
   PFOA.model <- lsoda(y = A_init, 
-                       times = TIME, 
+                       times = seq(0, 1095,by=1), 
                        func = PBPKmodPFOA_M, 
                        parms = parms)
   
@@ -740,7 +703,7 @@ PBPKmodPFOA_M_function <- function(parms) {
 # Perform Morris sensitivity analysis
 Morris <- morris(model = PBPKmodPFOA_M_function, 
                         factors = factors, 
-                        r = 10, 
+                        r = 4, 
                         design = list(type = "oat", levels = 5, grid.jump = 3), 
                         binf = binf, 
                         bsup = bsup, 
@@ -754,48 +717,6 @@ mu <- apply(Morris$ee, 2, mean)
 mu.star <- apply(Morris$ee, 2, function(Morris) mean(abs(Morris)))
 sigma <- apply(Morris$ee, 2, sd)
 plot(Morris)
-print(Morris)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 parm_names <- c(
   "BW",                             
@@ -843,7 +764,13 @@ parm_names <- c(
                              "Km_OATP1B3"
 )
 
+library(ggrepel)
 
-plot(mu.star, sigma, xlab = expression(mu), ylab = expression(sigma), pch = 20)
-
-text(mu.star, sigma, labels = parm_names, pos = 4, cex = 0.7)
+df <- data.frame(mu.star, sigma, parm_names)
+dft <- df %>% filter(mu.star >= 0.001)
+ggplot(df, aes(x = mu.star, y = sigma)) +
+  geom_point() +
+  geom_text_repel(aes(label = parm_names), size = 3) +
+  theme_minimal() +
+  ylab("σ") +
+  xlab("μ*")

@@ -549,7 +549,7 @@
       # Mass Balance
       Atot <- D + APT + APTL + ARK + ARKL + AUr +
         ASk +
-        AG + AGL + #AGL_up + AGL_low + AGL_col + AFe + 
+        AG + AGL + AFe + #AGL_up + AGL_low + AGL_col + AFe + 
         AL_ec + AL_ic +
         AA + AR +
         AP 
