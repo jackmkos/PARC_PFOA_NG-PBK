@@ -296,7 +296,7 @@
   # Input data, in vitro clearance
   # Vmax_OAT1c = 3.5                 # nmol/min/mg protein, Louisse et al. 2024 doi.org/10.1016/j.tox.2024.153961
   # Vmax_OAT3c = 1.5                 # nmol/min/mg protein, Louisse et al. 2024 doi.org/10.1016/j.tox.2024.153961
-  Vmax_OAT4c = 4.5                 # nmol/min/mg protein, Louisse et al. 2024 doi.org/10.1016/j.tox.2024.153961
+  Vmax_OAT4c = 4.5                   # nmol/min/mg protein, Louisse et al. 2024 doi.org/10.1016/j.tox.2024.153961
   
   # Km_OAT1 = 185*MW                 # ug/L, scaled from uM, Louisse et al. 2024 doi.org/10.1016/j.tox.2024.153961
   # Km_OAT3 = 90*MW                  # ug/L, scaled from uM, Louisse et al. 2024 doi.org/10.1016/j.tox.2024.153961
@@ -312,8 +312,8 @@
   REF_OAT4 <- 1 #PFOA_params$REF_OAT4 # is equal to 1, as we don't have data on the in vitro expression of OAT4
   
   
-  # SF_OAT <- 0.17 * 10e6 # 17% of kidney is protein [ICRP 89], 10e6 is scaling from mg protein to kg protein, double ref for 17% protein Ruark 2020: DOI: https://doi.org/10.1016/B978-0-12-818596-4.00006-0
-  SF_OAT <- 10.9e-7 * 99.4e6 * 1e3 * VPT #6.54 mgprotein/HEK293cell (ref: Han and Ni, 2004, Ho et al., 2004) * PTCPGK cells/g kidney * 1e3 as Vkidney is in Kg (could be 99.4e6 or 60e6 see below comment ref: Neuhoff et al., 2013), equation from: https://doi.org/10.1016/j.comtox.2021.100172 
+  #SF_OATt <- 0.17 * 10e6 * 0.3581 # 17% of kidney is protein [ICRP 89], 10e6 is scaling from mg protein to kg protein, double ref for 17% protein Ruark 2020: DOI: https://doi.org/10.1016/B978-0-12-818596-4.00006-0
+  SF_OAT <- 1.09e-7 * 99.4e6 * 1e3 * VK #6.54 mgprotein/HEK293cell (ref: Han and Ni, 2004, Ho et al., 2004) * PTCPGK cells/g kidney * 1e3 as Vkidney is in Kg (could be 99.4e6 or 60e6 see below comment ref: Neuhoff et al., 2013), equation from: https://doi.org/10.1016/j.comtox.2021.100172 
   # Comment regarding PTCPGK: from Tang et al. 2024 https://doi.org/10.1021/acs.molpharmaceut.4c00504  a value of 60 million PTCPGKis commonly used but the observed value as high as 209 million PTCPGK has been reported. In this study, avalue of 99.4 million PTCPGK was applied based on the mostrecent meta-analysis.45 
   
   
