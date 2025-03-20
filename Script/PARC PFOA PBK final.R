@@ -121,15 +121,18 @@
   # # Trine's value provides the surface total surface area, but according to the SCCS, if we take the body lotion,then we should remove the surface area of the head from our calculations
   # # The general equation is SA = 0.02350*H^0.4226*W^0.51456, ref. https://www.rivm.nl/bibliotheek/rapporten/090013003.pdf
   
+  # Stomach
+  VStc <- Physio_params$V_stomachFraction_M
+  SA_St <- 525                     # cm2, ICRP 2006, table 7.3, page 100
   
-  # Gut
-  VGc <- Physio_params$V_gutFraction_M
+  # Intestine
+  VIc <- Physio_params$V_gutFraction_M
   
-  # Gut lumen is taken as a compartment outside the intestine (weight of gut lumen is outside of the bodyweight)
+  # Intestinal lumen is taken as a compartment outside the intestine (weight of Intestinal lumen is outside of the bodyweight)
   L = 280                           # cm, (adult of 70kg) Willmann2004 doi: 10.1021/jm030999b
   R = (1.75+1)/2                    # cm, (adult of 70kg mean value) Willmann2004 doi: 10.1021/jm030999b
-  VGL = pi*L*(R^2)/1000             # L, cm3/1000 #Value is the same as Punt et al. 2021 https://dx.doi.org/10.1021/acs.chemrestox.0c00307
-  VGLc = VGL/70                     # deriving the constant as from the paper they used the default BW of 70kg
+  VIL = pi*L*(R^2)/1000             # L, cm3/1000 #Value is the same as Punt et al. 2021 https://dx.doi.org/10.1021/acs.chemrestox.0c00307
+  VILc = VIL/70                     # deriving the constant as from the paper they used the default BW of 70kg
   
   SA_SI = 2*pi*R*L*25               # cm2, amplification factor of 25 for the microvilli in the intestinal lumen, Willmann2004 doi: 10.1021/jm030999b
   
@@ -178,7 +181,8 @@
   ### Organ blood flows -------------------------
   QSkc <- Physio_params$Q_skinFraction_M    
   QTotc <- Physio_params$BloodFlowSum
-  QGc <- Physio_params$Q_gutFraction_M     
+  QStc <- Physio_params$Q_stomachFraction_M
+  QIc <- Physio_params$Q_gutFraction_M   
   QLc <- Physio_params$Q_liverFraction_M 
   QKc <- Physio_params$Q_kidneyFraction_M  
   QAc <- Physio_params$Q_adiposeFraction_M 
@@ -186,7 +190,8 @@
   
   ### Other physiological flows and constants -------------------------
   
-  tco = 0.09*24               # /d, Bowel residence/transit time in the colon, (24*/h) or 7h willmann2004 doi: 10.1021/jm030999b
+  tge = 0.77*24               # /d, Gastric emptying time for solids (as PFAS were administered in a muffin) this is about 75-80min in men and 100-110 min in women [ICRP 2006, page 84] (for liquids the gastric transit time is 10-60minutes willmann2004 doi: 10.1021/jm030999b)
+  tco = 0.14*24               # /d, Bowel residence/transit time in the colon, (24*/h) or 7h willmann2004 doi: 10.1021/jm030999b
   
   QUrc = 0.022                # L/d, Urine flow rate to the bladder 22 mL/kg BW/d [ICRP 89 page 161]
   GFRc = 0.18                 # L/d 18% of total renal plasma flow [ICRP 89 page 159] http://www.icrp.org/publication.asp?id=ICRP%20Publication%2089
@@ -196,7 +201,8 @@
   ### Physiological pHs in different matrices -------------------------
   
   pH_P <- 7.4     # plasma
-  pH_L <- 7       # intestinal gut lumen, average
+  pH_IL <- 7       # intestinal lumen, average
+  pH_S <- 2 # stomach, fasted (between 1.5 and 2.5)
   
   ### Albumin concentrations in different matrices -------------------------
   
@@ -243,19 +249,20 @@
   # In PFOA_params, PF, PG, PK, PL, PSK and PR are the initial PCs from Kudo 2007 (rat). These were recalculated to total tissue (/fup) to enable differentiating the fup for the sensitivity analysis
   # Correcting for fraction unbound (as it was not incorporated in the input calculating file)
   PSkc <- PFOA_params$KpSk #PSk  # Skin
-  PGc <- PFOA_params$KpGu  #PG   # Gut
+  PStc <- PFOA_params$KpSt       # Stomach
+  PIc <- PFOA_params$KpIn  #PG   # Intestine
   PLc <- PFOA_params$KpLi  #PL   # Liver
   PKc <- PFOA_params$KpKi  #PK   # Kidney
   PAc <- PFOA_params$KpAd  #PF   # Adipose
   PRc <- PFOA_params$KpRe  #PR   # Rest
   PLuc <- PFOA_params$KpLu       # Lungs
   
-  
+
   ### Uptake from skin -------------------------
   Papp_SkB = 3.82*1e-3 * 60*60                 # cm/s, Ragnarsdottir et al. 2024 https://doi.org/10.1016/j.envint.2024.108772 (calculations 3.82*1e-3 cm/h -> *60*60 cm/s)
   tlag = 1/6.21 * 24                           # /d, lag time for dermal absorption, Ragnarsdottir et al. 2024 https://doi.org/10.1016/j.envint.2024.108772 (calculations 6.21h *24d)
   
-  ### Uptake from gut -------------------------
+  ### Uptake from the gastro-intestinal duct -------------------------
   
   # Input data, in vitro clearance
   Papp_SI = 7.31*1e-6                         # cm/s, 7.31 ± 0.43, Janssen et al. 2024
@@ -308,8 +315,10 @@
                                 Hct,
                                 VSkB,
                                 VSkc,
-                                VGc,
-                                VGLc,
+                                VStc,
+                                SA_St,
+                                VIc,
+                                VILc,
                                 SA_SI,
                                 VLc,
                                 VL_icc,
@@ -325,13 +334,15 @@
                                 VAPc,
                                 VVPc,
                                 QSkc, 
-                                QGc,
+                                QStc,
+                                QIc,
                                 QLc,
                                 QKc,
                                 QAc,
                                 QUrc,
                                 GFRc,
                                 QT,
+                                tge,
                                 tco,
                                 R_T,
                                 R_PTL,
@@ -339,7 +350,8 @@
                                 fup,
                                 pKa,
                                 PSkc,
-                                PGc,
+                                PStc,
+                                PIc,
                                 PLc,
                                 PKc,
                                 PAc,
@@ -369,6 +381,8 @@
   
   write.csv(parm.c, "GSA_parms.csv")
   
+  
+  
   # PBK MODEL ####
   # ---------------------------------------------------------------------------- #
   
@@ -380,8 +394,10 @@
       VSkB <- VSkB                    # L, Volume of skin barrier
       VSk <- VSkc * BW                # L, Volume of skin
       
-      VGL <- VGLc * BW                # L, Volume of gut lumen
-      VG <- VGc * BW                  # L, Volume of gut
+      VSt <- VStc * BW                # L, Volume of stomach
+      
+      VIL <- VILc * BW                # L, Volume of intestinal lumen
+      VI <- VIc * BW                  # L, Volume of intestine
       
       VL <- VLc * BW                  # L, Volume of liver
       VL_ic <- VL_icc*VL              # L, Volume liver intracellular                 
@@ -404,20 +420,22 @@
       VTotc <- 0.96
       VTot <- VTotc * BW              # L, Total body volume (used for mass balance)
       
-      VR <- VTot - (VSk + VG + VL + VK + VA + VLu + VAP + VVP)             # L, Volume of the lumped rest compartment
+      VR <- VTot - (VSk + VI + VL + VK + VA + VLu + VAP + VVP)             # L, Volume of the lumped rest compartment
       
       QTotc <- 0.988
       QSk <- QSkc/QTotc * QC                # L/d, Skin 
-      QG <- QGc/QTotc * QC                  # L/d, Gut
+      QSt <- QStc/QTotc * QC                # L/d, Stomach
+      QI <- QIc/QTotc * QC                  # L/d, Intestinal
       QL <- QLc/QTotc * QC                  # L/d, Liver
       QK <- QKc/QTotc * QC                  # L/d, Kidney
       QA <- QAc/QTotc * QC                  # L/d, Adipose 
-      QR <- QC - (QA + QG + QK + QL + QSk)  # L/d, Rest
+      QR <- QC - (QA + QI + QK + QL + QSk)  # L/d, Rest
       
       QUr <- QUrc * BW              # L/d, Urine flow rate to the bladder 22 mL/kg BW/d [ICRP 89 page 161]
       GFR <- GFRc * QK              # L/d 18% of total renal plasma flow [ICRP 89 page 159] http://www.icrp.org/publication.asp?id=ICRP%20Publication%2089
       QT <- QT                      # L/d, Proximal tubule fluid flow
       
+      tge <- tge                    # /d, Gastric emptying time
       tco <- tco                    # /d, Bowel residence time in the colon
       
       
@@ -425,7 +443,8 @@
       MW <- 414.07
       
       PSk <- PSkc * fup  #PSk  # Skin
-      PG <- PGc * fup    #PG   # Gut
+      PSt <- PStc * fup        # Stomach
+      PI <- PIc * fup    #PI   # Intestinal
       PL <- PLc * fup    #PL   # Liver
       PK <- PKc * fup    #PK   # Kidney
       PA <- PAc * fup    #PF   # Adipose
@@ -434,10 +453,12 @@
       
       # Fraction unionised
       pH_P <- 7.4     # plasma
-      pH_L <- 7       # intestinal gut lumen, average
+      pH_IL <- 7      # intestinal Intestinal lumen, average
+      pH_S <- 2       # stomach, fasted (between 1.5 and 2.5)
       
       f.union_exp <- 1/(1 + 10^(pH_P - pKa))     # Is the same as plasma as pH in the experiment is 7.4
-      f.union_GT <- 1/(1 + 10^(pH_L - pKa))      # Gut lumen
+      f.union_IL <- 1/(1 + 10^(pH_IL - pKa))      # Intestinal lumen
+      f.union_S <- 1/(1 + 10^(pH_S - pKa))      # Intestinal lumen
       
       # Fraction unbound
       fuT <- 1/(1 + ((1 - fup)/fup) * R_T)       # Tissue
@@ -448,11 +469,12 @@
       ### Kinetic ----
       
       # Skin uptake
-      CL_SkBtSk <- Papp_SkB*SA_SkB*1e-3*60*60*24           # L/d, Skin barrier to skin (calculations: cm/s = L/s * 1e-3 = L/d *60*60*24)
+      CL_SkBtSk <- Papp_SkB*SA_SkB*1e-3*60*60*24           # L/d, Skin barrier to skin (calculations: cm/s -> L/s * 1e-3 -> L/d *60*60*24)
       
-      # Gut uptake
+      # Gastro-intestinal uptake
       Pint_SI <- Papp_SI/f.union_exp                       # cm/s, Intrinsic permeability, corrected for fraction unionised in the experiment
-      CL_GLtG <- (Pint_SI*SA_SI*f.union_GT*1e-3)*60*60*24  # L/d, Gut lumen to gut cell (calculations: cm/s = L/s /1000 = L/d *60*60*24) 
+      CL_GL <- (Pint_SI*SA_SI*f.union_IL*1e-3)*60*60*24    # L/d, Intestinal lumen to intestinal tissue (calculations: cm/s -> L/s /1000 -> L/d *60*60*24) 
+      CL_St <- (Pint_SI*SA_St*f.union_S*1e-3)*60*60*24     # L/d, Stomach uptake to the portal vein
       
       # Liver uptake
       Vmax_OATP1B1 <- Vmax_OATP1B1c*REF_OATP1B1            # ug/d
@@ -465,7 +487,7 @@
       KmBSEP <- KmBSEPc*MW                                 # ug/L, uM, Average affinity constant of bile acids to BSEP, following the above assumption
       
       # Renal clearance
-      Vmax_OAT4 = Vmax_OAT4c*MW*1e-3*60*24*SF_OAT*VPTT      # ug/d (nmol -> ug, min -> d)
+      Vmax_OAT4 = Vmax_OAT4c*MW*1e-3*60*24*SF_OAT*VPTT     # ug/d (nmol -> ug, min -> d)
       Km_OAT4 = Km_OAT4c*MW                                # ug/L, scaled from uM, Louisse et al. 2024 doi.org/10.1016/j.tox.2024.153961
       
       
@@ -487,17 +509,20 @@
       CSk <- ASk/VSk               # ug/L, Skin
       CVSk <- CSk/PSk              # ug/L, Skin venous 
       
-      CGL <- AGL/VGL               # ug/L, Gut lumen
-      CG <- AG/VG                  # ug/L, Gut 
-      CVG <- CG/PG                 # ug/L, Gut venous
+      CSt <- ASt/VSt               # ug/L, Stomach
+      CVSt <- CSt/PSt              # ug/L, Stomach venous
+      
+      CIL <- AIL/VIL               # ug/L, Intestinal lumen
+      CI <- AI/VI                  # ug/L, Intestinal 
+      CVI <- CI/PI                 # ug/L, Intestinal venous
       
       CL_ec <- AL_ec/VL_ec         # ug/L, Liver extracellular
       CL_ic <- AL_ic/VL_ic         # ug/L, Liver intracellular
       CVL_ec <- CL_ec/PL           # ug/L, Liver extracellular venous
       
-      CPTT <- APTT/VPTT             # ug/L, Kidney, proximal tubule tissue
+      CPTT <- APTT/VPTT            # ug/L, Kidney, proximal tubule tissue
       CPTL <- APTL/VPTL            # ug/L, Kidney, proximal tubule lumen
-      CRKT <- ARKT/VRKT             # ug/L, Rest of kidney tissue
+      CRKT <- ARKT/VRKT            # ug/L, Rest of kidney tissue
       CRKL <- ARKL/VRKL            # ug/L, Rest of kidney lumen
       CVRKT <- CRKT/PK             # ug/L, Rest of kidney venous
       
@@ -516,24 +541,27 @@
       
       ## Differential equations -------------------------
       
-      dDD = 0 #DermalD - DD                                               # ug/d, Dermal dose input
-      dOD = - OD # OralD - OD                                               # ug/d, Oral dose input
+      dDD = 0 #DermalD - DD                             # ug/d, Dermal dose input
+      dOD = - OD # OralD - OD                           # ug/d, Oral dose input
       
       
-      dASkB <- DD - CL_SkBtSk*CSkB                      # ug/d, Skin barrier
+      dASkB <- DD - CL_SkBtSk*CSkB                                # ug/d, Skin barrier
       
-      dASk <- + CL_SkBtSk*CSkB + QSk*(CAP-CVSk)                # ug/d, Skin
-      
-      
-      dAGL <- + OD - tco*AGL - CL_GLtG*CGL + 
-        + (VmaxBSEP/(KmBSEP + (CL_ic*fuT)))*CL_ic*fuT          # ug/d, Gut lumen
-      
-      dAG <- QG*(CAP - CVG) + CL_GLtG*CGL                      # ug/d, Gut
-      
-      dAFe <-  tco*AGL                                         # ug/d, Feces
+      dASk <- + CL_SkBtSk*CSkB + QSk*(CAP-CVSk)                   # ug/d, Skin
       
       
-      dAL_ec <- QG*CVG + QL*CAP - (QG+QL)*CVL_ec +
+      dASt <- + OD - CL_St*CVSt*QSt + QSt*CAP - tge*ASt       # ug/d, Stomach 
+      
+      
+      dAIL <- + tge*ASt - tco*AIL - CL_GL*CIL + #+ tge*ASt
+        + (VmaxBSEP/(KmBSEP + (CL_ic*fuT)))*CL_ic*fuT        # ug/d, Intestinal lumen
+      
+      dAI <- QI*(CAP - CVI) + CL_GL*CIL                      # ug/d, Intestinal
+      
+      dAFe <-  tco*AIL                                       # ug/d, Feces
+      
+      
+      dAL_ec <- + QI*CVI + QL*CAP - (QI+QL+QSt)*CVL_ec + CL_St*CVSt*QSt +
         - (Vmax_OATP1B1/(Km_OATP1B1 + (CL_ec*fup)))*CL_ec*fuL_ec +
         - (Vmax_OATP1B3/(Km_OATP1B3 + (CL_ec*fup)))*CL_ec*fuL_ec            # ug/d, Liver extracellular space (vascular + interstitial space)
       
@@ -562,13 +590,14 @@
       
       dALu <- QC*(CVP - CVLu)
       
-      dAAP <- - (QSk + QG + QL + QA + QR + QK)*CAP + QC*CVLu - fup*GFR*CAP           # ug/d, Arterial Plasma
-      dAVP <- + QSk*CVSk + (QL+QG)*CVL_ec + QK*CVRKT + QA*CVA + QR*CVR - QC*CVP      # ug/d, Venous Plasma
+      dAAP <- - (QSk + QI + QL + QA + QR + QK + QSt)*CAP + QC*CVLu - fup*GFR*CAP    #+ QSt       # ug/d, Arterial Plasma
+      dAVP <- + QSk*CVSk + (QL+QI+QSt)*CVL_ec + QK*CVRKT + QA*CVA + QR*CVR - QC*CVP      # ug/d, Venous Plasma
       
       # Mass Balance
       Atot <- DD + OD +
         ASkB + ASk +
-        AGL + AG + AFe +   
+        ASt +
+        AIL + AI + AFe +   
         AL_ec + AL_ic +
         APTT + APTL + ARKT + ARKL + AUr +
         AA + 
@@ -586,8 +615,9 @@
              dOD,
              dASkB,
              dASk, 
-             dAGL,
-             dAG, 
+             dASt,
+             dAIL,
+             dAI, 
              dAFe,
              dAL_ec,
              dAL_ic,
@@ -605,8 +635,9 @@
       ), 
       c(CSkB = CSkB, 
         CSk = CSk, 
-        CGL = CGL,
-        CG = CG, CVG = CVG, 
+        CSt = CSt,
+        CIL = CIL,
+        CI = CI, CVI = CVI, 
         CL_ec = CL_ec,
         CL_ic = CL_ic,
         CVL_ec = CVL_ec,
@@ -628,7 +659,8 @@
   
   A_init <- c(DD = 0, OD = DOral, #0
               ASkB = 0, ASk = 0,
-              AGL = 0, AG = 0, AFe = 0,   
+              ASt = 0,
+              AIL = 0, AI = 0, AFe = 0,   
               AL_ec = 0, AL_ic = 0,
               APTT = 0, APTL = 0, ARKT = 0, ARKL = 0, AUr = 0,
               AA = 0, 
@@ -680,8 +712,8 @@
     mutate(CK = CPTT + CPTL + CRKT + CRKL,
            CL = CL_ec + CL_ic
            ) %>% 
-    select(Days, CK, CSk, CL, CG, CA, CR, CP) %>% 
-    rename(Kidney = CK, Skin = CSk, Liver = CL, Gut = CG, Adipose = CA, Rest = CR, Plasma = CP) %>% 
+    select(Days, CK, CSk, CL, CI, CSt, CA, CR, CP) %>% 
+    rename(Kidney = CK, Skin = CSk, Liver = CL, Intestine = CI, Stomach = CSt, Adipose = CA, Rest = CR, Plasma = CP) %>% 
     pivot_longer(names_to = "Organ", values_to = "Concentration", Kidney:Plasma) %>% 
     ggplot()+
     geom_path(aes(x = Days, y = Concentration, color = Organ)) +
