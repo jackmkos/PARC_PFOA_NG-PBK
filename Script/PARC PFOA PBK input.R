@@ -40,7 +40,7 @@ showtext_auto()
 # ------------------------------------------------------ #
 
 ## Calculate partition coefficients based on tissue matrix distribution experimental data ####
-Physio.data <- read_csv("C:/Users/pacho003/OneDrive - Wageningen University & Research/CP_L_R/PARC_PFOA_mechanistic/Input/TissueComposition.csv")
+Tissue.composition <- read_csv("C:/Users/pacho003/OneDrive - Wageningen University & Research/CP_L_R/PARC_PFOA_mechanistic/Input/TissueComposition.csv")
 
 # PFOA Matrix/Water Distribution Coefficients
 
@@ -56,12 +56,13 @@ k_ALB <- 10^logALB     # albumin:water partition coefficient
 k_SL <- 10^logSL       # structural lipids:water partition coefficient
 k_FABP <- 10^logFABP   # fatty acid-binding protein:water partition coefficient
 
-
-Physio.dat <- Physio.data %>% filter(!Tissue %in% c("Comment", "NamingInUtsey")) %>% 
-  select(-Comment) %>% 
+Physio.data <- Tissue.composition %>% 
+  filter(Species == "Human") %>%
+  filter(!Tissue %in% c("Comment", "NamingInUtsey")) %>%
+  select(- c(Comment, Species)) %>% 
   mutate(across(-Tissue, as.numeric))
 
-Physio.Tissues <- Physio.dat %>% filter(!Tissue %in% c("Blood", "Plasma")) 
+Physio.Tissues <- Physio.data %>% filter(!Tissue %in% c("Blood", "Plasma")) 
 
 Kp <- (Physio.Tissues$f_W +
          (k_ML*Physio.Tissues$f_ML) +
