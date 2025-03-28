@@ -257,11 +257,73 @@
   PRc <- PFOA_params$KpRe  #PR   # Rest
   PLuc <- PFOA_params$KpLu       # Lungs
   
-
-  ### Uptake from skin -------------------------
-  Papp_SkB = 3.82*1e-3 * 60*60                 # cm/s, Ragnarsdottir et al. 2024 https://doi.org/10.1016/j.envint.2024.108772 (calculations 3.82*1e-3 cm/h -> *60*60 cm/s)
-  tlag = 1/6.21 * 24                           # /d, lag time for dermal absorption, Ragnarsdottir et al. 2024 https://doi.org/10.1016/j.envint.2024.108772 (calculations 6.21h *24d)
+  # Albumin ratio
+  R_T <- 0.5 # albumin and lipoprotein ratio between the tissue interstitial fluid and plasma
+  R_PTL <- Calb_PTL/Calb_P 
+  R_RKL <- Calb_RKL/Calb_P
+  R_exp <- Calb_exp/Calb_P
+  R_L_ec <- 0.086 # albumin ratio liver, Utsey et al. 2020 https://doi.org/10.1124/dmd.120.090498, https://github.com/metrumresearchgroup/PBPK_PC/blob/master/data/unified_tissue_comp.csv
   
+  # Fraction unbound
+  fuT <- 1/(1 + ((1 - fup)/fup) * R_T)       # Tissue
+  fuPTL <- 1/(1 + ((1 - fup)/fup) * R_PTL)   # Proximal tubule lumen
+  fuRKL <- 1/(1 + ((1 - fup)/fup) * R_RKL)   # Rest of kidney lumen
+  fuexp <- 1/(1 + ((1 - fup)/fup) * R_exp)   # Experiment (is actually 1)
+  fuL_ec <- 1/(1 + ((1 - fup)/fup) * R_L_ec) # Liver extracellular space
+  # Note Chrysa: need to check if I find the amount of albumin in liver interstitial space, as here the fuL_ec is 10 times higher than the fup, but extracellular space is actually mainly the albumin from the vascular space. 
+  
+  
+  ### Renal Clearance -------------------------
+  
+  ## Active transport
+  
+  # Input data, in vitro clearance
+  # Vmax_OAT1c = 3.5                 # nmol/min/mg protein, Louisse et al. 2024 doi.org/10.1016/j.tox.2024.153961
+  # Vmax_OAT3c = 1.5                 # nmol/min/mg protein, Louisse et al. 2024 doi.org/10.1016/j.tox.2024.153961
+  Vmax_OAT4c = 4.5                   # nmol/min/mg protein, Louisse et al. 2024 doi.org/10.1016/j.tox.2024.153961
+  
+  # Km_OAT1 = 185*MW                 # ug/L, scaled from uM, Louisse et al. 2024 doi.org/10.1016/j.tox.2024.153961
+  # Km_OAT3 = 90*MW                  # ug/L, scaled from uM, Louisse et al. 2024 doi.org/10.1016/j.tox.2024.153961
+  Km_OAT4 = 47*MW                  # ug/L, scaled from uM, Louisse et al. 2024 doi.org/10.1016/j.tox.2024.153961
+  
+  # CL_OAT1 = 19*1e-6*60*24          # L/d/mg protein, initial ul/min/mg protein, Louisse et al. 2024
+  # CL_OAT3 = 17*1e-6*60*24          # L/d/mg protein, initial ul/min/mg protein, Louisse et al. 2024
+  CL_OAT4 = 96*1e-6*60*24          # L/d/mg protein, initial ul/min/mg protein,Louisse et al. 2024
+  
+  # Relative expression factor
+  # REF_OAT1 <- 1 #PFOA_params$REF_OAT1 #
+  # REF_OAT3 <- 1 #PFOA_params$REF_OAT3 #
+  REF_OAT4 <- 1 #PFOA_params$REF_OAT4 # is equal to 1, as we don't have data on the in vitro expression of OAT4
+  
+  
+  #SF_OATt <- 0.17 * 10e6 * 0.3581 # 17% of kidney is protein [ICRP 89], 10e6 is scaling from mg protein to kg protein, double ref for 17% protein Ruark 2020: DOI: https://doi.org/10.1016/B978-0-12-818596-4.00006-0
+  SF_OAT <- 1.09e-7 * 99.4e6 * 1e3 * VK #6.54 mgprotein/HEK293cell (ref: Han and Ni, 2004, Ho et al., 2004) * PTCPGK cells/g kidney * 1e3 as Vkidney is in Kg (could be 99.4e6 or 60e6 see below comment ref: Neuhoff et al., 2013), equation from: https://doi.org/10.1016/j.comtox.2021.100172 
+  # Comment regarding PTCPGK: from Tang et al. 2024 https://doi.org/10.1021/acs.molpharmaceut.4c00504  a value of 60 million PTCPGKis commonly used but the observed value as high as 209 million PTCPGK has been reported. In this study, avalue of 99.4 million PTCPGK was applied based on the mostrecent meta-analysis.45 
+  
+  
+  # Scaled clearances for active transport
+  # CL_FiltPT <- CL_OAT4 * REF_OAT4 * SF_OAT                            # L/d, reabsorption
+  # CL_PltPT <- ((CL_OAT1 * REF_OAT1) + (CL_OAT3 * REF_OAT3)) * SF_OAT  # L/d, excretion
+  
+  # Vmax_OAT1 = Vmax_OAT1c*MW*1e-3*60*24*SF_OAT # ug/d (nmol -> ug, min -> d)
+  # Vmax_OAT3 = Vmax_OAT3c*MW*1e-3*60*24*SF_OAT # ug/d (nmol -> ug, min -> d)
+  Vmax_OAT4 = Vmax_OAT4c*MW*1e-3*60*24*SF_OAT # ug/d (nmol -> ug, min -> d)
+  
+  
+  ## Passive permeability
+  
+  # Input data, in vitro apparent permeability
+  # Papp_PT <- 1.46*1e-6                       # cm/s, In vitro permeability at apical compartment pH 7.4, PFAS were added to the donor wells and transport buffer containing 0.4% BSA was added to the receiver wells
+  # Pint_PT <- Papp_PT/f.union_exp             # cm/s, Intrinsic permeability, corrected for fraction unionised in the experiment
+  
+  # Final clearance for passive permeability (what is called effective passive diffusion)
+  # Equations from  Huang and Isoherranen 2018, what it's called effective passive diffusion doi:10.1002/psp4.12321
+  # In Huang and Isoherranen, it is assumed the same Peff (what they call CL_PD) for apical and basolateral sides except for the proximal tubule where apical side has 30 fold higher TSA than basolateral side, due to the presence of microvilli
+  # CLdif_PTLtPTC <- (Pint_PT*SA_PTL*f.union_PTL/1000)*60*60*24 # L/d, Proximal tubule lumen to proximal tubule cell (calculations: cm/s = L/s /1000 = L/d *60*60*24)
+  # CLdif_PTCtPTP <- (Pint_PT*SA_PT*f.union_KC/1000)*60*60*24   # L/d, Proximal tubule cell to proximal tubule plasma (calculations: cm/s = L/s /1000 = L/d *60*60*24)
+  # CLdif_PTCtPTL <- (Pint_PT*SA_PT*f.union_KC/1000)*60*60*24   # L/d, Proximal tubule cell to proximal tubule lumen (calculations: cm/s = L/s /1000 = L/d *60*60*24)
+  # CLdif_PTPtPTC <- (Pint_PT*SA_PT*f.union_P/1000)*60*60*24    # L/d, Proximal tubule plasma to proximal tubule cell (calculations: cm/s = L/s /1000 = L/d *60*60*24), 
+    
   ### Uptake from the gastro-intestinal duct -------------------------
   
   # Input data, in vitro clearance
@@ -594,10 +656,9 @@
       dAVP <- + QSk*CVSk + (QL+QI+QSt)*CVL_ec + QK*CVRKT + QA*CVA + QR*CVR - QC*CVP      # ug/d, Venous Plasma
       
       # Mass Balance
-      Atot <- DD + OD +
-        ASkB + ASk +
-        ASt +
-        AIL + AI + AFe +   
+      Atot <- D + APT + APTL + ARK + ARKL + AUr +
+        ASk +
+        AG + AGL + AFe + #AGL_up + AGL_low + AGL_col 
         AL_ec + AL_ic +
         APTT + APTL + ARKT + ARKL + AUr +
         AA + 
