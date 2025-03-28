@@ -1,5 +1,6 @@
   # --------------------------------------------------------------------------- #
   # PBK MODEL FOR PFOA, TO BE USED TOGETHER WITH THE LATEST HBM DATA
+  # Dermal and Oral absorption, Stomach and Lungs
   # Model File
   # CP, 20-03-2025
   # --------------------------------------------------------------------------- #
