@@ -1,8 +1,7 @@
   # --------------------------------------------------------------------------- #
   # PBK MODEL FOR PFOA, TO BE USED TOGETHER WITH THE LATEST HBM DATA
-  # Dermal and Oral absorption, Stomach and Lungs
-  # Model File
-  # CP, 20-03-2025
+  # Core PBK model, minimalistic
+  # CP, 29-03-2025
   # --------------------------------------------------------------------------- #
   
   rm(list=ls()) # to clear out the global environment
@@ -67,8 +66,8 @@
   # EXPOSURE SCENARIO ####
   # ------------------------------------------------------ #
   
-  EXP_STOP <- 50 #*365      # days, duration of the exposure; 1, Abraham et al. 2024 https://doi.org/10.1016/j.envint.2024.109047
-  SIM_STOP <- 450 # 5000 #*365 #450  # days, duration of the simulation; 450 days follow-up period from Abraham et al. 2024 https://doi.org/10.1016/j.envint.2024.109047  
+  EXP_STOP <- 10*365      # days, duration of the exposure; 1, Abraham et al. 2024 https://doi.org/10.1016/j.envint.2024.109047
+  SIM_STOP <- 80*365 #450  # days, duration of the simulation; 450 days follow-up period from Abraham et al. 2024 https://doi.org/10.1016/j.envint.2024.109047  
   
   TSTART <- 0
   TSTOP <- SIM_STOP                # days
@@ -76,20 +75,9 @@
   TIME <- seq(TSTART,TSTOP,by=DT)
   
   
-  ## Dermal exposure ##
-  # Comment Chrysa: the below section can be used to calculate the dermal concentration based on cosmetic product type and PFOA concentrations in the cosmetic product
-  # q = 123.20         # mg/kg/day amount of cosmetic product applied per day, SCCS 2021 table 3 (https://health.ec.europa.eu/document/download/89af1a70-a2b1-44da-a868-e7d80a8e736c_en?filename=sccs_o_250.pdf)
-  # fret = 1           # fraction of the cosmetic product retained on the skin, SCCS 2021 table 3 (https://health.ec.europa.eu/document/download/89af1a70-a2b1-44da-a868-e7d80a8e736c_en?filename=sccs_o_250.pdf)
-  # Aproduct = 1       # ug/mg amount of PFOA in the cosmetic product
-  # fbac = 0.78        # fraction bioaccessible (fraction of PFOA that leaves the cosmetic product and is accessible for absorption) Namazkar et al 2024 DOI: 10.1039/D3EM00461A 
-  # CDermal = q*fret*Aproduct*fbac # ug/kd/day
-  CDermal = 0# 0.000542   # ug/kg/day, mean of #as.numeric(SumExpPFOA_LB_val[i,14])
-  
-  
-  
   ## Oral exposure ##
-  COral = 0.048   #0.000187 #0.048       # ug/kg/day, calculated back from Abraham et al. 2024 https://doi.org/10.1016/j.envint.2024.109047 (3.96/BW of 82Kg); 0.000187 # ug/kg/day [EFSA 2020, page 143] 3.96ug
-  DOral = COral*82 #*DoseOn         # ug, PFOA oral dose 
+  COral = 0.000187 #0.048       # ug/kg/day, calculated back from Abraham et al. 2024 https://doi.org/10.1016/j.envint.2024.109047 (3.96/BW of 82Kg); 0.000187 # ug/kg/day [EFSA 2020, page 143] 3.96ug
+  DOral = COral #*DoseOn         # ug, PFOA oral dose 
   
   
   Tinput = 1          # day, duration of dose day
@@ -101,31 +89,21 @@
   
   ## Physiological ####
   Physio_params <- Physio_params %>% 
-    filter(age == 60) %>%  # 60 years old adult, male, as in the Abraham study
+    filter(age == 50) %>%  # 60 years old adult, male, as in the Abraham study
     select(ends_with('_M')) %>% 
     mutate(BloodFlowSum = rowSums(select(., starts_with("Q_")))) %>% # 0.9935, total blood flow as the sum of the fractional blood flows of all organs on which we have data
     mutate(VolumesSum = rowSums(select(., starts_with("V_")))) # 0.96, total volume as the sum of the fractional organ volumes of all organs on which we have data
   
-  BW <- 82                         # L (kg), The body weight of the subject in Abraham et al. 2024 https://doi.org/10.1016/j.envint.2024.109047 Physio_params$BDW_M 
+  BW <- Physio_params$BDW_M                          # L (kg), The body weight of 82 of the subject in Abraham et al. 2024 https://doi.org/10.1016/j.envint.2024.109047 Physio_params$BDW_M 
   QC <- Physio_params$CardOut_M    # L/d, This is corrected for hematocrit already so it's plasma
-  Hct <- 46.7/100                  # The hematocrit of the subject in Abraham et al. 2024 https://doi.org/10.1016/j.envint.2024.109047 Physio_params$Hct_M
+  Hct <- Physio_params$Hct_M                  # The hematocrit of 46.7/100 of the subject in Abraham et al. 2024 https://doi.org/10.1016/j.envint.2024.109047 Physio_params$Hct_M
   
   
   ### Organ volumes -------------------------
   
   # Skin
   VSkc <- Physio_params$V_skinFraction_M  
-  SA_SkB = 15670                   # cm2, total body surface area except head, SCCS 2021 table 4 (https://health.ec.europa.eu/document/download/89af1a70-a2b1-44da-a868-e7d80a8e736c_en?filename=sccs_o_250.pdf)
-  H_SkB = 83.1                     # cm, average thickness of the skin barrier, 83.7 +- 16.6 J.Sandby-Moller et al. 2003, Table II DOI: 10.1080/00015550310015419
-  VSkB = SA_SkB*H_SkB * 1e-3       # L, volume of the skin barrier 
-  # # Notes Chrysa: Trine calculated the surface area based on the BodyWeight with this formula: SA_SkB = 9.1*(BW*1000)^0.666  # cm2, total body area of the skin (Husoy)
-  # # Trine's value provides the surface total surface area, but according to the SCCS, if we take the body lotion,then we should remove the surface area of the head from our calculations
-  # # The general equation is SA = 0.02350*H^0.4226*W^0.51456, ref. https://www.rivm.nl/bibliotheek/rapporten/090013003.pdf
-  
-  # Stomach
-  VStc <- Physio_params$V_stomachFraction_M
-  SA_St <- 525                     # cm2, ICRP 2006, table 7.3, page 100
-  
+ 
   # Intestine
   VIc <- Physio_params$V_gutFraction_M
   
@@ -167,14 +145,11 @@
   # Adipose
   VAc <- Physio_params$V_adiposeFraction_M
   MAc <- Physio_params$AdiposeMass_M
-  
-  # Lungs
-  VLuc <- Physio_params$V_lungFraction_M
+
   
   # Plasma
   VPc <- Physio_params$V_plasmaFraction_M
-  VAPc <- 0.39*VPc                  # Arterial plasma
-  VVPc <- 0.61*VPc                  # Venous plasma
+
   
   # Total body volume
   VTotc <- Physio_params$VolumesSum                  
@@ -182,7 +157,6 @@
   ### Organ blood flows -------------------------
   QSkc <- Physio_params$Q_skinFraction_M    
   QTotc <- Physio_params$BloodFlowSum
-  QStc <- Physio_params$Q_stomachFraction_M
   QIc <- Physio_params$Q_gutFraction_M   
   QLc <- Physio_params$Q_liverFraction_M 
   QKc <- Physio_params$Q_kidneyFraction_M  
@@ -191,7 +165,6 @@
   
   ### Other physiological flows and constants -------------------------
   
-  tge = 0.77*24               # /d, Gastric emptying time for solids (as PFAS were administered in a muffin) this is about 75-80min in men and 100-110 min in women [ICRP 2006, page 84] (for liquids the gastric transit time is 10-60minutes willmann2004 doi: 10.1021/jm030999b)
   tco = 0.14*24               # /d, Bowel residence/transit time in the colon, (24*/h) or 7h willmann2004 doi: 10.1021/jm030999b
   
   QUrc = 0.022                # L/d, Urine flow rate to the bladder 22 mL/kg BW/d [ICRP 89 page 161]
@@ -203,8 +176,7 @@
   
   pH_P <- 7.4     # plasma
   pH_IL <- 7       # intestinal lumen, average
-  pH_S <- 2 # stomach, fasted (between 1.5 and 2.5)
-  
+
   ### Albumin concentrations in different matrices -------------------------
   
   # From Akihiro Tojo and Satoshi Kinugasa 2012 doi:10.1155/2012/481520
@@ -232,13 +204,17 @@
   
   # Calculate Plasma/Rest of the body partition coefficient
   # KpRe = partition coefficient of each of the lumped organs * fractional volume of the respective organ / sum of the fractional volume of all these organs
-  KpRe <- (PFOA_params$KpBr*Physio_params$V_brainFraction_M +
+  KpRe <- (PFOA_params$KpLu*Physio_params$V_lungFraction_M +
+             PFOA_params$KpSt*Physio_params$V_stomachFraction_M +
+             PFOA_params$KpBr*Physio_params$V_brainFraction_M +
              PFOA_params$KpHe*Physio_params$V_heartFraction_M + 
              PFOA_params$KpMu*Physio_params$V_muscleFraction_M +
              PFOA_params$KpSp*Physio_params$V_spleenFraction_M +
              PFOA_params$KpGo*Physio_params$V_reproFraction_M +
              PFOA_params$KpBo*Physio_params$V_boneFraction_M) / (
-               Physio_params$V_brainFraction_M +
+               Physio_params$V_lungFraction_M +
+                 Physio_params$V_stomachFraction_M +
+                 Physio_params$V_brainFraction_M +
                  Physio_params$V_heartFraction_M +
                  Physio_params$V_muscleFraction_M +
                  Physio_params$V_spleenFraction_M +
@@ -247,88 +223,22 @@
   PFOA_params$KpRe <- KpRe
   
   # Choose between calculated partition coefficients or initial ones (rat)
-  # In PFOA_params, PF, PG, PK, PL, PSK and PR are the initial PCs from Kudo 2007 (rat). These were recalculated to total tissue (/fup) to enable differentiating the fup for the sensitivity analysis
+  # In PFOA_params, PF, PI, PK, PL, PSK and PR are the initial PCs from Kudo 2007 (rat). These were recalculated to total tissue (/fup) to enable differentiating the fup for the sensitivity analysis
   # Correcting for fraction unbound (as it was not incorporated in the input calculating file)
   PSkc <- PFOA_params$KpSk #PSk  # Skin
-  PStc <- PFOA_params$KpSt       # Stomach
-  PIc <- PFOA_params$KpIn  #PG   # Intestine
+  PIc <- PFOA_params$KpIn  #PI   # Intestine
   PLc <- PFOA_params$KpLi  #PL   # Liver
   PKc <- PFOA_params$KpKi  #PK   # Kidney
   PAc <- PFOA_params$KpAd  #PF   # Adipose
   PRc <- PFOA_params$KpRe  #PR   # Rest
-  PLuc <- PFOA_params$KpLu       # Lungs
+
+
   
-  # Albumin ratio
-  R_T <- 0.5 # albumin and lipoprotein ratio between the tissue interstitial fluid and plasma
-  R_PTL <- Calb_PTL/Calb_P 
-  R_RKL <- Calb_RKL/Calb_P
-  R_exp <- Calb_exp/Calb_P
-  R_L_ec <- 0.086 # albumin ratio liver, Utsey et al. 2020 https://doi.org/10.1124/dmd.120.090498, https://github.com/metrumresearchgroup/PBPK_PC/blob/master/data/unified_tissue_comp.csv
-  
-  # Fraction unbound
-  fuT <- 1/(1 + ((1 - fup)/fup) * R_T)       # Tissue
-  fuPTL <- 1/(1 + ((1 - fup)/fup) * R_PTL)   # Proximal tubule lumen
-  fuRKL <- 1/(1 + ((1 - fup)/fup) * R_RKL)   # Rest of kidney lumen
-  fuexp <- 1/(1 + ((1 - fup)/fup) * R_exp)   # Experiment (is actually 1)
-  fuL_ec <- 1/(1 + ((1 - fup)/fup) * R_L_ec) # Liver extracellular space
-  # Note Chrysa: need to check if I find the amount of albumin in liver interstitial space, as here the fuL_ec is 10 times higher than the fup, but extracellular space is actually mainly the albumin from the vascular space. 
-  
-  
-  ### Renal Clearance -------------------------
-  
-  ## Active transport
-  
-  # Input data, in vitro clearance
-  # Vmax_OAT1c = 3.5                 # nmol/min/mg protein, Louisse et al. 2024 doi.org/10.1016/j.tox.2024.153961
-  # Vmax_OAT3c = 1.5                 # nmol/min/mg protein, Louisse et al. 2024 doi.org/10.1016/j.tox.2024.153961
-  Vmax_OAT4c = 4.5                   # nmol/min/mg protein, Louisse et al. 2024 doi.org/10.1016/j.tox.2024.153961
-  
-  # Km_OAT1 = 185*MW                 # ug/L, scaled from uM, Louisse et al. 2024 doi.org/10.1016/j.tox.2024.153961
-  # Km_OAT3 = 90*MW                  # ug/L, scaled from uM, Louisse et al. 2024 doi.org/10.1016/j.tox.2024.153961
-  Km_OAT4 = 47*MW                  # ug/L, scaled from uM, Louisse et al. 2024 doi.org/10.1016/j.tox.2024.153961
-  
-  # CL_OAT1 = 19*1e-6*60*24          # L/d/mg protein, initial ul/min/mg protein, Louisse et al. 2024
-  # CL_OAT3 = 17*1e-6*60*24          # L/d/mg protein, initial ul/min/mg protein, Louisse et al. 2024
-  CL_OAT4 = 96*1e-6*60*24          # L/d/mg protein, initial ul/min/mg protein,Louisse et al. 2024
-  
-  # Relative expression factor
-  # REF_OAT1 <- 1 #PFOA_params$REF_OAT1 #
-  # REF_OAT3 <- 1 #PFOA_params$REF_OAT3 #
-  REF_OAT4 <- 1 #PFOA_params$REF_OAT4 # is equal to 1, as we don't have data on the in vitro expression of OAT4
-  
-  
-  #SF_OATt <- 0.17 * 10e6 * 0.3581 # 17% of kidney is protein [ICRP 89], 10e6 is scaling from mg protein to kg protein, double ref for 17% protein Ruark 2020: DOI: https://doi.org/10.1016/B978-0-12-818596-4.00006-0
-  SF_OAT <- 1.09e-7 * 99.4e6 * 1e3 * VK #6.54 mgprotein/HEK293cell (ref: Han and Ni, 2004, Ho et al., 2004) * PTCPGK cells/g kidney * 1e3 as Vkidney is in Kg (could be 99.4e6 or 60e6 see below comment ref: Neuhoff et al., 2013), equation from: https://doi.org/10.1016/j.comtox.2021.100172 
-  # Comment regarding PTCPGK: from Tang et al. 2024 https://doi.org/10.1021/acs.molpharmaceut.4c00504  a value of 60 million PTCPGKis commonly used but the observed value as high as 209 million PTCPGK has been reported. In this study, avalue of 99.4 million PTCPGK was applied based on the mostrecent meta-analysis.45 
-  
-  
-  # Scaled clearances for active transport
-  # CL_FiltPT <- CL_OAT4 * REF_OAT4 * SF_OAT                            # L/d, reabsorption
-  # CL_PltPT <- ((CL_OAT1 * REF_OAT1) + (CL_OAT3 * REF_OAT3)) * SF_OAT  # L/d, excretion
-  
-  # Vmax_OAT1 = Vmax_OAT1c*MW*1e-3*60*24*SF_OAT # ug/d (nmol -> ug, min -> d)
-  # Vmax_OAT3 = Vmax_OAT3c*MW*1e-3*60*24*SF_OAT # ug/d (nmol -> ug, min -> d)
-  Vmax_OAT4 = Vmax_OAT4c*MW*1e-3*60*24*SF_OAT # ug/d (nmol -> ug, min -> d)
-  
-  
-  ## Passive permeability
-  
-  # Input data, in vitro apparent permeability
-  # Papp_PT <- 1.46*1e-6                       # cm/s, In vitro permeability at apical compartment pH 7.4, PFAS were added to the donor wells and transport buffer containing 0.4% BSA was added to the receiver wells
-  # Pint_PT <- Papp_PT/f.union_exp             # cm/s, Intrinsic permeability, corrected for fraction unionised in the experiment
-  
-  # Final clearance for passive permeability (what is called effective passive diffusion)
-  # Equations from  Huang and Isoherranen 2018, what it's called effective passive diffusion doi:10.1002/psp4.12321
-  # In Huang and Isoherranen, it is assumed the same Peff (what they call CL_PD) for apical and basolateral sides except for the proximal tubule where apical side has 30 fold higher TSA than basolateral side, due to the presence of microvilli
-  # CLdif_PTLtPTC <- (Pint_PT*SA_PTL*f.union_PTL/1000)*60*60*24 # L/d, Proximal tubule lumen to proximal tubule cell (calculations: cm/s = L/s /1000 = L/d *60*60*24)
-  # CLdif_PTCtPTP <- (Pint_PT*SA_PT*f.union_KC/1000)*60*60*24   # L/d, Proximal tubule cell to proximal tubule plasma (calculations: cm/s = L/s /1000 = L/d *60*60*24)
-  # CLdif_PTCtPTL <- (Pint_PT*SA_PT*f.union_KC/1000)*60*60*24   # L/d, Proximal tubule cell to proximal tubule lumen (calculations: cm/s = L/s /1000 = L/d *60*60*24)
-  # CLdif_PTPtPTC <- (Pint_PT*SA_PT*f.union_P/1000)*60*60*24    # L/d, Proximal tubule plasma to proximal tubule cell (calculations: cm/s = L/s /1000 = L/d *60*60*24), 
-    
   ### Uptake from the gastro-intestinal duct -------------------------
   
   # Input data, in vitro clearance
   Papp_SI = 7.31*1e-6                         # cm/s, 7.31 ± 0.43, Janssen et al. 2024
+  
   
   ### Uptake to the liver -------------------------
   
@@ -338,7 +248,6 @@
   
   Vmax_OATP1B3c = 2.694 * 1e-6                # umol/min/mg protein, 2.694± 0.470 pmol/min/mg protein [@lin2023]
   Km_OATP1B3c = 91.6                          # ug/L, 91.61 ± 47.70 uM [@lin2023]
-  
   
   # Relative expression factors
   OATP1B1_vitro = 0.120                       # [@lin2023, tables6, ref23]
@@ -350,6 +259,7 @@
   OATP1B3_vivo = 1.000                        # pmol/mg membrane protein [@lin2023, tables7, ref23]
   REF_OATP1B3 = OATP1B3_vivo/OATP1B3_vitro
   SF_OATP1B3 = REF_OATP1B3
+  
   
   ### Biliary clearance -------------------------
   
@@ -376,10 +286,7 @@
   parm.c <- unlist(c(data.frame(BW,
                                 QC,
                                 Hct,
-                                VSkB,
                                 VSkc,
-                                VStc,
-                                SA_St,
                                 VIc,
                                 VILc,
                                 SA_SI,
@@ -393,11 +300,8 @@
                                 VRKLc,
                                 VAc,
                                 MAc,
-                                VLuc,
-                                VAPc,
-                                VVPc,
+                                VPc,
                                 QSkc, 
-                                QStc,
                                 QIc,
                                 QLc,
                                 QKc,
@@ -405,7 +309,6 @@
                                 QUrc,
                                 GFRc,
                                 QT,
-                                tge,
                                 tco,
                                 R_T,
                                 R_PTL,
@@ -413,15 +316,11 @@
                                 fup,
                                 pKa,
                                 PSkc,
-                                PStc,
                                 PIc,
                                 PLc,
                                 PKc,
                                 PAc,
                                 PRc,
-                                PLuc,
-                                Papp_SkB,
-                                SA_SkB,
                                 Papp_SI,
                                 Vmax_OATP1B1c,
                                 Km_OATP1B1c,
@@ -438,11 +337,10 @@
                                 EXP_STOP,
                                 Tinput,
                                 tinterval,
-                                CDermal,
                                 COral
   )))
   
-  write.csv(parm.c, "GSA_parms.csv")
+  write.csv(parm.c, "Parameters.csv")
   
   
   
@@ -454,10 +352,7 @@
       
       ### Physiological ----
       
-      VSkB <- VSkB                    # L, Volume of skin barrier
       VSk <- VSkc * BW                # L, Volume of skin
-      
-      VSt <- VStc * BW                # L, Volume of stomach
       
       VIL <- VILc * BW                # L, Volume of intestinal lumen
       VI <- VIc * BW                  # L, Volume of intestine
@@ -475,19 +370,15 @@
       
       VA <- VAc * BW/0.9 + MAc/0.9    # L, Volume of adipose
       
-      VLu <- VLuc * BW                # L, Volume of lungs
-      
-      VAP <- VAPc * (1-Hct) * BW      # L, Volume of arterial plasma
-      VVP <- VVPc * (1-Hct) * BW      # L, Volume of venous plasma
+      VP <- VPc * (1-Hct) * BW        # L, Volume of arterial plasma
       
       VTotc <- 0.96
       VTot <- VTotc * BW              # L, Total body volume (used for mass balance)
       
-      VR <- VTot - (VSk + VI + VL + VK + VA + VLu + VAP + VVP)             # L, Volume of the lumped rest compartment
+      VR <- VTot - (VSk + VI + VL + VK + VA + VP)             # L, Volume of the lumped rest compartment
       
       QTotc <- 0.988
       QSk <- QSkc/QTotc * QC                # L/d, Skin 
-      QSt <- QStc/QTotc * QC                # L/d, Stomach
       QI <- QIc/QTotc * QC                  # L/d, Intestinal
       QL <- QLc/QTotc * QC                  # L/d, Liver
       QK <- QKc/QTotc * QC                  # L/d, Kidney
@@ -498,7 +389,6 @@
       GFR <- GFRc * QK              # L/d 18% of total renal plasma flow [ICRP 89 page 159] http://www.icrp.org/publication.asp?id=ICRP%20Publication%2089
       QT <- QT                      # L/d, Proximal tubule fluid flow
       
-      tge <- tge                    # /d, Gastric emptying time
       tco <- tco                    # /d, Bowel residence time in the colon
       
       
@@ -506,22 +396,18 @@
       MW <- 414.07
       
       PSk <- PSkc * fup  #PSk  # Skin
-      PSt <- PStc * fup        # Stomach
       PI <- PIc * fup    #PI   # Intestinal
       PL <- PLc * fup    #PL   # Liver
       PK <- PKc * fup    #PK   # Kidney
       PA <- PAc * fup    #PF   # Adipose
       PR <- PRc * fup    #PR   # Rest
-      PLu <- PLuc * fup        # Lungs
       
       # Fraction unionised
       pH_P <- 7.4     # plasma
       pH_IL <- 7      # intestinal Intestinal lumen, average
-      pH_S <- 2       # stomach, fasted (between 1.5 and 2.5)
       
       f.union_exp <- 1/(1 + 10^(pH_P - pKa))     # Is the same as plasma as pH in the experiment is 7.4
       f.union_IL <- 1/(1 + 10^(pH_IL - pKa))      # Intestinal lumen
-      f.union_S <- 1/(1 + 10^(pH_S - pKa))      # Intestinal lumen
       
       # Fraction unbound
       fuT <- 1/(1 + ((1 - fup)/fup) * R_T)       # Tissue
@@ -531,13 +417,9 @@
       
       ### Kinetic ----
       
-      # Skin uptake
-      CL_SkBtSk <- Papp_SkB*SA_SkB*1e-3*60*60*24           # L/d, Skin barrier to skin (calculations: cm/s -> L/s * 1e-3 -> L/d *60*60*24)
-      
       # Gastro-intestinal uptake
       Pint_SI <- Papp_SI/f.union_exp                       # cm/s, Intrinsic permeability, corrected for fraction unionised in the experiment
       CL_GL <- (Pint_SI*SA_SI*f.union_IL*1e-3)*60*60*24    # L/d, Intestinal lumen to intestinal tissue (calculations: cm/s -> L/s /1000 -> L/d *60*60*24) 
-      CL_St <- (Pint_SI*SA_St*f.union_S*1e-3)*60*60*24     # L/d, Stomach uptake to the portal vein
       
       # Liver uptake
       Vmax_OATP1B1 <- Vmax_OATP1B1c*REF_OATP1B1            # ug/d
@@ -556,28 +438,20 @@
       
       ## Dose -------------------------
       
-      # if(t<EXP_STOP){DoseOn=1} else{DoseOn=0}
-      # 
-      # ## Dermal exposure ##
-      # DDermal = CDermal*BW*DoseOn     # ug, PFOA dermal dose (what is available to be absorbed from the skin barrier)
-      # DermalD <- DDermal/Tinput*(t %% tinterval<Tinput)
-      # 
-      # ## Oral exposure ##
-      # DOral = COral*BW*DoseOn         # ug, PFOA oral dose
-      # OralD = DOral #/Tinput*(t %% tinterval<Tinput)
-      # 
+      if(t<EXP_STOP){DoseOn=1} else{DoseOn=0}
+
+      ## Oral exposure ##
+      DOral = COral*BW*DoseOn         # ug, PFOA oral dose
+      OralD = DOral #/Tinput*(t %% tinterval<Tinput)
+       
       ## Concentrations -------------------------
       
-      CSkB <- ASkB/VSkB            # ug/L, Skin barrier
       CSk <- ASk/VSk               # ug/L, Skin
       CVSk <- CSk/PSk              # ug/L, Skin venous 
       
-      CSt <- ASt/VSt               # ug/L, Stomach
-      CVSt <- CSt/PSt              # ug/L, Stomach venous
-      
       CIL <- AIL/VIL               # ug/L, Intestinal lumen
-      CI <- AI/VI                  # ug/L, Intestinal 
-      CVI <- CI/PI                 # ug/L, Intestinal venous
+      CI <- AI/VI                  # ug/L, Intestine 
+      CVI <- CI/PI                 # ug/L, Intestine venous
       
       CL_ec <- AL_ec/VL_ec         # ug/L, Liver extracellular
       CL_ic <- AL_ic/VL_ic         # ug/L, Liver intracellular
@@ -595,36 +469,24 @@
       CR <- AR/VR                  # ug/L, Rest
       CVR <- CR/PR                 # ug/L, Rest venous
       
-      CLu <- ALu/VLu               # ug/L, Lungs
-      CVLu <- CLu/PLu              # ug/L, Lung venous
-      
-      CAP <- AAP/VAP               # ug/L, Arterial plasma
-      CVP <- AVP/VVP               # ug/L, Venous plasma
+      CP <- AP/VP                  # ug/L, Plasma
       
       
       ## Differential equations -------------------------
       
-      dDD = 0 #DermalD - DD                             # ug/d, Dermal dose input
-      dOD = - OD # OralD - OD                           # ug/d, Oral dose input
+      dOD = OralD - OD                     # ug/d, Oral dose input
       
+      dASk <- QSk*(CP-CVSk)                # ug/d, Skin
       
-      dASkB <- DD - CL_SkBtSk*CSkB                                # ug/d, Skin barrier
+      dAIL <- + OD - tco*AIL - CL_GL*CIL + 
+        + (VmaxBSEP/(KmBSEP + (CL_ic*fuT)))*CL_ic*fuT          # ug/d, Intestine lumen
       
-      dASk <- + CL_SkBtSk*CSkB + QSk*(CAP-CVSk)                   # ug/d, Skin
-      
-      
-      dASt <- + OD - CL_St*CVSt*QSt + QSt*CAP - tge*ASt       # ug/d, Stomach 
-      
-      
-      dAIL <- + tge*ASt - tco*AIL - CL_GL*CIL + #+ tge*ASt
-        + (VmaxBSEP/(KmBSEP + (CL_ic*fuT)))*CL_ic*fuT        # ug/d, Intestinal lumen
-      
-      dAI <- QI*(CAP - CVI) + CL_GL*CIL                      # ug/d, Intestinal
+      dAI <- QI*(CP - CVI) + CL_GL*CIL                      # ug/d, Intestinal
       
       dAFe <-  tco*AIL                                       # ug/d, Feces
       
       
-      dAL_ec <- + QI*CVI + QL*CAP - (QI+QL+QSt)*CVL_ec + CL_St*CVSt*QSt +
+      dAL_ec <- + QI*CVI + QL*CP - (QI+QL)*CVL_ec + 
         - (Vmax_OATP1B1/(Km_OATP1B1 + (CL_ec*fup)))*CL_ec*fuL_ec +
         - (Vmax_OATP1B3/(Km_OATP1B3 + (CL_ec*fup)))*CL_ec*fuL_ec            # ug/d, Liver extracellular space (vascular + interstitial space)
       
@@ -633,10 +495,10 @@
         - (VmaxBSEP/(KmBSEP + (CL_ic*fuT)))*CL_ic*fuT                       # ug/d, Liver intracellular space
       
       
-      dAPTT <- QK*(CAP - CPTT) + 
+      dAPTT <- QK*(CP - CPTT) + 
         + (Vmax_OAT4/(Km_OAT4+(CPTL*fuPTL)))*CPTL*fuPTL        # ug/d, Proximal tubule tissue 
       
-      dAPTL <- + fup*GFR*CAP - QT*CPTL +
+      dAPTL <- + fup*GFR*CP - QT*CPTL +
         - (Vmax_OAT4/(Km_OAT4+(CPTL*fuPTL)))*CPTL*fuPTL        # ug/d, Proximal tubule lumen    
       
       dARKT <- QK*(CPTT - CVRKT)                               # ug/d, Rest of kidney
@@ -646,38 +508,32 @@
       dAUr <- QUr*CRKL                                         # ug/d, Urine
       
       
-      dAA <- QA*(CAP-CVA)                                      # ug/d, Adipose
+      dAA <- QA*(CP-CVA)                                      # ug/d, Adipose
       
       
-      dAR <- QR*(CAP-CVR)                                      # ug/d, Rest
+      dAR <- QR*(CP-CVR)                                      # ug/d, Rest
       
-      dALu <- QC*(CVP - CVLu)
-      
-      dAAP <- - (QSk + QI + QL + QA + QR + QK + QSt)*CAP + QC*CVLu - fup*GFR*CAP    #+ QSt       # ug/d, Arterial Plasma
-      dAVP <- + QSk*CVSk + (QL+QI+QSt)*CVL_ec + QK*CVRKT + QA*CVA + QR*CVR - QC*CVP      # ug/d, Venous Plasma
+      dAP <- - (QSk + QI + QL + QA + QR + QK)*CP - fup*GFR*CP +     # ug/d, Arterial Plasma
+        + QSk*CVSk + (QL+QI)*CVL_ec + QK*CVRKT + QA*CVA + QR*CVR       # ug/d, Venous Plasma
       
       # Mass Balance
-      Atot <- D + APT + APTL + ARK + ARKL + AUr +
+      Atot <- OD +
         ASk +
-        AG + AGL + AFe + #AGL_up + AGL_low + AGL_col 
+        AIL + AI + AFe + 
         AL_ec + AL_ic +
         APTT + APTL + ARKT + ARKL + AUr +
         AA + 
         AR +
-        ALu +
-        AAP + AVP  
+        AP
       
-      dAin <- 0 #OralD + DermalD # to be used if repeated exposure
-      # MB <- Ain - Atot + 1    # to be used if repeated exposure
-      MB <- DOral - Atot + 1
+      dAin <- OralD # to be used if repeated exposure
+      MB <- Ain - Atot + 1    # to be used if repeated exposure
+      # MB <- DOral - Atot + 1
       
       # End
       
-      list(c(dDD,
-             dOD,
-             dASkB,
+      list(c(dOD,
              dASk, 
-             dASt,
              dAIL,
              dAI, 
              dAFe,
@@ -690,14 +546,10 @@
              dAUr,
              dAA,
              dAR, 
-             dALu,
-             dAAP, 
-             dAVP,
+             dAP, 
              dAin
       ), 
-      c(CSkB = CSkB, 
-        CSk = CSk, 
-        CSt = CSt,
+      c(CSk = CSk, 
         CIL = CIL,
         CI = CI, CVI = CVI, 
         CL_ec = CL_ec,
@@ -709,9 +561,7 @@
         CRKL = CRKL,
         CA = CA, CVA = CVA,
         CR = CR, CVR = CVR,
-        CLu = CLu, CVLu = CVLu,
-        CAP = CAP, CVP = CVP,
-        CP = CVP,
+        CP = CP,
         Atot = Atot, 
         MB = MB
       )
@@ -719,32 +569,29 @@
     })
   }
   
-  A_init <- c(DD = 0, OD = DOral, #0
-              ASkB = 0, ASk = 0,
-              ASt = 0,
+  A_init <- c(OD = 0, #DOral
+              ASk = 0,
               AIL = 0, AI = 0, AFe = 0,   
               AL_ec = 0, AL_ic = 0,
               APTT = 0, APTL = 0, ARKT = 0, ARKL = 0, AUr = 0,
               AA = 0, 
               AR = 0,
-              ALu = 0,
-              AAP = 0, AVP = 0,
+              AP = 0,
               Ain = 0)
   
   output_PFOA <- lsoda(y = A_init, 
                        times = TIME, 
                        func = PBK.model, 
-                       parms = parm.c)
-  output.PFOA.df <- as.data.frame(output_PFOA) 
-  
+                       parms = parm.c, 
+                       atol = 1e-10,
+                       rtol = 1e-10)
+  output.PFOA.df <- as.data.frame(output_PFOA) %>% 
+    rename(Days = time)
 
+  write.csv(output.PFOA.df, "output.csv", row.names = FALSE)
   
   # RESULTS ####
   # ---------------------------------------------------------------------------- #
-  
-  output.PFOA.df <- output.PFOA.df %>% 
-    # mutate(time = time/365) %>% 
-    rename(Days = time)
   
   ## Mass Balance ###
   MB.df <- output.PFOA.df %>% select(Days, Atot, MB)
@@ -774,8 +621,8 @@
     mutate(CK = CPTT + CPTL + CRKT + CRKL,
            CL = CL_ec + CL_ic
            ) %>% 
-    select(Days, CK, CSk, CL, CI, CSt, CA, CR, CP) %>% 
-    rename(Kidney = CK, Skin = CSk, Liver = CL, Intestine = CI, Stomach = CSt, Adipose = CA, Rest = CR, Plasma = CP) %>% 
+    select(Days, CK, CSk, CL, CI, CA, CR, CP) %>% 
+    rename(Kidney = CK, Skin = CSk, Liver = CL, Intestine = CI, Adipose = CA, Rest = CR, Plasma = CP) %>% 
     pivot_longer(names_to = "Organ", values_to = "Concentration", Kidney:Plasma) %>% 
     ggplot()+
     geom_path(aes(x = Days, y = Concentration, color = Organ)) +
@@ -787,85 +634,105 @@
   ggsave("OrganConcentrations.png", dpi = 300)
   
   
-  ## AUC and Half life ####
-
-  AUC <- trapz(output_PFOA[ , "time"], output_PFOA[ , "CP"])   # ug*day/L
-  
-  # Calculate predicted half-life
-  time <- output_PFOA[ , "time"]                               # days
-  conc <- output_PFOA[ , "CP"]                                 # ug/L or ng/ml
-  Cmax <- max(conc)
-  Tmax <- time[which.max(conc)]
-  tlast <- max(time[conc > 0])
-  
-  half_life <- pk.calc.half.life(
-      conc,
-      time,
-      Tmax,
-      tlast
-    )
-  
-  HalfLife <- half_life$half.life/365                          # half-life in years
-  
-  # Experimental
-  ExpData <- read_csv("C:/Users/pacho003/OneDrive - Wageningen University & Research/CP_L_R/PARC_PFOA_mechanistic/Input/HalfLifes.csv")
-  
-  Exp_HalfLifes <- ExpData %>%
-    filter(species == "human",
-           chemical == "pfoa",
-           parameter== "HalfLife") %>%
-    select(value_average) %>%
-    rename(HalfLife = value_average)
-  Exp_HalfLifes$HalfLife <- as.numeric(Exp_HalfLifes$HalfLife) # years
-  
-  Predicted.df <- data.frame(
-    HalfLife = HalfLife,
-    Origin = "Predicted",
-    value = 1)
-  Experimental.df <- data.frame(
-    HalfLife = Exp_HalfLifes$HalfLife,
-    Origin = "Experimental",
-    value = 1)
-  
-  HalfLifes <- rbind(Predicted.df, Experimental.df)
-  
-  Plot_HalfLifes <- HalfLifes %>%
-    ggplot()+
-    geom_violin(data = Experimental.df, aes(value, HalfLife),
-                color = "transparent",
-                fill = "grey")+
-    geom_point(data = Predicted.df, aes(value, HalfLife),
-               color = "slateblue3", size = 5, shape = 18) +
-    ylab("Half life (years)") +
-    theme_CP() +
-    theme(axis.text.x=element_blank(),
-        axis.ticks.x=element_blank(),
-        axis.title.x = element_blank()
-        )
-  Plot_HalfLifes
-  ggsave("ExpVsSimHalfLife.png", dpi = 300)
-  
-  
-  ## Experimental Vs Simulated ####
-  ExpPlasma <- read_excel("C:/Users/pacho003/OneDrive - Wageningen University & Research/CP_L_R/PARC_PFOA_mechanistic/Input/Experimental.Plasma.PFOA.xlsx", 
-                          col_types = c("numeric", "numeric"))
-  
-  
-  ExpPlasma <- ExpPlasma %>% 
-    rename(Days = Time_days) %>% 
-    rename(CP = MPFOA_µg_per_L) %>%    # ug/L or ng/ml
-    mutate(CP = CP - 0.130) %>%        # substracting the pre-existing level of 0.130ug/L from their previous study, as also done in the ref. article: https://doi.org/10.1016/j.envint.2024.109047 (table 3)
-    filter(Days <=TSTOP)
-  
-  
-  Plot_Plasma <- ggplot()+
-    geom_path(data = output.PFOA.df, aes(x = Days, y = CP), color = "aquamarine", linewidth = 1.5)+
-    geom_point(data = ExpPlasma, aes(x = Days, y = CP), color = "black")+
-    theme_CP()+
-    ylab("Plasma (ng/ml)")
-  Plot_Plasma
-  ggsave("PlasmaExpVsPredicted.png", dpi = 300)
-  
-  
-  print(AUC)
-  print(HalfLife)
+  # ## AUC and Half life ####
+  # 
+  # AUC <- trapz(output_PFOA[ , "time"], output_PFOA[ , "CP"])   # ug*day/L
+  # 
+  # # Calculate predicted half-life
+  # time <- output_PFOA[ , "time"]                               # days
+  # conc <- output_PFOA[ , "CP"]                                 # ug/L or ng/ml
+  # Cmax <- max(conc)
+  # Tmax <- time[which.max(conc)]
+  # tlast <- max(time[conc > 0])
+  # 
+  # half_life <- pk.calc.half.life(
+  #     conc,
+  #     time,
+  #     Tmax,
+  #     tlast
+  #   )
+  # 
+  # HalfLife <- half_life$half.life/365                          # half-life in years
+  # 
+  # # Experimental
+  # ExpData <- read_csv("C:/Users/pacho003/OneDrive - Wageningen University & Research/CP_L_R/PARC_PFOA_mechanistic/Input/HalfLifes.csv")
+  # 
+  # Experimental.df <- ExpData %>%
+  #   filter(species == "human",
+  #          chemical == "pfoa",
+  #          parameter== "HalfLife") %>%
+  #   select(c(value_average,n)) %>%
+  #   rename(HalfLife = value_average) %>% 
+  #   mutate(value = 1, 
+  #          Origin = "Experimental")
+  # Experimental.df$HalfLife <- as.numeric(Experimental.df$HalfLife) # years
+  # Experimental.df$n <- as.numeric(Experimental.df$n)
+  # 
+  # Predicted.df <- data.frame(
+  #   HalfLife = HalfLife,
+  #   Origin = "Predicted",
+  #   value = 1, n = 1)
+  # Experimental.df <- data.frame(
+  #   HalfLife = Exp_HalfLifes$HalfLife,
+  #   Origin = "Experimental",
+  #   value = 1, 
+  #   n = Exp_HalfLifes$n)
+  # 
+  # HalfLifes <- rbind(Predicted.df, Experimental.df)
+  # 
+  # Plot_HalfLifes <- ggplot() +
+  #   geom_violin(
+  #     data = Experimental.df, 
+  #     aes(value, HalfLife),
+  #     color = "transparent",
+  #     fill = "grey89"
+  #   ) +
+  #   geom_point(
+  #     data = Experimental.df,
+  #     aes(value, HalfLife, size = n),  # Ensure 'n' is numeric!
+  #     color = "grey70",
+  #     shape = 20  
+  #   ) +
+  #   geom_point(
+  #     data = Predicted.df,
+  #     aes(value, HalfLife),
+  #     color = "slateblue3",
+  #     size = 5,
+  #     shape = 18
+  #   ) +
+  #   ylab("Half life (years)") +
+  #   scale_size_continuous(range = c(1, 10)) +  # Customize size range
+  #   theme_CP() +
+  #   theme(
+  #     axis.text.x = element_blank(),
+  #     axis.ticks.x = element_blank(),
+  #     axis.title.x = element_blank()
+  #   )
+  # 
+  # Plot_HalfLifes
+  # ggsave("ExpVsSimHalfLife.png", dpi = 300)
+  # 
+  # 
+  # ## Experimental Vs Simulated ####
+  # ExpPlasma <- read_excel("C:/Users/pacho003/OneDrive - Wageningen University & Research/CP_L_R/PARC_PFOA_mechanistic/Input/Experimental.Plasma.PFOA.xlsx", 
+  #                         col_types = c("numeric", "numeric"))
+  # 
+  # 
+  # ExpPlasma <- ExpPlasma %>% 
+  #   rename(Days = Time_days) %>% 
+  #   rename(CP = MPFOA_µg_per_L) %>%    # ug/L or ng/ml
+  #   mutate(CP = CP - 0.130) %>%        # substracting the pre-existing level of 0.130ug/L from their previous study, as also done in the ref. article: https://doi.org/10.1016/j.envint.2024.109047 (table 3)
+  #   filter(Days <=TSTOP)
+  # 
+  # 
+  # Plot_Plasma <- ggplot()+
+  #   geom_path(data = output.PFOA.df, aes(x = Days, y = CP), color = "aquamarine", linewidth = 1.5)+
+  #   geom_point(data = ExpPlasma, aes(x = Days, y = CP), color = "black")+
+  #   theme_CP()+
+  #   ylab("Plasma (ng/ml)")
+  # Plot_Plasma
+  # ggsave("PlasmaExpVsPredicted.png", dpi = 300)
+  # 
+  # 
+  # print(AUC)
+  # print(HalfLife)
