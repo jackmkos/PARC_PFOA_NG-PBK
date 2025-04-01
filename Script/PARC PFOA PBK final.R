@@ -66,18 +66,18 @@
   # EXPOSURE SCENARIO ####
   # ------------------------------------------------------ #
   
-  EXP_STOP <- 10*365      # days, duration of the exposure; 1, Abraham et al. 2024 https://doi.org/10.1016/j.envint.2024.109047
-  SIM_STOP <- 80*365 #450  # days, duration of the simulation; 450 days follow-up period from Abraham et al. 2024 https://doi.org/10.1016/j.envint.2024.109047  
+  EXP_STOP <- 50*365      # days, duration of the exposure; 1, Abraham et al. 2024 https://doi.org/10.1016/j.envint.2024.109047
+  SIM_STOP <- 465 #80*365  # days, duration of the simulation; 450 days follow-up period from Abraham et al. 2024 https://doi.org/10.1016/j.envint.2024.109047  
   
   TSTART <- 0
   TSTOP <- SIM_STOP                # days
-  DT <- 1/10 #1/10                    # days
+  DT <- 1 #1/10                 # days
   TIME <- seq(TSTART,TSTOP,by=DT)
   
   
   ## Oral exposure ##
-  COral = 0.000187 #0.048       # ug/kg/day, calculated back from Abraham et al. 2024 https://doi.org/10.1016/j.envint.2024.109047 (3.96/BW of 82Kg); 0.000187 # ug/kg/day [EFSA 2020, page 143] 3.96ug
-  DOral = COral #*DoseOn         # ug, PFOA oral dose 
+  COral = 0.048   # 0.000187 #    # ug/kg/day, calculated back from Abraham et al. 2024 https://doi.org/10.1016/j.envint.2024.109047 (3.96/BW of 82Kg); 0.000187 # ug/kg/day [EFSA 2020, page 143] 3.96ug
+  DOral = COral*82 #*DoseOn         # ug, PFOA oral dose 
   
   
   Tinput = 1          # day, duration of dose day
@@ -175,7 +175,7 @@
   ### Physiological pHs in different matrices -------------------------
   
   pH_P <- 7.4     # plasma
-  pH_IL <- 7       # intestinal lumen, average
+  pH_IL <- 7      # intestinal lumen, average
 
   ### Albumin concentrations in different matrices -------------------------
   
@@ -183,14 +183,11 @@
   # In the same paper: the proximal tubule reabsorbes 71% of albumin, while LoH and DT 23% and the collecting duct 3%
   Calb_P <- 37.0      # mg/ml plasma
   Calb_PTL <- 14.4e-3 # mg/ml proximal tubule 
-  Calb_RKL <- 2.88e-3 # mg/ml rest of kidney tubule, as the PT is filtering 71%, then the concentration of albumin leaving the PT is 6.641ul/ml, in the urine it's 0.7ul/ml, therefore I'm doing the average here
-  Calb_exp <- 1e-10   # albumin, or protein concentration not reported in the experiments, therefore assuming a very low number
-  
+
   # Based on the Poulin and Theil 2009, below Table 6
   # Albumin ratio
-  R_T <- 0.5 # albumin and lipoprotein ratio between the tissue interstitial fluid and plasma
-  R_PTL <- Calb_PTL/Calb_P 
-  R_L_ec <- 0.086 # albumin ratio liver, Utsey et al. 2020 https://doi.org/10.1124/dmd.120.090498, https://github.com/metrumresearchgroup/PBPK_PC/blob/master/data/unified_tissue_comp.csv
+  R_PTL <- Calb_P/Calb_PTL # plasma to proximal tubule lumen albumin ratio
+  R_L_ec <- 1/0.086 # plasma to liver albumin ratio, Utsey et al. 2020 https://doi.org/10.1124/dmd.120.090498, https://github.com/metrumresearchgroup/PBPK_PC/blob/master/data/unified_tissue_comp.csv
   
   
   ## Chemical Specific ####
@@ -237,48 +234,48 @@
   ### Uptake from the gastro-intestinal duct -------------------------
   
   # Input data, in vitro clearance
-  Papp_SI = 7.31*1e-6                         # cm/s, 7.31 ± 0.43, Janssen et al. 2024
+  Papp_SI = 7.31 * 1e-6                         # cm/s, 7.31 ± 0.43, Janssen et al. 2024
   
   
   ### Uptake to the liver -------------------------
   
   # Input data, in vitro clearance
-  Vmax_OATP1B1c = 2.305 * 1e-6                # umol/min/mg protein, 2.305± 0.295 pmol/min/mg protein [@lin2023]
-  Km_OATP1B1c = 52.65                         # ug/L, 52.65 ± 23.28 uM [@lin2023]
+  Vmax_OATP1B1c = 2.305 * 1e-6                # umol/min/mg protein, 2.305± 0.295 pmol/min/mg protein [@lin2023] (pmol -> umol)
+  Km_OATP1B1c = 52.65                         # umol/L, 52.65 ± 23.28 uM [@lin2023]
   
-  Vmax_OATP1B3c = 2.694 * 1e-6                # umol/min/mg protein, 2.694± 0.470 pmol/min/mg protein [@lin2023]
-  Km_OATP1B3c = 91.6                          # ug/L, 91.61 ± 47.70 uM [@lin2023]
+  Vmax_OATP1B3c = 2.694 * 1e-6                # umol/min/mg protein, 2.694± 0.470 pmol/min/mg protein [@lin2023] (pmol -> umol)
+  Km_OATP1B3c = 91.6                          # umol/L, 91.61 ± 47.70 uM [@lin2023]
   
-  # Relative expression factors
-  OATP1B1_vitro = 0.120                       # [@lin2023, tables6, ref23]
-  OATP1B1_vivo = 2.000                        # pmol/mg membrane protein [@lin2023, tables7, ref23]
-  REF_OATP1B1 = OATP1B1_vivo/OATP1B1_vitro
-  SF_OATP1B1 = REF_OATP1B1
-  
-  OATP1B3_vitro = 0.719                       # [@lin2023, tables6, ref23]
-  OATP1B3_vivo = 1.000                        # pmol/mg membrane protein [@lin2023, tables7, ref23]
-  REF_OATP1B3 = OATP1B3_vivo/OATP1B3_vitro
-  SF_OATP1B3 = REF_OATP1B3
+  # IVIVE scaling factors
+  REF_OATP1B1 = 16.67                               # relative expression factor OATP1B1, calculated from: OATP1B1_vivo/OATP1B1_vitro = 2/0.120  (pmol/mg membrane protein/pmol/mg membrane protein) [@lin2023, tables7, ref23]
+  REF_OATP1B3 = 1.39                                # relative expression factor OATP1B3, calculated from: OATP1B3_vivo/OATP1B3_vitro = 1/0.719  (pmol/mg membrane protein/pmol/mg membrane protein) [@lin2023, tables7, ref23]
+  mgOATP.mgL = 0.18                                 # mg of protein per gram liver [ICRP 89, Ruark et al 2020]
+  SF_OATP1B1 = mgOATP.mgL * REF_OATP1B1 * 1e6       # (mg liver * 1e6 -> kg liver)
+  SF_OATP1B3 = mgOATP.mgL * REF_OATP1B3 * 1e6       # (mg liver * 1e6 -> kg liver)
   
   
   ### Biliary clearance -------------------------
-  
   # Input data, in vitro clearance
-  VmaxBSEPc <- 7.1                            # umol/min/mg BSEP, Average active transport of bile acids, assuming that the maximum velocity of PFOA transport by BSEP corresponds to that of bile acids 
-  KmBSEPc <- 16.4                             # ug/L, uM, Average affinity constant of bile acids to BSEP, following the above assumption
+  VmaxBSEPc <- 7.1                            # umol/min/mg BSEP, Average active transport of bile acids, assuming that the maximum velocity of PFOA transport by BSEP corresponds to that of bile acids [de Bruijn et al. 2024 https://doi.org/10.14573/altex.2302011] 
+  KmBSEPc <- 16.4                             # ug/L, uM, Average affinity constant of bile acids to BSEP, following the above assumption [de Bruijn et al. 2024 https://doi.org/10.14573/altex.2302011]
   
-  # Scaling factor
-  SF_BSEP <- 0.839*140000 * 99 * 1e-9 * 1e3   # Scaling factor for BSEP mediated hepatic efflux for GCA and GCDC De Bruijn et al. 2024 (calculation: SF_BSEP = aBSEP_all*MWBSEP_all * Hep_all * 1e-9 * 1e3 * VL )
+  # IVIVE 
+  mgBSEP.HC <-  0.839 * 140000 * 1e-9         # mg BSEP/1e6 hepatocytes (0.839 pmole BSEP/1e6 hepatocytes (amound of BSEP per hepatocyte) * 140000 g/mole (MW BSEP) -> pg * 1e-9 -> mg) [de Bruijn et al. 2024 https://doi.org/10.14573/altex.2302011]
+  HC.GL <- 99                                 # 1e6 hepatocytes in the liver [de Bruijn et al. 2024 https://doi.org/10.14573/altex.2302011]
+  SF_BSEP <- mgBSEP.HC * HC.GL * 1e3          # Scaling factor for BSEP mediated hepatic efflux for GCA and GCDC [de Bruijn et al. 2024 https://doi.org/10.14573/altex.2302011]
   
   
   ### Renal Clearance -------------------------
   
   ## Active transport
   
-  Vmax_OAT4c = 4.5                 # nmol/min/mg protein, Louisse et al. 2024 doi.org/10.1016/j.tox.2024.153961
+  Vmax_OAT4c = 4.5 *1e-3           # umol/min/mg protein, Louisse et al. 2024 doi.org/10.1016/j.tox.2024.153961 (nmol -> umol)
   Km_OAT4c = 47                    # ug/L, scaled from uM, Louisse et al. 2024 doi.org/10.1016/j.tox.2024.153961
-  REF_OAT <- 0.56                  # average of REF_OAT values of OAT1 and OAT3, check excel file for detailed information
-  SF_OAT <- 0.17 * REF_OAT * 1e6   # 0.17 is the mg of protein per gram kidney, ICRP 89, Ruark et al 2020
+  
+  # IVIVE 
+  REF_OAT <- 0.56                       # relative expression factor OAT, average of REF_OAT values of OAT1 and OAT3, check excel file for detailed information
+  mgOAT.mgK <- 0.17                     # mg of protein per gram kidney [ICRP 89, Ruark et al 2020]
+  SF_OAT <- mgOAT.mgK * REF_OAT * 1e6   # (mg kidney * 1e6 -> kg kidney)
   
   
   ### Final parameter constants -------------------------
@@ -310,7 +307,6 @@
                                 GFRc,
                                 QT,
                                 tco,
-                                R_T,
                                 R_PTL,
                                 R_L_ec,
                                 fup,
@@ -326,8 +322,8 @@
                                 Km_OATP1B1c,
                                 Vmax_OATP1B3c,
                                 Km_OATP1B3c,
-                                REF_OATP1B1,
-                                REF_OATP1B3,
+                                SF_OATP1B1,
+                                SF_OATP1B3,
                                 VmaxBSEPc,
                                 KmBSEPc,
                                 SF_BSEP,
@@ -406,14 +402,16 @@
       pH_P <- 7.4     # plasma
       pH_IL <- 7      # intestinal Intestinal lumen, average
       
+      f.union_p <- 1/(1 + 10^(pH_P - pKa))       # Plasma
       f.union_exp <- 1/(1 + 10^(pH_P - pKa))     # Is the same as plasma as pH in the experiment is 7.4
-      f.union_IL <- 1/(1 + 10^(pH_IL - pKa))      # Intestinal lumen
+      f.union_IL <- 1/(1 + 10^(pH_IL - pKa))     # Intestinal lumen
       
-      # Fraction unbound
-      fuT <- 1/(1 + ((1 - fup)/fup) * R_T)       # Tissue
-      fuPTL <- 1/(1 + ((1 - fup)/fup) * R_PTL)   # Proximal tubule lumen
-      fuL_ec <- 1/(1 + ((1 - fup)/fup) * R_L_ec) # Liver extracellular space
-      # Note Chrysa: need to check if I find the amount of albumin in liver interstitial space, as here the fuL_ec is 10 times higher than the fup, but extracellular space is actually mainly the albumin from the vascular space. 
+      # Fraction unbound, calculated based on Poulin and Haddad, 2018 https://doi.org/10.1016/j.xphs.2018.03.012
+      # Equation was adapted to not account for fraction unionised
+      # OAT and OATP transporters transport the ionised compound, given that the ratio of fraction ionised at plasma to cellular pH is 1, this can be ignored (fraction unionised of PFOA is 0.9999923 at pH 7.4 and 0.9999963 at pH 7)
+      fu_PTL <- R_PTL*fup/(1 + ((R_PTL-1)*fup)) # Proximal tubule lumen
+      fu_Lec <- R_L_ec*fup/(1 + ((R_L_ec-1)*fup)) # Liver extracellular space
+      
       
       ### Kinetic ----
       
@@ -422,27 +420,27 @@
       CL_GL <- (Pint_SI*SA_SI*f.union_IL*1e-3)*60*60*24    # L/d, Intestinal lumen to intestinal tissue (calculations: cm/s -> L/s /1000 -> L/d *60*60*24) 
       
       # Liver uptake
-      Vmax_OATP1B1 <- Vmax_OATP1B1c*REF_OATP1B1            # ug/d
-      Km_OATP1B1 <- Km_OATP1B1c*MW                         # ug/L, 52.65 ± 23.28 uM [@lin2023]
-      Vmax_OATP1B3 <- Vmax_OATP1B3c*REF_OATP1B3            # ug/d
-      Km_OATP1B3 <- Km_OATP1B3c*MW                         # ug/L, 91.61 ± 47.70 uM [@lin2023]
+      Vmax_OATP1B1 <- Vmax_OATP1B1c*MW*60*24*SF_OATP1B1*VL_ec             # ug/d
+      Km_OATP1B1 <- Km_OATP1B1c*MW                                        # ug/L (uM -> ug/L)
+      Vmax_OATP1B3 <- Vmax_OATP1B3c*MW*60*24*SF_OATP1B3*VL_ec             # ug/d
+      Km_OATP1B3 <- Km_OATP1B3c*MW                                        # ug/L (uM -> ug/L)
       
       # Biliary excretion
-      VmaxBSEP <- VmaxBSEPc*SF_BSEP*60*24*MW               # ug/d
-      KmBSEP <- KmBSEPc*MW                                 # ug/L, uM, Average affinity constant of bile acids to BSEP, following the above assumption
+      VmaxBSEP <- VmaxBSEPc*MW*60*24*SF_BSEP*VL_ic         # ug/d
+      KmBSEP <- KmBSEPc*MW                                 # ug/L (uM -> ug/L)
       
       # Renal clearance
-      Vmax_OAT4 = Vmax_OAT4c*MW*1e-3*60*24*SF_OAT*VPTT     # ug/d (nmol -> ug, min -> d)
-      Km_OAT4 = Km_OAT4c*MW                                # ug/L, scaled from uM, Louisse et al. 2024 doi.org/10.1016/j.tox.2024.153961
+      Vmax_OAT4 = Vmax_OAT4c*MW*60*24*SF_OAT*VPT           # ug/d (umol -> ug, min -> d)
+      Km_OAT4 = Km_OAT4c*MW                                # ug/L (uM -> ug/L)
       
       
       ## Dose -------------------------
       
-      if(t<EXP_STOP){DoseOn=1} else{DoseOn=0}
-
-      ## Oral exposure ##
-      DOral = COral*BW*DoseOn         # ug, PFOA oral dose
-      OralD = DOral #/Tinput*(t %% tinterval<Tinput)
+      # if(t<EXP_STOP){DoseOn=1} else{DoseOn=0}
+      # 
+      # ## Oral exposure ##
+      # DOral = COral*BW*DoseOn         # ug, PFOA oral dose
+      # OralD = DOral #/Tinput*(t %% tinterval<Tinput)
        
       ## Concentrations -------------------------
       
@@ -474,12 +472,12 @@
       
       ## Differential equations -------------------------
       
-      dOD = OralD - OD                     # ug/d, Oral dose input
+      dOD = -OD                    # ug/d, Oral dose input #OralD - OD  #-OD
       
       dASk <- QSk*(CP-CVSk)                # ug/d, Skin
       
       dAIL <- + OD - tco*AIL - CL_GL*CIL + 
-        + (VmaxBSEP/(KmBSEP + (CL_ic*fuT)))*CL_ic*fuT          # ug/d, Intestine lumen
+        + (VmaxBSEP/(KmBSEP + (CL_ic*fu_Lec)))*CL_ic*fu_Lec          # ug/d, Intestine lumen
       
       dAI <- QI*(CP - CVI) + CL_GL*CIL                      # ug/d, Intestinal
       
@@ -487,19 +485,19 @@
       
       
       dAL_ec <- + QI*CVI + QL*CP - (QI+QL)*CVL_ec + 
-        - (Vmax_OATP1B1/(Km_OATP1B1 + (CL_ec*fup)))*CL_ec*fuL_ec +
-        - (Vmax_OATP1B3/(Km_OATP1B3 + (CL_ec*fup)))*CL_ec*fuL_ec            # ug/d, Liver extracellular space (vascular + interstitial space)
+        - (Vmax_OATP1B1/(Km_OATP1B1 + (CL_ec*fup)))*CL_ec*fup +
+        - (Vmax_OATP1B3/(Km_OATP1B3 + (CL_ec*fup)))*CL_ec*fup            # ug/d, Liver extracellular space (vascular + interstitial space)
       
-      dAL_ic <- (Vmax_OATP1B1/(Km_OATP1B1 + (CL_ec*fup)))*CL_ec*fuL_ec +
-        + (Vmax_OATP1B3/(Km_OATP1B3 + (CL_ec*fup)))*CL_ec*fuL_ec +
-        - (VmaxBSEP/(KmBSEP + (CL_ic*fuT)))*CL_ic*fuT                       # ug/d, Liver intracellular space
+      dAL_ic <- (Vmax_OATP1B1/(Km_OATP1B1 + (CL_ec*fup)))*CL_ec*fup +
+        + (Vmax_OATP1B3/(Km_OATP1B3 + (CL_ec*fup)))*CL_ec*fup +
+        - (VmaxBSEP/(KmBSEP + (CL_ic*fu_Lec)))*CL_ic*fu_Lec             # ug/d, Liver intracellular space
       
       
       dAPTT <- QK*(CP - CPTT) + 
-        + (Vmax_OAT4/(Km_OAT4+(CPTL*fuPTL)))*CPTL*fuPTL        # ug/d, Proximal tubule tissue 
+        + (Vmax_OAT4/(Km_OAT4+(CPTL*fu_PTL)))*CPTL*fu_PTL      # ug/d, Proximal tubule tissue 
       
       dAPTL <- + fup*GFR*CP - QT*CPTL +
-        - (Vmax_OAT4/(Km_OAT4+(CPTL*fuPTL)))*CPTL*fuPTL        # ug/d, Proximal tubule lumen    
+        - (Vmax_OAT4/(Km_OAT4+(CPTL*fu_PTL)))*CPTL*fu_PTL      # ug/d, Proximal tubule lumen    
       
       dARKT <- QK*(CPTT - CVRKT)                               # ug/d, Rest of kidney
       
@@ -514,7 +512,7 @@
       dAR <- QR*(CP-CVR)                                      # ug/d, Rest
       
       dAP <- - (QSk + QI + QL + QA + QR + QK)*CP - fup*GFR*CP +     # ug/d, Arterial Plasma
-        + QSk*CVSk + (QL+QI)*CVL_ec + QK*CVRKT + QA*CVA + QR*CVR       # ug/d, Venous Plasma
+        + QSk*CVSk + (QL+QI)*CVL_ec + QK*CVRKT + QA*CVA + QR*CVR    # ug/d, Venous Plasma
       
       # Mass Balance
       Atot <- OD +
@@ -526,9 +524,9 @@
         AR +
         AP
       
-      dAin <- OralD # to be used if repeated exposure
-      MB <- Ain - Atot + 1    # to be used if repeated exposure
-      # MB <- DOral - Atot + 1
+      dAin <- 0 # OralD # to be used if repeated exposure
+      # MB <- Ain - Atot + 1    # to be used if repeated exposure
+      MB <- DOral - Atot + 1
       
       # End
       
@@ -569,7 +567,7 @@
     })
   }
   
-  A_init <- c(OD = 0, #DOral
+  A_init <- c(OD = DOral, #0, #
               ASk = 0,
               AIL = 0, AI = 0, AFe = 0,   
               AL_ec = 0, AL_ic = 0,
@@ -594,8 +592,9 @@
   # ---------------------------------------------------------------------------- #
   
   ## Mass Balance ###
-  MB.df <- output.PFOA.df %>% select(Days, Atot, MB)
+  MB.df <- output.PFOA.df %>% select(Days, Atot, Ain, MB)
   MB.df$MB <- round(MB.df$MB, 3)
+  # MB.df$ERROR <- (MB.df$Ain - MB.df$Atot) / MB.df$Atot * 100
   MB.df$ERROR <- (DOral - MB.df$Atot) / MB.df$Atot * 100
   MB.df$ERROR <- round(MB.df$ERROR, 3)
   MB_plot <- ggplot(data = MB.df)+
@@ -634,105 +633,105 @@
   ggsave("OrganConcentrations.png", dpi = 300)
   
   
-  # ## AUC and Half life ####
-  # 
-  # AUC <- trapz(output_PFOA[ , "time"], output_PFOA[ , "CP"])   # ug*day/L
-  # 
-  # # Calculate predicted half-life
-  # time <- output_PFOA[ , "time"]                               # days
-  # conc <- output_PFOA[ , "CP"]                                 # ug/L or ng/ml
-  # Cmax <- max(conc)
-  # Tmax <- time[which.max(conc)]
-  # tlast <- max(time[conc > 0])
-  # 
-  # half_life <- pk.calc.half.life(
-  #     conc,
-  #     time,
-  #     Tmax,
-  #     tlast
-  #   )
-  # 
-  # HalfLife <- half_life$half.life/365                          # half-life in years
-  # 
-  # # Experimental
-  # ExpData <- read_csv("C:/Users/pacho003/OneDrive - Wageningen University & Research/CP_L_R/PARC_PFOA_mechanistic/Input/HalfLifes.csv")
-  # 
-  # Experimental.df <- ExpData %>%
-  #   filter(species == "human",
-  #          chemical == "pfoa",
-  #          parameter== "HalfLife") %>%
-  #   select(c(value_average,n)) %>%
-  #   rename(HalfLife = value_average) %>% 
-  #   mutate(value = 1, 
-  #          Origin = "Experimental")
-  # Experimental.df$HalfLife <- as.numeric(Experimental.df$HalfLife) # years
-  # Experimental.df$n <- as.numeric(Experimental.df$n)
-  # 
-  # Predicted.df <- data.frame(
-  #   HalfLife = HalfLife,
-  #   Origin = "Predicted",
-  #   value = 1, n = 1)
-  # Experimental.df <- data.frame(
-  #   HalfLife = Exp_HalfLifes$HalfLife,
-  #   Origin = "Experimental",
-  #   value = 1, 
-  #   n = Exp_HalfLifes$n)
-  # 
-  # HalfLifes <- rbind(Predicted.df, Experimental.df)
-  # 
-  # Plot_HalfLifes <- ggplot() +
-  #   geom_violin(
-  #     data = Experimental.df, 
-  #     aes(value, HalfLife),
-  #     color = "transparent",
-  #     fill = "grey89"
-  #   ) +
-  #   geom_point(
-  #     data = Experimental.df,
-  #     aes(value, HalfLife, size = n),  # Ensure 'n' is numeric!
-  #     color = "grey70",
-  #     shape = 20  
-  #   ) +
-  #   geom_point(
-  #     data = Predicted.df,
-  #     aes(value, HalfLife),
-  #     color = "slateblue3",
-  #     size = 5,
-  #     shape = 18
-  #   ) +
-  #   ylab("Half life (years)") +
-  #   scale_size_continuous(range = c(1, 10)) +  # Customize size range
-  #   theme_CP() +
-  #   theme(
-  #     axis.text.x = element_blank(),
-  #     axis.ticks.x = element_blank(),
-  #     axis.title.x = element_blank()
-  #   )
-  # 
-  # Plot_HalfLifes
-  # ggsave("ExpVsSimHalfLife.png", dpi = 300)
-  # 
-  # 
-  # ## Experimental Vs Simulated ####
-  # ExpPlasma <- read_excel("C:/Users/pacho003/OneDrive - Wageningen University & Research/CP_L_R/PARC_PFOA_mechanistic/Input/Experimental.Plasma.PFOA.xlsx", 
-  #                         col_types = c("numeric", "numeric"))
-  # 
-  # 
-  # ExpPlasma <- ExpPlasma %>% 
-  #   rename(Days = Time_days) %>% 
-  #   rename(CP = MPFOA_µg_per_L) %>%    # ug/L or ng/ml
-  #   mutate(CP = CP - 0.130) %>%        # substracting the pre-existing level of 0.130ug/L from their previous study, as also done in the ref. article: https://doi.org/10.1016/j.envint.2024.109047 (table 3)
-  #   filter(Days <=TSTOP)
-  # 
-  # 
-  # Plot_Plasma <- ggplot()+
-  #   geom_path(data = output.PFOA.df, aes(x = Days, y = CP), color = "aquamarine", linewidth = 1.5)+
-  #   geom_point(data = ExpPlasma, aes(x = Days, y = CP), color = "black")+
-  #   theme_CP()+
-  #   ylab("Plasma (ng/ml)")
-  # Plot_Plasma
-  # ggsave("PlasmaExpVsPredicted.png", dpi = 300)
-  # 
-  # 
-  # print(AUC)
-  # print(HalfLife)
+  ## AUC and Half life ####
+
+  AUC <- trapz(output_PFOA[ , "time"], output_PFOA[ , "CP"])   # ug*day/L
+
+  # Calculate predicted half-life
+  time <- output_PFOA[ , "time"]                               # days
+  conc <- output_PFOA[ , "CP"]                                 # ug/L or ng/ml
+  Cmax <- max(conc)
+  Tmax <- time[which.max(conc)]
+  tlast <- max(time[conc > 0])
+
+  half_life <- pk.calc.half.life(
+      conc,
+      time,
+      Tmax,
+      tlast
+    )
+
+  HalfLife <- half_life$half.life/365                          # half-life in years
+
+  # Experimental
+  ExpData <- read_csv("C:/Users/pacho003/OneDrive - Wageningen University & Research/CP_L_R/PARC_PFOA_mechanistic/Input/HalfLifes.csv")
+
+  Experimental.df <- ExpData %>%
+    filter(species == "human",
+           chemical == "pfoa",
+           parameter== "HalfLife") %>%
+    select(c(value_average,n)) %>%
+    rename(HalfLife = value_average) %>%
+    mutate(value = 1,
+           Origin = "Experimental")
+  Experimental.df$HalfLife <- as.numeric(Experimental.df$HalfLife) # years
+  Experimental.df$n <- as.numeric(Experimental.df$n)
+
+  Predicted.df <- data.frame(
+    HalfLife = HalfLife,
+    Origin = "Predicted",
+    value = 1, n = 1)
+  Experimental.df <- data.frame(
+    HalfLife = Experimental.df$HalfLife,
+    Origin = "Experimental",
+    value = 1,
+    n = Experimental.df$n)
+
+  HalfLifes <- rbind(Predicted.df, Experimental.df)
+
+  Plot_HalfLifes <- ggplot() +
+    geom_violin(
+      data = Experimental.df,
+      aes(value, HalfLife),
+      color = "transparent",
+      fill = "grey89"
+    ) +
+    geom_point(
+      data = Experimental.df,
+      aes(value, HalfLife, size = n),  # Ensure 'n' is numeric!
+      color = "grey70",
+      shape = 20
+    ) +
+    geom_point(
+      data = Predicted.df,
+      aes(value, HalfLife),
+      color = "slateblue3",
+      size = 5,
+      shape = 18
+    ) +
+    ylab("Half life (years)") +
+    scale_size_continuous(range = c(1, 10)) +  # Customize size range
+    theme_CP() +
+    theme(
+      axis.text.x = element_blank(),
+      axis.ticks.x = element_blank(),
+      axis.title.x = element_blank()
+    )
+
+  Plot_HalfLifes
+  ggsave("ExpVsSimHalfLife.png", dpi = 300)
+
+
+  ## Experimental Vs Simulated ####
+  ExpPlasma <- read_excel("C:/Users/pacho003/OneDrive - Wageningen University & Research/CP_L_R/PARC_PFOA_mechanistic/Input/Experimental.Plasma.PFOA.xlsx",
+                          col_types = c("numeric", "numeric"))
+
+
+  ExpPlasma <- ExpPlasma %>%
+    rename(Days = Time_days) %>%
+    rename(CP = MPFOA_µg_per_L) %>%    # ug/L or ng/ml
+    mutate(CP = CP - 0.130) %>%        # substracting the pre-existing level of 0.130ug/L from their previous study, as also done in the ref. article: https://doi.org/10.1016/j.envint.2024.109047 (table 3)
+    filter(Days <=TSTOP)
+
+
+  Plot_Plasma <- ggplot()+
+    geom_path(data = output.PFOA.df, aes(x = Days, y = CP), color = "aquamarine", linewidth = 1.5)+
+    geom_point(data = ExpPlasma, aes(x = Days, y = CP), color = "black")+
+    theme_CP()+
+    ylab("Plasma (ng/ml)")
+  Plot_Plasma
+  ggsave("PlasmaExpVsPredicted.png", dpi = 300)
+
+
+  print(AUC)
+  print(HalfLife)
