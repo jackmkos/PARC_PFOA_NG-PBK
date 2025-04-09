@@ -38,7 +38,7 @@ author:
           postal-code: 6708 WE
     note: Yet another author footnote.
 abstract: |
-  Per- and polyfluoroalkyl substances (PFAS) represent a substantial chemical class, comprising thousands of structurally diverse chemicals, which only have in common one fully fluorinated methyl or methylene carbon atom. PFAS are ubiquitous environmental pollutants of anthropogenic nature and therefore of potential risk to human health. Human toxicological risk assessment of PFAS is challenging, due to their sheer number, structural diversity and paucity of the relevant data required to identify and characterize them. A solution to this challenge lies in the application of read-across approach, which involves the extrapolation of information from a data-rich PFAS to make predictions about a similar data-poor one. One example of this approach could be the application of a Physiologically Based Kinetic (PBK) model from PFOA, to inform the development of PBK models for PFASs with analogous physicochemical properties. Despite the availability of several PBK models for PFOA, all of them rely on PFOA-specific animal-sourced data and are optimised to correctly predict the long half-lives observed in humans. This hinders their use in the read-across scope, where PBK models should be as mechanistic as possible, with key toxicokinetic processes are described based on either in vitro or in silico studies. The present study introduces a human mechanistic PBK model for PFOA, that uses only in vitro derived input parameters. The uptake and elimination of PFOA are predicted using in vitro to in vivo extrapolation principles, while its tissue distribution is predicted using experimentally derived distribution coefficients to tissue components, such as albumin and phospholipids. The model introduces a minimal mechanistic kidney compartment to predict the active re-uptake of PFOA in the proximal tubules and a mechanistic transporter-mediated entero-hepatic circulation. Furthermore, given the high affinity of PFOA to albumin, the unbound fraction determined in plasma, is adjusted to the differential albumin concentration between the plasma and tissue or tubular fluid compartments, to better describe an albumin facilitated transport of PFOA. The predicted Area Under the Curve (AUC) and half-life were compared to the concentration over time curve from a human volunteer study as well as to observed plasma concentrations and half-lives from the latest human biomonitoring data. Finally, the Global Sensitivity Analysis (GSA) workflow recommended by the OECD PBK guideline was applied to both evaluate the validity of the model and inform about the key parameters determining the PBK model predictions. The newly developed PFOA PBK model can be extrapolated to other PFASs for which these key parameters are already available. The subsequent derivation of these parameters for other PFASs will facilitate the extrapolation of the present PBK models to them as well and enable their human toxicological risk assessment.
+  Per- and polyfluoroalkyl substances (PFAS) represent a substantial chemical class, comprising thousands of structurally diverse chemicals, which only have in common one fully fluorinated methyl or methylene carbon atom. PFAS are ubiquitous environmental pollutants of anthropogenic nature and therefore of potential risk to human health. Human toxicological risk assessment of PFAS is challenging, due to their sheer number, structural diversity and paucity of the relevant data required to identify and characterize them. A solution to this challenge lies in the application of read-across approach, which involves the extrapolation of information from a data-rich PFAS to make predictions about a similar data-poor one. One example of this approach could be the application of a Physiologically Based Kinetic (PBK) model from PFOA, to inform the development of PBK models for PFASs with analogous physicochemical properties. Despite the availability of several PBK models for PFOA, all of them rely on PFOA-specific animal-sourced data and are optimised to correctly predict the long half-lives observed in humans. This hinders their use in the read-across scope, where PBK models should be as mechanistic as possible, with key toxicokinetic processes are described based on either in vitro or in silico studies. The present study introduces a human mechanistic PBK model for PFOA, that uses only in vitro derived input parameters. The uptake and elimination of PFOA are predicted using in vitro to in vivo extrapolation principles, while its tissue distribution is predicted using experimentally derived distribution coefficients to tissue components, such as albumin and phospholipids. The model introduces a minimal mechanistic kidney compartment to predict the active re-absorption of PFOA in the proximal tubules and a mechanistic transporter-mediated entero-hepatic circulation. Furthermore, given the high affinity of PFOA to albumin, the unbound fraction determined in plasma, is adjusted to the differential albumin concentration between the plasma and tissue or tubular fluid compartments, to better describe an albumin facilitated transport of PFOA. The predicted Area Under the Curve (AUC) and half-life were compared to the concentration over time curve from a human volunteer study as well as to observed plasma concentrations and half-lives from the latest human biomonitoring data. Finally, the Global Sensitivity Analysis (GSA) workflow recommended by the OECD PBK guideline was applied to both evaluate the validity of the model and inform about the key parameters determining the PBK model predictions. The newly developed PFOA PBK model can be extrapolated to other PFASs for which these key parameters are already available. The subsequent derivation of these parameters for other PFASs will facilitate the extrapolation of the present PBK models to them as well and enable their human toxicological risk assessment.
 keywords: 
   - PFOA
   - Physiologically Based Kinetic modelling
@@ -67,19 +67,19 @@ Too many PFAS PFOA toxicokinetic understanding long half-life, persistence stron
 
 ## PBK Model Development
 
-The PFOA human PBK model was developed with the aim of being as minimal and mechanistic as possible for read-across in a NGRA framework. For this, the critical toxicokinetic processes relevant for PFAS were included, those being renal elimination and re-uptake, enterohepatic circulation and oral, dermal or inhalation exposure. The model was evaluated against observed *in vivo* concentration-time profiles in plasma as well as observed half-life in humans, from human biomonitoring data.[^1]
+The PFOA human PBK model was developed with the aim of being as minimal and mechanistic as possible for read-across in a NGRA framework. For this, the critical toxicokinetic processes relevant for PFAS were included, those being renal elimination and re-absorption, enterohepatic circulation and oral, dermal or inhalation exposure. The model was evaluated against observed *in vivo* concentration-time profiles in plasma as well as observed half-life in humans, from human biomonitoring data.[^1]
 
 [^1]: Could consider also evaluation against urine and fecal concentrations from Abraham study, but in this study they mentioned that urinary PFOA concentrations were contaminated while fecal concentrations (ng/g feces) don't represent fecal daily excretion and can't be used for data evaluation
 
 ### Model structure
 
-The PBK model was build on the model by [@husøy2023]. The model was updated to include physiological processes related to renal elimination and re-uptake and enterohepatic circulation. The model was structured in a way to enable addition or removal of compartments relevant for different exposure routes.
+The PBK model was build on the model by [@husøy2023]. The model was updated to include physiological processes related to renal elimination and re-absorption, as well as enterohepatic circulation. The model structure included the intestinal, kidney and liver compartments which are responsible for the abovementioned toxicokinetic processes and the option to include skin and lungs in case relevant exposure routes are used.
 
 #### Absorption
 
 ##### Oral absorption
 
-Oral absorption via food or drinks is the main route of exposure to PFOA. PFOA is quickly and efficiently absorbed from the gastro-intestinal tract to portal circulation [@abraham2024][^2]. Given the low pKa of PFOA, absorption through the stomach could occur as at gastric pH, a considerable fraction of PFOA is non-ionised and could passively permeate the gastric epithelium to the portal circulation. However, inclusion of this process didn't significantly alter the absorption of PFOA and was excluded from the final model[^3]. PFOA absorption mainly happens in the small
+Oral absorption via food or drinks is the main route of exposure to PFOA. PFOA is quickly and efficiently absorbed from the gastro-intestinal tract to portal circulation [@abraham2024][^2]. A most physiological and mechanistic model for the gastro-intestinal tract (GIT) was initially considered to fully describe the toxicokinetic process involved in the absorption and elimination of PFOA in that organ. PFOA could be absorbed in all sections of the GIT both by passive diffusion of the fraction non-ionised and active uptake of the fraction ionised at the pH of the corresponding section. Uptake via both passive and active processes has been also observed in *in vitro* uptake studies [@janssen2024; @kimura2017]. The initial model subdivided the GIT into the stomach, upper small intestine (duodenum and jejunum), lower small intestine (ileum) and large intestine. Each intestinal sub-section was further divided into the lumen and intestinal vascular tissue. Absorption of PFOA was modelled as an uptake clearance from the lumen to the intestinal tissue, while the fraction of PFOA that was not absorbed in each section was transferred to the following section, or eliminated to the faeces, based on physiological transit times [@willmann2004]. In the final model, the GIT was simplified to only one compartment as the initial more complex model did not significantly altered the absorption profile of PFOA[^3].
 
 [^2]: Plasma Tmax of 2h after oral exposure (from Abraham)
 
@@ -87,9 +87,13 @@ Oral absorption via food or drinks is the main route of exposure to PFOA. PFOA i
 
 ##### Dermal absorption
 
-Dermal absorption via cosmetic products or dust disposed on skin was modelled 
+Dermal absorption can occur after exposure via cosmetic products or dust disposed on skin. Dermal absorption was modelled using a compartmentalised skin compartment with a separate skin barrier (epidermis) and rest of skin compartment. Absorption of PFOA from the skin barrier was defined as the absorption clearance[^4], while once PFOA was in the rest of skin compartment it was then distributed to the systemic plasma concentration.
 
-##### Inhalation absorption
+[^4]: Is it correct to call it a clearance? I perceive clearance as an elimination parameter, but I could be wrong.
+
+##### Inhalation absorption[^5]
+
+[^5]: tentative...
 
 Fast absorption, with Tmax at 3h post exposure (rats) [@gustafsson2022]
 
@@ -97,13 +101,27 @@ PFAS delivery on lung surfactants facilitated by albumin [@pye2023]
 
 For air partition coef [@yao2025]
 
-### Mechanistic kidney sub-compartment
+### Distribution
 
-### Mechanistic liver and intestinal sub-compartments
+Tissue distribution of PFOA was assumed to be perfusion limited, as not enough mechanistic data is available to support a permeability limited model. Permeability limited PBK models for PFOA have been already developed, but they under-predict plasma concentrations and require the addition of a fitted parameter to correctly describe a reabsorption process from cells to plasma [@cheng2017; @lin2023]. In previous PFOA PBK models, tissue-plasma partition coefficients were determined from *in vivo* animal steady-state tissue and plasma concentrations. This approach has been recently proven not adequate due to significant inter-species variabilities in the toxicokinetics of PFOA[^6]. An alternative approach to defining tissue-plasma partition coefficients, is the mechanistic tissue-plasma partition algorithms, that use physiochemical properties (such as the octanol-water partition coefficient Kow and acid disociation constant pKa) to predict the chemical affinities tissue components (proteins or lipids), assuming that these depend on the lipophilicity and ionisation status of the chemical. The final steady-state tissue-plasma distribution is based on the differences in composition of the different tissues and their respective volume [@Rodgers2007; @Utsey2020b; @Peyret2010]. However, these algorithms are limited to the chemical-space for which they have been validated for and cannot be applied to PFAS. PFAS, due to their amphiphilic nature lie outside of the applicability domain of these algorithms as they don't have a Kow. Recently, the binding affinity of PFOA to different tissue components (membrane phospholipids, storage lipids, structural proteins, albumin, fatty-acid binding protein) was derived experimentally [@Allendorf2021]. PFOA showed high affinity for albumin, fatty acid binding proteins and membrane phospholipids, while it's binding affinity to structural proteins and storage lipids was lower. Tissue-plasma partition coefficients were calculated using the above mentioned distribution coefficients. Physiological data about the relevant tissue components were taken from literature [@allendorf2020; @utsey2020]. To enable comparison of the calculated partition coefficients with the previously used *in vivo* derived ones, partition coefficients were derived for both rat and human tissues. Results are available in supplementary file...
+
+[^6]: refer to Deepika/Annelies study
+
+### Elimination
+
+Renal and biliary elimination of PFOA has been well documented, while renal and intestinal reabsorption are believed to be the mechanisms determining its long plasma half-life.
+
+#### Renal elimination
+
+Multiple mechanisms can be involved in the renal elimination of PFOA, including glomerular filtration, active tubular secretion and re-absorption and passive permeability. Several studies have showed that PFOA is a substrate of organic anion transporters, while recently its intrinsic clearance by these transporters was determined in vitro, using either HEK293, or CHO cells transfected with the specific transporter [@janssen2024; @ryu2024; @lin2023; @yang2010]. PFOA can be actively secreted from the plasma to the proximal tubule cells by OAT1 and OAT3 transporters and actively re-absorbed from the primary urine to the proximal tubule cells by OAT4 and URAT1 transporters [@janssen2024; @ryu2024; @lin2023; @yang2010]. The available un-ionised PFOA can also freely diffuse between plasma, cells and the primary urine. A mechanistic kidney was developed, based on models previously developed for drugs undergoing renal reabsorption [@pletz2021; @scotcher2016; @huang2018]. Briefly, the proximal tubule was explicitly modelled as local PFOA concentrations are determining the extend of transporter mediated re-absorption. All other kidney sections (loop of Henle, distal tube and the collecting duct) were lumped together as rest-of-kidney as it was assumed that they don't significantly contribute to PFOA renal kinetics. Each section was initially sub-divided to plasma, cellular and luminar sub-sections where PFOA is distributed based on the active and or passive processes mentioned above. In the final model, the plasma and cellular compartments were lumped together to as active secretion by OAT1 and OAT3 transporters did not significantly contribute to the model predictions, while passive re-absorption from the proximal tubule cell to the plasma was not enough to accurately predict plasma concentrations, leading to PFOA accumulation in the proximal tubule cells[^7].
+
+[^7]: Not sure if I should further elaborate on this.
+
+#### Enterohepatic circulation
 
 ## Model parametrization
 
-The uptake and elimination of PFOA are predicted using in vitro to in vivo extrapolation principles, while its tissue distribution is predicted using experimentally derived distribution coefficients to tissue components, such as albumin and phospholipids. The model introduces a minimal mechanistic kidney compartment to predict the active re-uptake of PFOA in the proximal tubules and a mechanistic transporter-mediated entero-hepatic circulation. Furthermore, given the high affinity of PFOA to albumin, the unbound fraction determined in plasma, is adjusted to the differential albumin concentration between the plasma and tissue or tubular fluid compartments, to better describe an albumin facilitated transport of PFOA. Being proud of yourself
+The uptake and elimination of PFOA are predicted using in vitro to in vivo extrapolation principles, while its tissue distribution is predicted using experimentally derived distribution coefficients to tissue components, such as albumin and phospholipids. The model introduces a minimal mechanistic kidney compartment to predict the active re-absorption of PFOA in the proximal tubules and a mechanistic transporter-mediated entero-hepatic circulation. Furthermore, given the high affinity of PFOA to albumin, the unbound fraction determined in plasma, is adjusted to the differential albumin concentration between the plasma and tissue or tubular fluid compartments, to better describe an albumin facilitated transport of PFOA.
 
 ### Derivation of partition coefficients
 
@@ -127,6 +145,8 @@ Check this study [@domingo2025], [@hanvoravongchai2024a]
 
 ## Model development
 
+Think if the results of the tissue-plasma partition coefficients are needed here. I think its enough to have them in the supplementary data.
+
 Model figure Show results with & without sub compartments, from most complex to less complex and which processess were included
 
 ## Model evaluation
@@ -145,9 +165,17 @@ The predicted Area Under the Curve (AUC) and half-life were compared to the conc
 
 # Discussion
 
+Oral absorption/GIT: differential absorption of PFOA in the GIT depending on it's ionisation status could have been significant if we separately considered passive absorption of the non-ionised form and active absorption of the non-ionised form. But we couldn't do it as mechanistic data on this is not available.
+
 Model limitations : tissue absorption not fully understood, uncertainty of the most sensitive parameters Potential uses?!
 
 The newly developed PFOA PBK model can be extrapolated to other PFASs for which these key parameters are already available. The subsequent derivation of these parameters for other PFASs will facilitate the extrapolation of the present PBK models to them as well and enable their human toxicological risk assessment.
+
+Distribution: Recently, equilibrium tissue distribution coefficients were derived using PFOA tissue concentrations found in healthy human forensic autopsies of different tissues. This approach could be considered more physiologically relevant, however its application would increase the uncertainty of the model some limitations were the sizes of the tissue samples, that might not be representative of the whole tissue concentrations, as well as the variability in blood compositions due to blood coagulation in some of the samples [@nielsen2023].
+
+Distribution: the need of a fitted parameter in permeability limited models suggest a rapid equilibrium of PFOA concentrations in plasma and cells.
+
+Finally passive processes could be important in determining the half life of PFOA in specific populations, such as patients with chronic kidney disease (CKD), which has actually been linked to PFOA exposure. CKD leads to decreased GFR and changes in urinary pH, both of which alter the passive permeability of PFOA in the kidney [@huang2020]. This is interesting to model, especially for the assessment of the risk of PFOA exposure in that population.
 
 # Conclusion
 
