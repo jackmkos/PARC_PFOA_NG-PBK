@@ -65,46 +65,6 @@
 \fi
 \makeatother
 
-\usepackage{color}
-\usepackage{fancyvrb}
-\newcommand{\VerbBar}{|}
-\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
-\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
-% Add ',fontsize=\small' for more characters per line
-\usepackage{framed}
-\definecolor{shadecolor}{RGB}{241,243,245}
-\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
-\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
-\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
-\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.40,0.45,0.13}{#1}}
-\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
-\newcommand{\BuiltInTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
-\newcommand{\CharTok}[1]{\textcolor[rgb]{0.13,0.47,0.30}{#1}}
-\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
-\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{\textit{#1}}}
-\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
-\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{\textbf{#1}}}
-\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
-\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
-\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{\textit{#1}}}
-\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
-\newcommand{\ExtensionTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
-\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
-\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.28,0.35,0.67}{#1}}
-\newcommand{\ImportTok}[1]{\textcolor[rgb]{0.00,0.46,0.62}{#1}}
-\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
-\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{\textbf{#1}}}
-\newcommand{\NormalTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
-\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
-\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
-\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.68,0.00,0.00}{#1}}
-\newcommand{\RegionMarkerTok}[1]{\textcolor[rgb]{0.00,0.23,0.31}{#1}}
-\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{#1}}
-\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.13,0.47,0.30}{#1}}
-\newcommand{\StringTok}[1]{\textcolor[rgb]{0.13,0.47,0.30}{#1}}
-\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.07,0.07,0.07}{#1}}
-\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.13,0.47,0.30}{#1}}
-\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.37,0.37,0.37}{\textit{#1}}}
 
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}\usepackage{longtable,booktabs,array}
@@ -315,9 +275,9 @@ Too many PFAS PFOA toxicokinetic understanding long half-life,
 persistence strong binding to proteins (especially albumin and
 fatty-acid binding proteins) and membrane phospholipids Discussion about
 previous PBK approaches, need of fitting to data \& use of parameters
-taken from animal studies -\textgreater{} read-across not possible -
-What we need: more generic, that we can use for PFAS for which we don't
-know information
+taken from animal studies - read-across not possible - What we need:
+more generic, that we can use for PFAS for which we don't know
+information
 
 \section{Materials and Methods}\label{materials-and-methods}
 
@@ -338,13 +298,14 @@ data.\footnote{Could consider also evaluation against urine and fecal
 
 \subsubsection{Model structure}\label{model-structure}
 
-The PBK model was build on the model by \citep{husøy2023}. The model was
-updated to include physiological processes related to renal elimination
-and re-absorption, as well as enterohepatic circulation. The model
-structure included the intestinal, kidney and liver compartments which
-are responsible for the abovementioned toxicokinetic processes and the
-option to include skin and lungs in case relevant exposure routes are
-used.
+The PBK model was build on the model previously used by EFSA and
+recently updated to include dermal exposure \citep{husøy2023}. The model
+was updated to include physiological processes related to renal
+elimination and re-absorption, as well as enterohepatic circulation. The
+model structure included the intestinal, kidney and liver compartments
+which are responsible for the above-mentioned toxicokinetic processes
+and the option to include skin and lungs in case relevant exposure
+routes are used.
 
 \paragraph{Absorption}\label{absorption}
 
@@ -361,18 +322,18 @@ PFOA in that organ. PFOA could be absorbed in all sections of the GIT
 both by passive diffusion of the fraction non-ionised and active uptake
 of the fraction ionised at the pH of the corresponding section. Uptake
 via both passive and active processes has been also observed in \emph{in
-vitro} uptake studies \citep{janssen2024, kimura2017}. The initial model
-subdivided the GIT into the stomach, upper small intestine (duodenum and
-jejunum), lower small intestine (ileum) and large intestine. Each
-intestinal sub-section was further divided into the lumen and intestinal
-vascular tissue. Absorption of PFOA was modelled as an uptake clearance
-from the lumen to the intestinal tissue, while the fraction of PFOA that
-was not absorbed in each section was transferred to the following
-section, or eliminated to the faeces, based on physiological transit
-times \citep{willmann2004}. In the final model, the GIT was simplified
-to only one compartment as the initial more complex model did not
-significantly altered the absorption profile of PFOA\footnote{Insert
-  reference to predictions in supplementary material}.
+vitro} uptake studies \citep{kimura2017, janssen2024} . The initial
+model subdivided the GIT into the stomach, upper small intestine
+(duodenum and jejunum), lower small intestine (ileum) and large
+intestine. Each intestinal sub-section was further divided into the
+lumen and intestinal vascular tissue. Absorption of PFOA was modelled as
+an uptake clearance from the lumen to the intestinal tissue, while the
+fraction of PFOA that was not absorbed in each section was transferred
+to the following section, or eliminated to the faeces, based on
+physiological transit times \citep{willmann2004}. In the final model,
+the GIT was simplified to only one compartment as the initial more
+complex model did not significantly altered the absorption profile of
+PFOA\footnote{Insert reference to predictions in supplementary material}.
 
 \subparagraph{Dermal absorption}\label{dermal-absorption}
 
@@ -392,7 +353,8 @@ absorption\footnote{tentative\ldots{}}}{Inhalation absorption}}\label{inhalation
 Fast absorption, with Tmax at 3h post exposure (rats)
 \citep{gustafsson2022}
 
-PFAS delivery on lung surfactants facilitated by albumin \citep{pye2023}
+PFAS delivery on lung surfactants facilitated by albumin
+\citep{forsthuber2020}
 
 For air partition coef \citep{yao2025}
 
@@ -403,7 +365,7 @@ enough mechanistic data is available to support a permeability limited
 model. Permeability limited PBK models for PFOA have been already
 developed, but they under-predict plasma concentrations and require the
 addition of a fitted parameter to correctly describe a reabsorption
-process from cells to plasma \citep{cheng2017, lin2023}. In previous
+process from cells to plasma \citep{lin2023, cheng2017}. In previous
 PFOA PBK models, tissue-plasma partition coefficients were determined
 from \emph{in vivo} animal steady-state tissue and plasma
 concentrations. This approach has been recently proven not adequate due
@@ -424,7 +386,7 @@ outside of the applicability domain of these algorithms as they don't
 have a Kow. Recently, the binding affinity of PFOA to different tissue
 components (membrane phospholipids, storage lipids, structural proteins,
 albumin, fatty-acid binding protein) was derived experimentally
-\citep{Allendorf2021}. PFOA showed high affinity for albumin, fatty acid
+\citep{allendorf2020}. PFOA showed high affinity for albumin, fatty acid
 binding proteins and membrane phospholipids, while it's binding affinity
 to structural proteins and storage lipids was lower. Tissue-plasma
 partition coefficients were calculated using the above mentioned
@@ -448,23 +410,26 @@ including glomerular filtration, active tubular secretion and
 re-absorption and passive permeability. Several studies have showed that
 PFOA is a substrate of organic anion transporters, while recently its
 intrinsic clearance by these transporters was determined in vitro, using
-either HEK293, or CHO cells transfected with the specific transporter.
-PFOA can be actively secreted from the plasma to the proximal tubule
-cells by OAT1 and OAT3 transporters and actively re-absorbed from the
-primary urine to the proximal tubule cells by OAT4 and URAT1
-transporters. The available un-ionised PFOA can also freely diffuse
-between plasma, cells and the primary urine. A mechanistic kidney was
-developed, based on models previously developed for drugs undergoing
-renal reabsorption. Briefly, the proximal tubule was explicitly modelled
-as local PFOA concentrations are determining the extend of transporter
-mediated re-absorption. All other kidney sections (loop of Henle, distal
-tube and the collecting duct) were lumped together as rest-of-kidney as
-it was assumed that they don't significantly contribute to PFOA renal
-kinetics. Each section was initially sub-divided to plasma, cellular and
-luminar sub-sections where PFOA is distributed based on the active and
-or passive processes mentioned above. In the final model, the plasma and
-cellular compartments were lumped together to as active secretion by
-OAT1 and OAT3 transporters did not significantly contribute to the model
+either HEK293, or CHO cells transfected with the specific transporter
+\citep{yang2010, janssen2024, ryu2024, lin2023}. PFOA can be actively
+secreted from the plasma to the proximal tubule cells by OAT1 and OAT3
+transporters and actively re-absorbed from the primary urine to the
+proximal tubule cells by OAT4 and URAT1 transporters
+\citep{yang2010, janssen2024, ryu2024, lin2023}. The available
+un-ionised PFOA can also freely diffuse between plasma, cells and the
+primary urine. A mechanistic kidney was developed, based on models
+previously developed for drugs undergoing renal reabsorption
+\citep{scotcher2016, huang2018, pletz2021}. Briefly, the proximal tubule
+was explicitly modelled as local PFOA concentrations are determining the
+extend of transporter mediated re-absorption. All other kidney sections
+(loop of Henle, distal tube and the collecting duct) were lumped
+together as rest-of-kidney as it was assumed that they don't
+significantly contribute to PFOA renal kinetics. Each section was
+initially sub-divided to plasma, cellular and luminar sub-sections where
+PFOA is distributed based on the active and or passive processes
+mentioned above. In the final model, the plasma and cellular
+compartments were lumped together to as active secretion by OAT1 and
+OAT3 transporters did not significantly contribute to the model
 predictions, while passive re-absorption from the proximal tubule cell
 to the plasma was not enough to accurately predict plasma
 concentrations, leading to PFOA accumulation in the proximal tubule
@@ -507,7 +472,8 @@ Workflow}\label{global-sensitivity-analysis-workflow}
 \subsubsection{Evaluation against human biomonitoring
 data}\label{evaluation-against-human-biomonitoring-data}
 
-Check this study \citep{domingo2025}, \citep{hanvoravongchai2024a}
+Check this study
+\citep{domingo2025, convertino2018, hanvoravongchai2024, botelho2025, lin2024, faquih2024}
 
 \section{Results}\label{results}
 
@@ -565,7 +531,7 @@ considered more physiologically relevant, however its application would
 increase the uncertainty of the model some limitations were the sizes of
 the tissue samples, that might not be representative of the whole tissue
 concentrations, as well as the variability in blood compositions due to
-blood coagulation in some of the samples \citep{nielsen2023}.
+blood coagulation in some of the samples. \citep{baumert2023}
 
 Distribution: the need of a fitted parameter in permeability limited
 models suggest a rapid equilibrium of PFOA concentrations in plasma and
@@ -575,7 +541,7 @@ Finally passive processes could be important in determining the half
 life of PFOA in specific populations, such as patients with chronic
 kidney disease (CKD), which has actually been linked to PFOA exposure.
 CKD leads to decreased GFR and changes in urinary pH, both of which
-alter the passive permeability of PFOA in the kidney \citep{huang2020}.
+alter the passive permeability of PFOA in the kidney \citep{huang2018} .
 This is interesting to model, especially for the assessment of the risk
 of PFOA exposure in that population.
 
@@ -595,77 +561,6 @@ Interest}\label{declaration-of-competing-interest}
 information}\label{appendix-a.-supporting-information}
 
 \section{Data availability}\label{data-availability}
-
-\section{FYI (for Chrysa)}\label{fyi-for-chrysa}
-
-\subsection{Using CSL}\label{using-csl}
-
-If \texttt{cite-method} is set to \texttt{citeproc} in
-\texttt{elsevier\_article()}, then pandoc is used for citations instead
-of \texttt{natbib}. In this case, the \texttt{csl} option is used to
-format the references. By default, this template will provide an
-appropriate style, but alternative \texttt{csl} files are available from
-\url{https://www.zotero.org/styles?q=elsevier}. These can be downloaded
-and stored locally, or the url can be used as in the example header.
-
-\section{Equations}\label{equations}
-
-Here is an equation: \[ 
-  f_{X}(x) = \left(\frac{\alpha}{\beta}\right)
-  \left(\frac{x}{\beta}\right)^{\alpha-1}
-  e^{-\left(\frac{x}{\beta}\right)^{\alpha}}; 
-  \alpha,\beta,x > 0 .
-\]
-
-Inline equations work as well: \(\sum_{i = 2}^\infty\{\alpha_i^\beta\}\)
-
-\section{Figures and tables}\label{figures-and-tables}
-
-Figure~\ref{fig-meaningless} is generated using an R chunk.
-
-\begin{figure}
-
-\centering{
-
-\includegraphics[width=0.5\textwidth,height=\textheight]{Article_PFOA_files/figure-pdf/fig-meaningless-1.pdf}
-
-}
-
-\caption{\label{fig-meaningless}A meaningless scatterplot}
-
-\end{figure}%
-
-\section{Tables coming from R}\label{tables-coming-from-r}
-
-Tables can also be generated using R chunks, as shown in
-Table~\ref{tbl-simple} example.
-
-\begin{Shaded}
-\begin{Highlighting}[]
-\NormalTok{knitr}\SpecialCharTok{::}\FunctionTok{kable}\NormalTok{(}\FunctionTok{head}\NormalTok{(mtcars)[,}\DecValTok{1}\SpecialCharTok{:}\DecValTok{4}\NormalTok{])}
-\end{Highlighting}
-\end{Shaded}
-
-\begin{longtable}[]{@{}lrrrr@{}}
-
-\caption{\label{tbl-simple}Caption centered above table}
-
-\tabularnewline
-
-\toprule\noalign{}
-& mpg & cyl & disp & hp \\
-\midrule\noalign{}
-\endhead
-\bottomrule\noalign{}
-\endlastfoot
-Mazda RX4 & 21.0 & 6 & 160 & 110 \\
-Mazda RX4 Wag & 21.0 & 6 & 160 & 110 \\
-Datsun 710 & 22.8 & 4 & 108 & 93 \\
-Hornet 4 Drive & 21.4 & 6 & 258 & 110 \\
-Hornet Sportabout & 18.7 & 8 & 360 & 175 \\
-Valiant & 18.1 & 6 & 225 & 105 \\
-
-\end{longtable}
 
 
 \renewcommand\refname{References}
