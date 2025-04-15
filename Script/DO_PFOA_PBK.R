@@ -26,6 +26,14 @@
   
   source(here("Script", "RUN_and_OUTPUT.R"))
   
+  # !!! FOR DERMAL SEE BELOW NOTES
+  # Comment Chrysa: the below section can be used to calculate the dermal concentration based on cosmetic product type and PFOA concentrations in the cosmetic product
+  # q = 123.20         # mg/kg/day amount of cosmetic product applied per day, SCCS 2021 table 3 (https://health.ec.europa.eu/document/download/89af1a70-a2b1-44da-a868-e7d80a8e736c_en?filename=sccs_o_250.pdf)
+  # fret = 1           # fraction of the cosmetic product retained on the skin, SCCS 2021 table 3 (https://health.ec.europa.eu/document/download/89af1a70-a2b1-44da-a868-e7d80a8e736c_en?filename=sccs_o_250.pdf)
+  # Aproduct = 1       # ug/mg amount of PFOA in the cosmetic product
+  # fbac = 0.78        # fraction bioaccessible (fraction of PFOA that leaves the cosmetic product and is accessible for absorption) Namazkar et al 2024 DOI: 10.1039/D3EM00461A 
+  # CDermal = q*fret*Aproduct*fbac # ug/kd/day
+  
   RESULTS <- RUNandOUT(exposure_type = exposure_type, # type of exposure
                        expCONC = 0.048, # ug/kg/day
                        Tinput = 1, # for repeated exposure or so, default = 1

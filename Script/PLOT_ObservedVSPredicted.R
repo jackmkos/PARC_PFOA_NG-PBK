@@ -48,8 +48,6 @@ HalfLifes <- rbind(Predicted.df, Observed.df)
 
 range <- c(min(Observed.df$n), max(Observed.df$n))
 
-
-
 Plot_HalfLifes <- ggplot() +
   geom_violin(
     data = Observed.df,
@@ -58,9 +56,9 @@ Plot_HalfLifes <- ggplot() +
     fill = "grey89") +
   geom_point(
     data = Observed.df,
-    aes(value, HalfLife, size = n),  # Ensure 'n' is numeric!
+    aes(value, HalfLife, size = n),  
     color = "black",
-    alpha = 0.5,  # Optional: Make points semi-transparent
+    alpha = 0.5,  
     shape = 20) +
   geom_point(
     data = Predicted.df,
@@ -75,34 +73,40 @@ Plot_HalfLifes <- ggplot() +
   theme(
     axis.text.x = element_blank(),
     axis.ticks.x = element_blank(),
-    axis.title.x = element_blank()
+    axis.title.x = element_blank(),
+      axis.text = element_text(size = 12),
+      axis.title = element_text(size = 14)
   )
 Plot_HalfLifes
-ggsave(filename = here(OUTPUT, "ExpVsSimHalfLife.png"), dpi = 300)
+ggsave(filename = here(OUTPUT, "ExpVsSimHalfLife.png"), 
+       dpi = 300,
+       width = 17,      
+       height = 8,      
+       units = "cm")
 
 
-## Plot Concentration over time ####
-
-ObsPlasma <- ObsPlasmaConc %>%
-  filter(Timedays <= 450.00) %>% 
-  mutate(Timedays = Timedays/365) %>% #to years
-  rename(time = Timedays) %>% 
-  rename(CP = MPFOAugperL) %>%    # ug/L or ng/ml
-  mutate(CP = CP - 0.130) %>%     # substracting the pre-existing level of 0.130ug/L from their previous study, as also done in the ref. article: https://doi.org/10.1016/j.envint.2024.109047 (table 3)
-  mutate(Origin = "Observed")
-
-SimData <- RESULTS$data
-SimPlasma <- SimData %>% 
-  select(time, CP) %>% 
-  mutate(time = time) %>% 
-  mutate(Origin = "Predicted")
-
-Plot_Plasma <- ggplot() +
-  geom_path(data = SimData, aes(x = time, y = CP), color = "red", linewidth = 1.5)+
-  geom_point(data = ObsPlasma, aes(x = time, y = CP), color = "black")+
-  theme_minimal()+
-  ylab("Plasma (ng/ml)")+
-  xlab("Time (years)")
-Plot_Plasma
-ggsave(here(OUTPUT, "ObsVsSimConcOverTime.png"), dpi = 300)
-
+# ## Plot Concentration over time ####
+# 
+# ObsPlasma <- ObsPlasmaConc %>%
+#   filter(Timedays <= 450.00) %>% 
+#   mutate(Timedays = Timedays/365) %>% #to years
+#   rename(time = Timedays) %>% 
+#   rename(CP = MPFOAugperL) %>%    # ug/L or ng/ml
+#   mutate(CP = CP - 0.130) %>%     # substracting the pre-existing level of 0.130ug/L from their previous study, as also done in the ref. article: https://doi.org/10.1016/j.envint.2024.109047 (table 3)
+#   mutate(Origin = "Observed")
+# 
+# SimData <- RESULTS$data
+# SimPlasma <- SimData %>% 
+#   select(time, CP) %>% 
+#   mutate(time = time) %>% 
+#   mutate(Origin = "Predicted")
+# 
+# Plot_Plasma <- ggplot() +
+#   geom_path(data = SimData, aes(x = time, y = CP), color = "red", linewidth = 1.5)+
+#   geom_point(data = ObsPlasma, aes(x = time, y = CP), color = "black")+
+#   theme_minimal()+
+#   ylab("Plasma (ng/ml)")+
+#   xlab("Time (years)")
+# Plot_Plasma
+# ggsave(here(OUTPUT, "ObsVsSimConcOverTime.png"), dpi = 300)
+# 

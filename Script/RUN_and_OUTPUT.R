@@ -167,9 +167,17 @@ RUNandOUT <- function(exposure_type, expCONC, Tinput, tinterval, expAGE, expSTOP
                        name = NULL) +
     # ylim(0,1) +
     theme_minimal() +
+    theme(
+      axis.text = element_text(size = 12),
+      axis.title = element_text(size = 14)
+    )+
     ylab("MB / ERROR")
   MB_plot
-  ggsave(filename = here(OUTPUT,"MB_ERROR.png"), dpi = 300)
+  ggsave(filename = here(OUTPUT,"MB_ERROR.png"), 
+         dpi = 300,
+         width = 17,      
+         height = 8,      
+         units = "cm")
   
   
   # Plot organ concentrations
@@ -180,9 +188,17 @@ RUNandOUT <- function(exposure_type, expCONC, Tinput, tinterval, expAGE, expSTOP
     labs(title = "PFOA organ concentrations",
          x = "Time (years)", # check that time is indeed in days and not years
          y = "Concentration (ng/ml)") +
-    theme_minimal()
+    theme_minimal()+
+    theme(
+      axis.text = element_text(size = 12),
+      axis.title = element_text(size = 14)
+    )
   Plot_C_organs
-  ggsave(filename = here(OUTPUT, "Plot_C_organ.png"), dpi = 300)
+  ggsave(filename = here(OUTPUT, "Plot_C_organ.png"), 
+         dpi = 300,
+         width = 17,      
+         height = 8,      
+         units = "cm")
   
   Plot_C_plasma <- C_organs.df %>% 
     filter(Organ == "Plasma") %>% 
@@ -191,9 +207,17 @@ RUNandOUT <- function(exposure_type, expCONC, Tinput, tinterval, expAGE, expSTOP
     labs(title = "PFOA plasma concentration",
          x = "Time (years)", # check that time is indeed in days and not years
          y = "Concentration (ng/ml)") +
-    theme_minimal()
+    theme_minimal()+
+    theme(
+      axis.text = element_text(size = 12),
+      axis.title = element_text(size = 14)
+    )
   Plot_C_plasma
-  ggsave(filename = here(OUTPUT, "Plot_C_plasma.png"), dpi = 300)
+  ggsave(filename = here(OUTPUT, "Plot_C_plasma.png"), 
+         dpi = 300,
+         width = 17,      
+         height = 8,      
+         units = "cm")
   
   
   # Calculate AUC
