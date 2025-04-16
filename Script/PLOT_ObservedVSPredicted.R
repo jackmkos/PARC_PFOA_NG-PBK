@@ -35,7 +35,7 @@ Observed.df$HalfLife <- as.numeric(Observed.df$HalfLife) # years
 Observed.df$n <- as.numeric(Observed.df$n)
 
 Predicted.df <- data.frame(
-  HalfLife = RESULTS$HalfLife,
+  HalfLife = HalfLife, #RESULTS$HalfLife,
   Origin = "Predicted",
   value = 1, n = 1)
 Observed.df <- data.frame(
@@ -64,6 +64,7 @@ Plot_HalfLifes <- ggplot() +
     data = Predicted.df,
     aes(value, HalfLife),
     color = "red",
+    alpha = 0.7,
     size = 10,
     shape = 18) +
   labs(y = "Half life (years)") + 
@@ -74,8 +75,9 @@ Plot_HalfLifes <- ggplot() +
     axis.text.x = element_blank(),
     axis.ticks.x = element_blank(),
     axis.title.x = element_blank(),
-      axis.text = element_text(size = 12),
-      axis.title = element_text(size = 14)
+    axis.text = element_text(size = 10),
+    axis.title = element_text(size = 10),
+    legend.position = "top"
   )
 Plot_HalfLifes
 ggsave(filename = here(OUTPUT, "ExpVsSimHalfLife.png"), 

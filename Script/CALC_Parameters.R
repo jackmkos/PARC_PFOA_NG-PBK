@@ -4,26 +4,72 @@
 # Date: 14-04-2025
 # --------------------------------------------------------------------------- #
 
+# !! max BW in Physio_params is 76 for Female
+
 # COMMON PARAMETERS ####
-BASE_PARAMS <- function(expAGE) { #could also be a function of BW
+BASE_PARAMS <- function(expAGE = NULL, expBW = NULL, sex = NULL) { 
+  
+  ## Function conditions ####
+  if (is.null(expAGE) && is.null(expBW)) {
+    expBW <- 70  # Default body weight
+  }
+  if (is.null(sex)) {
+    sex <- "M"  # Default sex to male
+  }
+  
+  ## Input
+  Physio_params <- Physio.c
+  
+  suffix <- ifelse(sex == "F", "_F", "_M")
+  
+  
+  if (!is.null(expAGE)) { # filters based on age
+    Physio_params <- Physio_params %>% filter(age == expAGE)
+  } else if (!is.null(expBW)) { # filters based on BW if age is not provided
+    bw_col <- paste0("BW", suffix)
+    Physio_params <- Physio_params %>%
+    mutate(bw_diff = abs(!!sym(bw_col) - expBW)) %>% # calculate difference between the input BW and the one from the lifestage calculations
+    filter(bw_diff == min(bw_diff)) # select the row that has the smallest difference in bW
+  }
+  
+  Physio_params <- Physio_params %>% select(ends_with(suffix))
+  
   
   ## Physiological Parameters ####
-  Physio_params <- Physio.c %>% 
-    filter(age == expAGE)   %>%  
-    select(ends_with('_M')) %>% 
+  Physio_params <- Physio_params %>% 
     mutate(BloodFlowSum = rowSums(select(., starts_with("Q_")))) %>% # 0.9935, total blood flow as the sum of the fractional blood flows of all organs on which we have data
     mutate(VolumesSum = rowSums(select(., starts_with("V_")))) # 0.96, total volume as the sum of the fractional organ volumes of all organs on which we have data
   
-  BW <- Physio_params$BDW_M                   # L(kg),  Body weight
-  QC <- Physio_params$CardOut_M               # L/d, This is corrected for hematocrit already so it's plasma
-  Hct <- Physio_params$Hct_M                  # Hematocrit
+  max_bw <- max(Physio_params[[paste0("BDW", suffix)]], na.rm = TRUE)
+  
+  BW <- if (!is.null(expBW)) {
+    if (expBW <= max_bw) {
+      bw_col <- paste0("BW", suffix)
+      Physio_params %>% mutate(bw_diff = abs(!!sym(bw_col) - expBW)) %>%
+        filter(bw_diff == min(bw_diff, na.rm = TRUE)) %>%
+        pull(paste0("BDW", suffix))  
+    } else {
+      expBW
+    }
+  } else {
+    Physio_params[[paste0("BDW", suffix)]]
+  }
+  # if (!is.null(expBW) && expBW < max_bw) {
+  #   BW <- Physio_params[[paste0("BDW", suffix)]]                  # L(kg),  Body weight
+  # } else { #if the actual BW is above what is calculated from the lifestage equations, then we should still take the BW of the person to be more precise
+  #   BW <- expBW
+  # }
+  
+  
+  QC <- Physio_params[[paste0("CardOut", suffix)]]              # L/d, This is corrected for hematocrit already so it's plasma
+  Hct <- Physio_params[[paste0("Hct", suffix)]]                 # Hematocrit
   
   
   ### Organ volumes -------------------------
   
   
   # Intestine
-  VIc <- Physio_params$V_gutFraction_M
+  VIc <- Physio_params[[paste0("V_gutFraction", suffix)]] 
   
   # Intestinal lumen is taken as a compartment outside the intestine (weight of Intestinal lumen is outside of the bodyweight)
   L = 280                           # cm, (adult of 70kg) Willmann2004 doi: 10.1021/jm030999b
@@ -35,7 +81,7 @@ BASE_PARAMS <- function(expAGE) { #could also be a function of BW
   SA_SIc = 70.1 * 1e3/70            # cm2 converted to a constant by dividing by BW, (adult of 70kg) Willmann2004 doi: 10.1021/jm030999b
   
   # Liver
-  VLc <- Physio_params$V_liverFraction_M # cm2, (adult of 70kg) Willmann2004 doi: 10.1021/jm030999b        
+  VLc <- Physio_params[[paste0("V_liverFraction", suffix)]]  # cm2, (adult of 70kg) Willmann2004 doi: 10.1021/jm030999b        
   
   # # Liver is divided in intracellular and extracellular compartments. 
   # # Extracellular compartment combines both the vascular and interstitial space
@@ -45,7 +91,7 @@ BASE_PARAMS <- function(expAGE) { #could also be a function of BW
   
   
   # Kidney
-  VKc <- Physio_params$V_kidneyFraction_M
+  VKc <- Physio_params[[paste0("V_kidneyFraction", suffix)]]
   
   # Kidney is divided in to proximal tubule and rest of kidney. Each compartment is divided in to tissue and lumen (or filtrate). 
   # This separation is necessary because of the active reabsorption happening in the proximal tubule, but also due to the differences in composition and pH of primary and terminal urine.
@@ -61,12 +107,12 @@ BASE_PARAMS <- function(expAGE) { #could also be a function of BW
   
   
   # Adipose
-  VAc <- Physio_params$V_adiposeFraction_M
-  MAc <- Physio_params$AdiposeMass_M
+  VAc <- Physio_params[[paste0("V_adiposeFraction", suffix)]]
+  MAc <- Physio_params[[paste0("AdiposeMass", suffix)]]
   
   
   # Plasma
-  VPc <- Physio_params$V_bloodFraction_M
+  VPc <- Physio_params[[paste0("V_bloodFraction", suffix)]]
   
   
   # Total body volume
@@ -74,10 +120,10 @@ BASE_PARAMS <- function(expAGE) { #could also be a function of BW
   
   ### Organ blood flows -------------------------
   QTotc <- Physio_params$BloodFlowSum
-  QIc <- Physio_params$Q_gutFraction_M   
-  QLc <- Physio_params$Q_liverFraction_M 
-  QKc <- Physio_params$Q_kidneyFraction_M  
-  QAc <- Physio_params$Q_adiposeFraction_M 
+  QIc <- Physio_params[[paste0("Q_gutFraction", suffix)]]
+  QLc <- Physio_params[[paste0("Q_liverFraction", suffix)]]
+  QKc <- Physio_params[[paste0("Q_kidneyFraction", suffix)]] 
+  QAc <- Physio_params[[paste0("Q_adiposeFraction", suffix)]]
   
   
   ### Other physiological flows and constants -------------------------
@@ -155,34 +201,33 @@ BASE_PARAMS <- function(expAGE) { #could also be a function of BW
   
   # Calculate Plasma/Rest of the body partition coefficient
   # KpRe = partition coefficient of each of the lumped organs * fractional volume of the respective organ / sum of the fractional volume of all these organs
-  KpRe <- (Kp.df$KpSk*Physio_params$V_skinFraction_M +
-             Kp.df$KpLu*Physio_params$V_lungFraction_M +
-             Kp.df$KpSt*Physio_params$V_stomachFraction_M +
-             Kp.df$KpBr*Physio_params$V_brainFraction_M +
-             Kp.df$KpHe*Physio_params$V_heartFraction_M + 
-             Kp.df$KpMu*Physio_params$V_muscleFraction_M +
-             Kp.df$KpSp*Physio_params$V_spleenFraction_M +
-             Kp.df$KpGo*Physio_params$V_reproFraction_M +
-             Kp.df$KpBo*Physio_params$V_boneFraction_M) / (
-               Physio_params$V_skinFraction_M +
-               Physio_params$V_lungFraction_M +
-                 Physio_params$V_stomachFraction_M +
-                 Physio_params$V_brainFraction_M +
-                 Physio_params$V_heartFraction_M +
-                 Physio_params$V_muscleFraction_M +
-                 Physio_params$V_spleenFraction_M +
-                 Physio_params$V_reproFraction_M +
-                 Physio_params$V_boneFraction_M)  
+  KpRe <- (Kp.df$KpSk * Physio_params[[paste0("V_skinFraction", suffix)]] +
+             Kp.df$KpLu * Physio_params[[paste0("V_lungFraction", suffix)]] +
+             Kp.df$KpSt * Physio_params[[paste0("V_stomachFraction", suffix)]] +
+             Kp.df$KpBr * Physio_params[[paste0("V_brainFraction", suffix)]] +
+             Kp.df$KpHe * Physio_params[[paste0("V_heartFraction", suffix)]] + 
+             Kp.df$KpMu * Physio_params[[paste0("V_muscleFraction", suffix)]] +
+             Kp.df$KpSp * Physio_params[[paste0("V_spleenFraction", suffix)]] +
+             Kp.df$KpGo * Physio_params[[paste0("V_reproFraction", suffix)]] +
+             Kp.df$KpBo * Physio_params[[paste0("V_boneFraction", suffix)]]) / (
+               Physio_params[[paste0("V_skinFraction", suffix)]] +
+               Physio_params[[paste0("V_lungFraction", suffix)]] +
+                 Physio_params[[paste0("V_stomachFraction", suffix)]] +
+                 Physio_params[[paste0("V_brainFraction", suffix)]] +
+                 Physio_params[[paste0("V_heartFraction", suffix)]] +
+                 Physio_params[[paste0("V_muscleFraction", suffix)]] +
+                 Physio_params[[paste0("V_spleenFraction", suffix)]] +
+                 Physio_params[[paste0("V_reproFraction", suffix)]] +
+                 Physio_params[[paste0("V_boneFraction", suffix)]])  
   Kp.df$KpRe <- KpRe
   
-  # Choose between calculated partition coefficients or initial ones (rat)
-  # In Kp.df, PF, PI, PK, PL, PSK and PR are the initial PCs from Kudo 2007 (rat). These were recalculated to total tissue (/fup) to enable differentiating the fup for the sensitivity analysis
+  
   # Correcting for fraction unbound (as it was not incorporated in the input calculating file)
-  PIc <- Kp.df$KpIn  #PI   # Intestine
-  PLc <- Kp.df$KpLi  #PL   # Liver
-  PKc <- Kp.df$KpKi  #PK   # Kidney
-  PAc <- Kp.df$KpAd  #PF   # Adipose
-  PRc <- Kp.df$KpRe  #PR   # Rest
+  PIc <- Kp.df$KpIn   # Intestine
+  PLc <- Kp.df$KpLi   # Liver
+  PKc <- Kp.df$KpKi   # Kidney
+  PAc <- Kp.df$KpAd   # Adipose
+  PRc <- Kp.df$KpRe   # Rest
   
   
   
@@ -289,20 +334,43 @@ BASE_PARAMS <- function(expAGE) { #could also be a function of BW
 }
 
 # PARAMETERS FOR DERMAL EXPOSURE ####
-DERMAL_PARAMS <- function(expAGE, base.parm.c) { #could also be a function of BW
+DERMAL_PARAMS <- function(expAGE = NULL, expBW = NULL, sex = "M", base.parm.c) { 
   
-  # base.parm.c <- BASE_PARAMS(expAGE = expAGE)  
+  ## Function conditions ####
+  if (is.null(expAGE) && is.null(expBW)) {
+    expBW <- 70  # Default body weight
+  }
+  if (is.null(sex)) {
+    sex <- "M"  # Default sex to male
+  }
   
+  ## Input
+  Physio_params <- Physio.c
+  
+  suffix <- ifelse(sex == "F", "_F", "_M")
+  
+  
+  if (!is.null(expAGE)) { # filters based on Age
+    Physio_params <- Physio_params %>% filter(age == expAGE)
+  } else if (!is.null(expBW)) { # filters based on BW if Age is not provided
+    bw_col <- paste0("BW", suffix)
+    Physio_params <- Physio_params %>%
+      mutate(bw_diff = abs(!!sym(bw_col) - expBW)) %>% # calculate difference between the input BW and the one from the lifestage calculations
+      filter(bw_diff == min(bw_diff)) # select the row that has the smallest difference in bW
+    # Physio_params <- Physio_params %>% filter(BW == expBW)
+  }
+  
+  Physio_params <- Physio_params %>% select(ends_with(suffix))
+  
+
   # Physiological Parameters ####
-  Physio_params <- Physio.c %>% 
-    filter(age == expAGE)   %>%  
-    select(ends_with('_M')) %>% 
+  Physio_params <- Physio_params %>% 
     mutate(BloodFlowSum = rowSums(select(., starts_with("Q_")))) %>% # 0.9935, total blood flow as the sum of the fractional blood flows of all organs on which we have data
     mutate(VolumesSum = rowSums(select(., starts_with("V_")))) # 0.96, total volume as the sum of the fractional organ volumes of all organs on which we have data
   
   
   # Skin
-  VSkc <- Physio_params$V_skinFraction_M  # fractional skin volume
+  VSkc <- Physio_params[[paste0("V_skinFraction", suffix)]]  # fractional skin volume
   SA_SkB = 15670                   # cm2, total body surface area except head, SCCS 2021 table 4 (https://health.ec.europa.eu/document/download/89af1a70-a2b1-44da-a868-e7d80a8e736c_en?filename=sccs_o_250.pdf)
   H_SkB = 83.1                     # cm, average thickness of the skin barrier, 83.7 +- 16.6 J.Sandby-Moller et al. 2003, Table II DOI: 10.1080/00015550310015419
   VSkB = SA_SkB*H_SkB * 1e-3       # L, volume of the skin barrier 
@@ -310,7 +378,7 @@ DERMAL_PARAMS <- function(expAGE, base.parm.c) { #could also be a function of BW
   # # Trine's value provides the surface total surface area, but according to the SCCS, if we take the body lotion,then we should remove the surface area of the head from our calculations
   # # The general equation is SA = 0.02350*H^0.4226*W^0.51456, ref. https://www.rivm.nl/bibliotheek/rapporten/090013003.pdf
   
-  QSkc <- Physio_params$Q_skinFraction_M # fractional skin blood flow
+  QSkc <- Physio_params[[paste0("Q_skinFraction", suffix)]]  # fractional skin blood flow
   
   # Partition coefficients -------------------------
   
@@ -353,22 +421,22 @@ DERMAL_PARAMS <- function(expAGE, base.parm.c) { #could also be a function of BW
   
   # Calculate Plasma/Rest of the body partition coefficient
   # KpRe = partition coefficient of each of the lumped organs * fractional volume of the respective organ / sum of the fractional volume of all these organs
-  KpRe <- (Kp.df$KpLu*Physio_params$V_lungFraction_M +
-             Kp.df$KpSt*Physio_params$V_stomachFraction_M +
-             Kp.df$KpBr*Physio_params$V_brainFraction_M +
-             Kp.df$KpHe*Physio_params$V_heartFraction_M + 
-             Kp.df$KpMu*Physio_params$V_muscleFraction_M +
-             Kp.df$KpSp*Physio_params$V_spleenFraction_M +
-             Kp.df$KpGo*Physio_params$V_reproFraction_M +
-             Kp.df$KpBo*Physio_params$V_boneFraction_M) / (
-               Physio_params$V_lungFraction_M +
-                 Physio_params$V_stomachFraction_M +
-                 Physio_params$V_brainFraction_M +
-                 Physio_params$V_heartFraction_M +
-                 Physio_params$V_muscleFraction_M +
-                 Physio_params$V_spleenFraction_M +
-                 Physio_params$V_reproFraction_M +
-                 Physio_params$V_boneFraction_M)  
+  KpRe <- (Kp.df$KpLu * Physio_params[[paste0("V_lungFraction", suffix)]] +
+             Kp.df$KpSt * Physio_params[[paste0("V_stomachFraction", suffix)]] +
+             Kp.df$KpBr * Physio_params[[paste0("V_brainFraction", suffix)]] +
+             Kp.df$KpHe * Physio_params[[paste0("V_heartFraction", suffix)]] + 
+             Kp.df$KpMu * Physio_params[[paste0("V_muscleFraction", suffix)]] +
+             Kp.df$KpSp * Physio_params[[paste0("V_spleenFraction", suffix)]] +
+             Kp.df$KpGo * Physio_params[[paste0("V_reproFraction", suffix)]] +
+             Kp.df$KpBo * Physio_params[[paste0("V_boneFraction", suffix)]]) / (
+                 Physio_params[[paste0("V_lungFraction", suffix)]] +
+                 Physio_params[[paste0("V_stomachFraction", suffix)]] +
+                 Physio_params[[paste0("V_brainFraction", suffix)]] +
+                 Physio_params[[paste0("V_heartFraction", suffix)]] +
+                 Physio_params[[paste0("V_muscleFraction", suffix)]] +
+                 Physio_params[[paste0("V_spleenFraction", suffix)]] +
+                 Physio_params[[paste0("V_reproFraction", suffix)]] +
+                 Physio_params[[paste0("V_boneFraction", suffix)]]) 
   Kp.df$KpRe <- KpRe
   
   # Choose between calculated partition coefficients or initial ones (rat)
@@ -402,22 +470,46 @@ DERMAL_PARAMS <- function(expAGE, base.parm.c) { #could also be a function of BW
 }
 
 # PARAMETERS FOR INHALATION EXPOSURE ####
-INHALATION_PARAMS <- function(expAGE, base.parm.c) { #could also be a function of BW
+INHALATION_PARAMS <- function(expAGE = NULL, expBW = NULL, sex = "M", base.parm.c) { 
   
-  # base.parm.c <- BASE_PARAMS(expAGE = expAGE)  # Assuming baseline_value = expAGE
   
+  ## Function conditions ####
+  if (is.null(expAGE) && is.null(expBW)) {
+    expBW <- 70  # Default body weight
+  }
+  if (is.null(sex)) {
+    sex <- "M"  # Default sex to male
+  }
+  
+  ## Input
+  Physio_params <- Physio.c
+  
+  suffix <- ifelse(sex == "F", "_F", "_M")
+  
+  
+  if (!is.null(expAGE)) { # filters based on Age
+    Physio_params <- Physio_params %>% filter(age == expAGE)
+  } else if (!is.null(expBW)) { # filters based on BW if Age is not provided
+    bw_col <- paste0("BW", suffix)
+    Physio_params <- Physio_params %>%
+      mutate(bw_diff = abs(!!sym(bw_col) - expBW)) %>% # calculate difference between the input BW and the one from the lifestage calculations
+      filter(bw_diff == min(bw_diff)) # select the row that has the smallest difference in bW
+    # Physio_params <- Physio_params %>% filter(BW == expBW)
+  }
+  
+  Physio_params <- Physio_params %>% select(ends_with(suffix))
+  
+
   # Physiological Parameters ####
-  Physio_params <- Physio.c %>% 
-    filter(age == expAGE)   %>%  
-    select(ends_with('_M')) %>% 
+  Physio_params <- Physio_params %>% 
     mutate(BloodFlowSum = rowSums(select(., starts_with("Q_")))) %>% # 0.9935, total blood flow as the sum of the fractional blood flows of all organs on which we have data
     mutate(VolumesSum = rowSums(select(., starts_with("V_")))) # 0.96, total volume as the sum of the fractional organ volumes of all organs on which we have data
   
   # Lungs
-  VLuc <- Physio_params$V_lungFraction_M
+  VLuc <- Physio_params[[paste0("V_lungFraction", suffix)]]
   
   # Plasma
-  VPc <- Physio_params$V_plasmaFraction_M
+  VPc <- Physio_params[[paste0("V_plasmaFraction", suffix)]]
   VAPc <- 0.39*VPc                  # Arterial plasma
   VVPc <- 0.61*VPc                  # Venous plasma  
   
@@ -462,26 +554,25 @@ INHALATION_PARAMS <- function(expAGE, base.parm.c) { #could also be a function o
   
   # Calculate Plasma/Rest of the body partition coefficient
   # KpRe = partition coefficient of each of the lumped organs * fractional volume of the respective organ / sum of the fractional volume of all these organs
-  KpRe <- (Kp.df$KpSk*Physio_params$V_skinFraction_M +
-             Kp.df$KpSt*Physio_params$V_stomachFraction_M +
-             Kp.df$KpBr*Physio_params$V_brainFraction_M +
-             Kp.df$KpHe*Physio_params$V_heartFraction_M + 
-             Kp.df$KpMu*Physio_params$V_muscleFraction_M +
-             Kp.df$KpSp*Physio_params$V_spleenFraction_M +
-             Kp.df$KpGo*Physio_params$V_reproFraction_M +
-             Kp.df$KpBo*Physio_params$V_boneFraction_M) / (
-               Physio_params$V_skinFraction_M +
-                 Physio_params$V_stomachFraction_M +
-                 Physio_params$V_brainFraction_M +
-                 Physio_params$V_heartFraction_M +
-                 Physio_params$V_muscleFraction_M +
-                 Physio_params$V_spleenFraction_M +
-                 Physio_params$V_reproFraction_M +
-                 Physio_params$V_boneFraction_M)  
+  KpRe <- (Kp.df$KpSk * Physio_params[[paste0("V_skinFraction", suffix)]] +
+             Kp.df$KpSt * Physio_params[[paste0("V_stomachFraction", suffix)]] +
+             Kp.df$KpBr * Physio_params[[paste0("V_brainFraction", suffix)]] +
+             Kp.df$KpHe * Physio_params[[paste0("V_heartFraction", suffix)]] + 
+             Kp.df$KpMu * Physio_params[[paste0("V_muscleFraction", suffix)]] +
+             Kp.df$KpSp * Physio_params[[paste0("V_spleenFraction", suffix)]] +
+             Kp.df$KpGo * Physio_params[[paste0("V_reproFraction", suffix)]] +
+             Kp.df$KpBo * Physio_params[[paste0("V_boneFraction", suffix)]]) / (
+               Physio_params[[paste0("V_skinFraction", suffix)]] +
+                 Physio_params[[paste0("V_stomachFraction", suffix)]] +
+                 Physio_params[[paste0("V_brainFraction", suffix)]] +
+                 Physio_params[[paste0("V_heartFraction", suffix)]] +
+                 Physio_params[[paste0("V_muscleFraction", suffix)]] +
+                 Physio_params[[paste0("V_spleenFraction", suffix)]] +
+                 Physio_params[[paste0("V_reproFraction", suffix)]] +
+                 Physio_params[[paste0("V_boneFraction", suffix)]])  
   Kp.df$KpRe <- KpRe
   
   # Choose between calculated partition coefficients or initial ones (rat)
-  # In Kp.df, PF, PI, PK, PL, PSK and PR are the initial PCs from Kudo 2007 (rat). These were recalculated to total tissue (/fup) to enable differentiating the fup for the sensitivity analysis
   # Correcting for fraction unbound (as it was not incorporated in the input calculating file)
   PRc <- Kp.df$KpRe   # Rest
   PLuc <- Kp.df$KpLu  # Lungs

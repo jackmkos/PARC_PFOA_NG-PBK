@@ -5,7 +5,11 @@
 # --------------------------------------------------------------------------- #
 
 
-RUNandOUT <- function(exposure_type, expCONC, Tinput, tinterval, expAGE, expSTOP, Tstart, Tstop, Dt) {
+RUNandOUT <- function(exposure_type, 
+                      expCONC, expCONC_Oral = NULL, expCONC_Dermal = NULL, 
+                      Tinput, tinterval, expSTOP, 
+                      expAGE = NULL, expBW = NULL, sex = "M", 
+                      Tstart, Tstop, Dt) {
   
   
   # Load R file to calculate parameters
@@ -13,19 +17,25 @@ RUNandOUT <- function(exposure_type, expCONC, Tinput, tinterval, expAGE, expSTOP
   
   
   # Calculate parameters
-  base.parm.c = BASE_PARAMS(expAGE) # common parameters
+  base.parm.c = BASE_PARAMS(expAGE, expBW, sex) # common parameters
   parm.c <- switch(exposure_type,
                    "Oral" = c(base.parm.c, 
                                  expSTOP = expSTOP, 
                                  COral = expCONC, 
                                  Tinput = Tinput, 
                                  tinterval = tinterval),  
-                   "Dermal" = c(DERMAL_PARAMS(expAGE, base.parm.c), 
+                   "Dermal" = c(DERMAL_PARAMS(expAGE, expBW, sex, base.parm.c), 
                                 list(expSTOP = expSTOP, 
                                      CDermal = expCONC, 
                                      Tinput = Tinput, 
                                      tinterval = tinterval)),
-                   "Inhalation" = c(INHALATION_PARAMS(expAGE, base.parm.c), 
+                   "Oral_Dermal" = c(DERMAL_PARAMS(expAGE, expBW, sex = "M", base.parm.c), 
+                                     list(expSTOP = expSTOP, 
+                                          COral = expCONC_Oral,
+                                          CDermal = expCONC_Dermal, 
+                                          Tinput = Tinput, 
+                                          tinterval = tinterval)),
+                   "Inhalation" = c(INHALATION_PARAMS(expAGE, expBW, sex = "M", base.parm.c), 
                                     list(expSTOP = expSTOP, 
                                          CLung = expCONC, 
                                          Tinput = Tinput, 
@@ -69,6 +79,24 @@ RUNandOUT <- function(exposure_type, expCONC, Tinput, tinterval, expAGE, expSTOP
                                  AR = 0, 
                                  AP = 0, 
                                  Ain = 0),
+                    "Oral_Dermal" = c(OD = 0,
+                                      DD = 0,
+                                      ASkB = 0,
+                                      ASk = 0, 
+                                      AIL = 0,
+                                      AI = 0, 
+                                      AFe = 0,
+                                      AL_ec = 0,
+                                      AL_ic = 0,
+                                      APTT = 0,
+                                      APTL = 0,
+                                      ARKT = 0,
+                                      ARKL = 0,
+                                      AUr = 0,
+                                      AA = 0,
+                                      AR = 0, 
+                                      AP = 0, 
+                                      Ain = 0),
                     "Inhalation" = c(LuD = 0,
                                      ALu = 0, 
                                      AIL = 0,
@@ -97,6 +125,7 @@ RUNandOUT <- function(exposure_type, expCONC, Tinput, tinterval, expAGE, expSTOP
   output_PFOA <- switch(exposure_type,
                         "Oral" = ORAL_PBK_RUN(A_init, parm.c, TIME = seq(Tstart,Tstop,by=Dt)),
                         "Dermal" = DERMAL_PBK_RUN(A_init, parm.c, TIME = seq(Tstart,Tstop,by=Dt)),
+                        "Oral_Dermal" = ORAL_DERMAL_PBK_RUN(A_init, parm.c, TIME = seq(Tstart, Tstop, by=Dt)),
                         "Inhalation" = INHALATION_PBK_RUN(A_init, parm.c, TIME = seq(Tstart,Tstop,by=Dt))
   )
   
@@ -122,6 +151,22 @@ RUNandOUT <- function(exposure_type, expCONC, Tinput, tinterval, expAGE, expSTOP
                                   "Plasma" = CP) %>% 
                            pivot_longer(cols = Intestine:Plasma, names_to = "Organ", values_to = "Concentration"),
                          "Dermal" = output.df %>% 
+                           transmute(
+                             time = time,
+                             CI = CI + CIL,
+                             CL = CL_ec + CL_ic,
+                             CK = CPTT + CPTL + CRKT + CRKL,
+                             CSk, CA, CR, CP  
+                           ) %>% 
+                           rename("Intestine" = CI, 
+                                  "Liver" = CL, 
+                                  "Kidney" = CK, 
+                                  "Adipose" = CA, 
+                                  "Rest" = CR,
+                                  "Skin" = CSk,
+                                  "Plasma" = CP) %>% 
+                           pivot_longer(cols = Intestine:Plasma, names_to = "Organ", values_to = "Concentration"), 
+                         "Oral_Dermal" = output.df %>% 
                            transmute(
                              time = time,
                              CI = CI + CIL,
@@ -168,8 +213,8 @@ RUNandOUT <- function(exposure_type, expCONC, Tinput, tinterval, expAGE, expSTOP
     # ylim(0,1) +
     theme_minimal() +
     theme(
-      axis.text = element_text(size = 12),
-      axis.title = element_text(size = 14)
+      axis.text = element_text(size = 10),
+      axis.title = element_text(size = 12)
     )+
     ylab("MB / ERROR")
   MB_plot
@@ -190,8 +235,8 @@ RUNandOUT <- function(exposure_type, expCONC, Tinput, tinterval, expAGE, expSTOP
          y = "Concentration (ng/ml)") +
     theme_minimal()+
     theme(
-      axis.text = element_text(size = 12),
-      axis.title = element_text(size = 14)
+      axis.text = element_text(size = 10),
+      axis.title = element_text(size = 12)
     )
   Plot_C_organs
   ggsave(filename = here(OUTPUT, "Plot_C_organ.png"), 
@@ -209,8 +254,8 @@ RUNandOUT <- function(exposure_type, expCONC, Tinput, tinterval, expAGE, expSTOP
          y = "Concentration (ng/ml)") +
     theme_minimal()+
     theme(
-      axis.text = element_text(size = 12),
-      axis.title = element_text(size = 14)
+      axis.text = element_text(size = 10),
+      axis.title = element_text(size = 12)
     )
   Plot_C_plasma
   ggsave(filename = here(OUTPUT, "Plot_C_plasma.png"), 
@@ -240,8 +285,75 @@ RUNandOUT <- function(exposure_type, expCONC, Tinput, tinterval, expAGE, expSTOP
   HalfLife <- half_life$half.life  # half-life in years
   print(HalfLife)
   
+  # Plot observed vs predicted half-life
+  ObsHalfLifes <- read_csv(here("Input", "HalfLifes.csv"))
+  
+  Observed.df <- ObsHalfLifes %>%
+    filter(species == "human",
+           chemical == "pfoa",
+           parameter== "HalfLife") %>%
+    select(c(value_average,n)) %>%
+    rename(HalfLife = value_average) %>%
+    mutate(value = 1,
+           Origin = "Observed")
+  Observed.df$HalfLife <- as.numeric(Observed.df$HalfLife) # years
+  Observed.df$n <- as.numeric(Observed.df$n)
+  
+  Predicted.df <- data.frame(
+    HalfLife = HalfLife,
+    Origin = "Predicted",
+    value = 1, n = 1)
+  Observed.df <- data.frame(
+    HalfLife = Observed.df$HalfLife,
+    Origin = "Observed",
+    value = 1,
+    n = Observed.df$n)
+  
+  HalfLifes <- rbind(Predicted.df, Observed.df)
+  
+  range <- c(min(Observed.df$n), max(Observed.df$n))
+  
+  Plot_HalfLifes <- ggplot() +
+    geom_violin(
+      data = Observed.df,
+      aes(value, HalfLife),
+      color = "transparent",
+      fill = "grey89") +
+    geom_point(
+      data = Observed.df,
+      aes(value, HalfLife, size = n),  
+      color = "black",
+      alpha = 0.5,  
+      shape = 20) +
+    geom_point(
+      data = Predicted.df,
+      aes(value, HalfLife),
+      color = "red",
+      alpha = 0.7,
+      size = 10,
+      shape = 18) +
+    labs(y = "Half life (years)") + 
+    scale_size_continuous(range = c(1, 10), 
+                          name = "Sample size") + 
+    theme_minimal() +
+    theme(
+      axis.text.x = element_blank(),
+      axis.ticks.x = element_blank(),
+      axis.title.x = element_blank(),
+      axis.text = element_text(size = 10),
+      axis.title = element_text(size = 12),
+      legend.position = "top"
+    )
+  Plot_HalfLifes
+  ggsave(filename = here(OUTPUT, "ExpVsSimHalfLife.png"), 
+         dpi = 300,
+         width = 17,      
+         height = 8,      
+         units = "cm")
   
   return(list(
+    Plot_C_organs,
+    Plot_HalfLifes,
     data = output.df,
     AUC = AUC,
     HalfLife = HalfLife

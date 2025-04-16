@@ -327,7 +327,7 @@ DERMAL_PBK_RUN <- function(A_init, parm.c, TIME){ # Input for ode
       KmBSEP <- KmBSEPc*MW                                 # ug/L (uM -> ug/L)
       
       # Renal clearance
-      Vmax_OAT4 = Vmax_OAT4c*MW*1e-3*60*24*SF_OAT*VPT      # ug/d (nmol -> ug, min -> d)
+      Vmax_OAT4 = Vmax_OAT4c*MW*60*24*SF_OAT*VPT           # ug/d (umol -> ug, min -> d)
       Km_OAT4 = Km_OAT4c*MW                                # ug/L, scaled from uM, Louisse et al. 2024 doi.org/10.1016/j.tox.2024.153961
       
       
@@ -578,7 +578,7 @@ ORAL_DERMAL_PBK_RUN <- function(A_init, parm.c, TIME){ # Input for ode
       KmBSEP <- KmBSEPc*MW                                 # ug/L (uM -> ug/L)
       
       # Renal clearance
-      Vmax_OAT4 = Vmax_OAT4c*MW*1e-3*60*24*SF_OAT*VPT      # ug/d (nmol -> ug, min -> d)
+      Vmax_OAT4 = Vmax_OAT4c*MW*60*24*SF_OAT*VPT           # ug/d (umol -> ug, min -> d)
       Km_OAT4 = Km_OAT4c*MW                                # ug/L, scaled from uM, Louisse et al. 2024 doi.org/10.1016/j.tox.2024.153961
       
       
@@ -591,7 +591,7 @@ ORAL_DERMAL_PBK_RUN <- function(A_init, parm.c, TIME){ # Input for ode
       OralD = DOral/Tinput*(t %% tinterval<Tinput)
       
       ## Dermal exposure ##
-      DDermal = CDermal*BW*DoseOn         # ug, PFOA oral dose
+      DDermal = CDermal*BW*DoseOn         # ug, PFOA dermal dose
       DermalD = DDermal/Tinput*(t %% tinterval<Tinput)
       
       ## Concentrations -------------------------
