@@ -60,7 +60,9 @@ The user should also provide the simulation relevant information directly in the
 - If neither expAGE and expBW are provided then the default bodyweight of 70kg is used.
 - If sex is not provided, then sex is assumed to be male (M). If sex is used then physiological constants are selected based on sex.
 - The main model parameters are the same for all exposure scenarios. If dermal exposure is used, then the skin is added with the relevant parameters. If inhalation exposure is used, then the lungs are added and plasma is changed to arterial and venous plasma. The "Rest" organ and relevant parameters are updated accordingly.
-- Default initial PFOA amounts in each organ are 0, if background PFOA organ concentrations are available, these can be directly added in the _RUN_and_OUTPUT.R_ file.
+- **Default initial PFOA amounts in each organ are 0**, if background PFOA organ concentrations are available, these can be directly added in the _RUN_and_OUTPUT.R_ file.
+- The model assumes **plasma-limited perfusion**. As PFOA is highly bound to plasma proteins, the blood volume and flow rates were directly converted to plasma values, by correcting with the hematocrit.
+- PFOA excretion to the bile is assumed to be the same as that of biliary acids.
 
 # Results
 
@@ -68,5 +70,13 @@ Results are saved in an Output folder which is not synchronised in github. To ch
 
 # The PBK model
 
-The basic PBK model 
+## Base structure
+The basic PBK model specifies the organs that are necessary to describe the toxicokinetics of PFOA.
+
+Entero-hepatic circulation is modelled as:
+
+- Active/Passive uptake from the intestinal lumen to the intestine (vascular and cellular).
+- Transfer to the liver extracellular space (vascular and interstitial space) via the portal plasma flow.
+- Active, OATP transporter driven and albumin facilitated, uptake to hepatocytes.
+- Active, BSEP mediated excretion to the intestinal lumen. [Physiologically, a fraction of billiary secretion is stored in the gallbladder and released after food consumption. For model simplification and as simulations are on the yearly scale, it was decided to assume direct excretion back to the intestinal lumen.]
 ![PFOA_PBK_model](https://github.com/user-attachments/assets/8ca3f246-8781-4aba-b35e-36149908a123)
