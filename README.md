@@ -53,7 +53,7 @@ The user should also provide the simulation relevant information directly in the
 - **Tstop**: (time in days), time when the simulation should stop, can be longer or shorter than the exposure time
 - **Dt**: (time in days), this is the iteration steps, default is 1, decreasing them would improve the accuracy of the model but will compromise computing speed
 
-## Defaults, assumptions and calculations
+## Defaults, calculations and assumptions  
 - Physiological constants (fractional organ volumes, blood flows, surface areas, GFR, kidney tubular flow, intestinal transit time) are selected based on the provided age, or bodyweight, in _CALC_Parameters.R_. The actual physiological parameters are calculated based on bodyweight in _PBK_model.R_.
 - If expAGE is not provided, then the physiological constants are selected based on the provided bodyweight. Physiological parameters are also calculated based on the provided bodyweight.
 - If expAGE is provided, then the physiological constants are selected based on the provided age. If expBW is also provided, then physiological parameters are calculated based on the actual bodyweight.
@@ -78,5 +78,6 @@ Entero-hepatic circulation is modelled as:
 - Active/Passive uptake from the intestinal lumen to the intestine (vascular and cellular).
 - Transfer to the liver extracellular space (vascular and interstitial space) via the portal plasma flow.
 - Active, OATP transporter driven and albumin facilitated, uptake to hepatocytes.
-- Active, BSEP mediated excretion to the intestinal lumen. [Physiologically, a fraction of billiary secretion is stored in the gallbladder and released after food consumption. For model simplification and as simulations are on the yearly scale, it was decided to assume direct excretion back to the intestinal lumen.]
+- Active, BSEP mediated excretion to the intestinal lumen. [1]Physiologically, a fraction of billiary secretion is stored in the gallbladder and released after food consumption. For model simplification and as simulations are on the yearly scale, it was decided to assume direct excretion back to the intestinal lumen.
+- 
 ![PFOA_PBK_model](https://github.com/user-attachments/assets/8ca3f246-8781-4aba-b35e-36149908a123)
