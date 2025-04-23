@@ -62,6 +62,7 @@ The user should also provide the simulation relevant information directly in the
 - The main model parameters are the same for all exposure scenarios. If dermal exposure is used, then the skin is added with the relevant parameters. If inhalation exposure is used, then the lungs are added and plasma is changed to arterial and venous plasma. The "Rest" organ and relevant parameters are updated accordingly.
 - **Default initial PFOA amounts in each organ are 0**, if background PFOA organ concentrations are available, these can be directly added in the _RUN_and_OUTPUT.R_ file.
 - The model assumes **plasma-limited perfusion**. As PFOA is highly bound to plasma proteins, the blood volume and flow rates were directly converted to plasma values, by correcting with the hematocrit.
+- Passive PFOA kinetics are driven from the tissue-plasma partition coefficients and PFOA fraction unbound in plasma. Tissue-plasma partition coefficients are calculated for all organs based on PFOA distribution coefficients to organ components (Allendorf et al. 2021) and the fractional volume of each component in each organ (found in _TissueComposition.csv_). 
 - PFOA excretion to the bile is assumed to be the same as that of biliary acids.
 
 # Results
@@ -73,11 +74,45 @@ Results are saved in an Output folder which is not synchronised in github. To ch
 ## Base structure
 The basic PBK model specifies the organs that are necessary to describe the toxicokinetics of PFOA.
 
-Entero-hepatic circulation is modelled as:
-
-- Active/Passive uptake from the intestinal lumen to the intestine (vascular and cellular).
+(Semi-permeability limited liver and intestine) Entero-hepatic circulation is modelled as:
+- Passive/active uptake from the intestinal lumen to the intestine (vascular and cellular).
 - Transfer to the liver extracellular space (vascular and interstitial space) via the portal plasma flow.
-- Active, OATP transporter driven and albumin facilitated, uptake to hepatocytes.
-- Active, BSEP mediated excretion to the intestinal lumen. [1]Physiologically, a fraction of billiary secretion is stored in the gallbladder and released after food consumption. For model simplification and as simulations are on the yearly scale, it was decided to assume direct excretion back to the intestinal lumen.
-- 
+- Active, OATP transporter mediated and albumin facilitated, uptake to hepatocytes.
+- Active, BSEP mediated excretion to the intestinal lumen from the hepatocytes. Physiologically, a fraction of billiary secretion is stored in the gallbladder and released after food consumption. For model simplification and as simulations are on the yearly scale, it was decided to assume direct excretion back to the intestinal lumen.
+- Fecal excretion based on physiological colonic transit time of luminal contents.
+
+(Sequential, semi-permeability limited kidney) Renal secretion and re-absorption is modelled as:
+- Glomerular filtration of the fraction unbound of PFOA in plasma to the proximal tubuly lumen, forming the primary urine.
+- Active, OAT4 transported mediated and albumin facilitated, re-uptake to the proximal tubule (vascular and cellular). 
+- Passive (kidney plasma flow driven) flow of PFOA from the proximal tubule to the rest of the kidney structures (loop of Henle, Distal tubule, Collecting duct), and then back to the systemic circulation.
+- Passive (tubular fluid flow driven) flow of PFOA from the proximal tubule lumen to the lumen of the rest of the kidney structures.
+- Renal excretion, from the lumen of the rest of the kindey structures to the urine, based on the physiological urinary flow rate.
+
+Given the affinity of PFOA to different type of lipids, a simple adipose compartment is also added. All other organs are lumped together in a "rest" compartment.
+
 ![PFOA_PBK_model](https://github.com/user-attachments/assets/8ca3f246-8781-4aba-b35e-36149908a123)
+
+## Oral exposure
+The PBK model for oral exposure is exactly that of the base structure. The initial amount of PFOA from oral dose is added to the intestinal lumen.
+
+## Dermal exposure
+The PBK model for dermal exposure has two additional compartments: skin and skin barrier (epidermis).
+
+- PFOA absorption from the skin is modelled as a clearance from the epidermis to the skin (vascular and cellular).
+- Distribution to the rest of the body from the skin is plasma flow driven.
+
+![PFOA_PBK_Dermal](https://github.com/user-attachments/assets/dc2d8f21-6dca-4b3f-beba-2df227999535)
+
+## Oral and dermal exposure
+As described above
+
+![PFOA_PBK_Oral_Dermal](https://github.com/user-attachments/assets/a28ace2d-fdad-4366-961a-f911661c5d0c)
+
+## Inhalation
+A lung compartment is added. Plasma is devided in arterial and venous. 
+Exposure is directly added to the lung compartment. In future versions a more mechanistic description of the inhalation exposure will be added, based on available mechanistic studies. 
+
+![PFOA_PBK_Inhalation](https://github.com/user-attachments/assets/86a6d8c7-75a4-4db9-8b9f-284c4800e178)
+
+
+
