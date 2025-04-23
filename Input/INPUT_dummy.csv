@@ -1,0 +1,6 @@
+Idcode,sex,expBW,expAGE,exposure_type,expCONC,expCONC_Oral,expCONC_Dermal,expSTOP,Tinput,tinterval
+1,M,60,NA,Oral,1.23E-04,1.23E-04,0,3570,1,1
+2,F,60,20,Oral_Dermal,1.23E-04,4.11E-05,8.23E-05,3570,1,1
+3,M,60,20,Dermal,1.23E-04,0,1.23E-04,3570,1,1
+4,F,60,NA,Dermal,1.23E-04,0,1.23E-04,3570,1,1
+5,M,60,70,Oral_Dermal,1.23E-04,8.23E-05,4.11E-05,3570,1,1

@@ -10,10 +10,10 @@
 BASE_PARAMS <- function(expAGE = NULL, expBW = NULL, sex = NULL) { 
   
   ## Function conditions ####
-  if (is.null(expAGE) && is.null(expBW)) {
+  if (is.na(expAGE) && is.na(expBW)) {
     expBW <- 70  # Default body weight
   }
-  if (is.null(sex)) {
+  if (is.na(sex)) {
     sex <- "M"  # Default sex to male
   }
   
@@ -23,13 +23,13 @@ BASE_PARAMS <- function(expAGE = NULL, expBW = NULL, sex = NULL) {
   suffix <- ifelse(sex == "F", "_F", "_M")
   
   
-  if (!is.null(expAGE)) { # filters based on age
+  if (!is.na(expAGE)) { # filters based on age
     Physio_params <- Physio_params %>% filter(age == expAGE)
-  } else if (!is.null(expBW)) { # filters based on BW if age is not provided
+  } else if (!is.na(expBW)) { # filters based on BW if age is not provided
     bw_col <- paste0("BW", suffix)
     Physio_params <- Physio_params %>%
-    mutate(bw_diff = abs(!!sym(bw_col) - expBW)) %>% # calculate difference between the input BW and the one from the lifestage calculations
-    filter(bw_diff == min(bw_diff)) # select the row that has the smallest difference in bW
+      mutate(bw_diff = abs(!!sym(bw_col) - expBW)) %>% # calculate difference between the input BW and the one from the lifestage calculations
+      filter(bw_diff == min(bw_diff)) # select the row that has the smallest difference in bW
   }
   
   Physio_params <- Physio_params %>% select(ends_with(suffix))
@@ -42,7 +42,7 @@ BASE_PARAMS <- function(expAGE = NULL, expBW = NULL, sex = NULL) {
   
   max_bw <- max(Physio_params[[paste0("BDW", suffix)]], na.rm = TRUE)
   
-  BW <- if (!is.null(expBW)) {
+  BW <- if (!is.na(expBW)) {
     if (expBW <= max_bw) {
       bw_col <- paste0("BW", suffix)
       Physio_params %>% mutate(bw_diff = abs(!!sym(bw_col) - expBW)) %>%
@@ -54,7 +54,7 @@ BASE_PARAMS <- function(expAGE = NULL, expBW = NULL, sex = NULL) {
   } else {
     Physio_params[[paste0("BDW", suffix)]]
   }
-  # if (!is.null(expBW) && expBW < max_bw) {
+  # if (!is.na(expBW) && expBW < max_bw) {
   #   BW <- Physio_params[[paste0("BDW", suffix)]]                  # L(kg),  Body weight
   # } else { #if the actual BW is above what is calculated from the lifestage equations, then we should still take the BW of the person to be more precise
   #   BW <- expBW
@@ -132,6 +132,7 @@ BASE_PARAMS <- function(expAGE = NULL, expBW = NULL, sex = NULL) {
   
   QUrc = 0.022                # L/d, Urine flow rate to the bladder 22 mL/kg BW/d [ICRP 89 page 161]
   GFRc = 0.18                 # L/d 18% of total renal plasma flow [ICRP 89 page 159] http://www.icrp.org/publication.asp?id=ICRP%20Publication%2089
+  # GFRc = Physio_params[[paste0("Q_GFRFraction", suffix)]]
   QT = 43.2*60*24/1000        # L/d, Tubular flow rate at the end of the proximal tubule, 43.2 ml/min TFR from Scotcher et al. 2016 https://doi.org/10.1016/j.ejps.2016.03.018 and Pletz
   
   
@@ -337,10 +338,10 @@ BASE_PARAMS <- function(expAGE = NULL, expBW = NULL, sex = NULL) {
 DERMAL_PARAMS <- function(expAGE = NULL, expBW = NULL, sex = "M", base.parm.c) { 
   
   ## Function conditions ####
-  if (is.null(expAGE) && is.null(expBW)) {
+  if (is.na(expAGE) && is.na(expBW)) {
     expBW <- 70  # Default body weight
   }
-  if (is.null(sex)) {
+  if (is.na(sex)) {
     sex <- "M"  # Default sex to male
   }
   
@@ -350,9 +351,9 @@ DERMAL_PARAMS <- function(expAGE = NULL, expBW = NULL, sex = "M", base.parm.c) {
   suffix <- ifelse(sex == "F", "_F", "_M")
   
   
-  if (!is.null(expAGE)) { # filters based on Age
+  if (!is.na(expAGE)) { # filters based on Age
     Physio_params <- Physio_params %>% filter(age == expAGE)
-  } else if (!is.null(expBW)) { # filters based on BW if Age is not provided
+  } else if (!is.na(expBW)) { # filters based on BW if Age is not provided
     bw_col <- paste0("BW", suffix)
     Physio_params <- Physio_params %>%
       mutate(bw_diff = abs(!!sym(bw_col) - expBW)) %>% # calculate difference between the input BW and the one from the lifestage calculations
@@ -372,6 +373,8 @@ DERMAL_PARAMS <- function(expAGE = NULL, expBW = NULL, sex = "M", base.parm.c) {
   # Skin
   VSkc <- Physio_params[[paste0("V_skinFraction", suffix)]]  # fractional skin volume
   SA_SkB = 15670                   # cm2, total body surface area except head, SCCS 2021 table 4 (https://health.ec.europa.eu/document/download/89af1a70-a2b1-44da-a868-e7d80a8e736c_en?filename=sccs_o_250.pdf)
+  # SA_SkBc =  9.1                   # cm2, surface area constant, based on the equation from Trine's model, this is for the total body surface area
+  
   H_SkB = 83.1                     # cm, average thickness of the skin barrier, 83.7 +- 16.6 J.Sandby-Moller et al. 2003, Table II DOI: 10.1080/00015550310015419
   VSkB = SA_SkB*H_SkB * 1e-3       # L, volume of the skin barrier 
   # # Notes Chrysa: Trine calculated the surface area based on the BodyWeight with this formula: SA_SkB = 9.1*(BW*1000)^0.666  # cm2, total body area of the skin (Husoy)
@@ -474,10 +477,10 @@ INHALATION_PARAMS <- function(expAGE = NULL, expBW = NULL, sex = "M", base.parm.
   
   
   ## Function conditions ####
-  if (is.null(expAGE) && is.null(expBW)) {
+  if (is.na(expAGE) && is.na(expBW)) {
     expBW <- 70  # Default body weight
   }
-  if (is.null(sex)) {
+  if (is.na(sex)) {
     sex <- "M"  # Default sex to male
   }
   
@@ -487,9 +490,9 @@ INHALATION_PARAMS <- function(expAGE = NULL, expBW = NULL, sex = "M", base.parm.
   suffix <- ifelse(sex == "F", "_F", "_M")
   
   
-  if (!is.null(expAGE)) { # filters based on Age
+  if (!is.na(expAGE)) { # filters based on Age
     Physio_params <- Physio_params %>% filter(age == expAGE)
-  } else if (!is.null(expBW)) { # filters based on BW if Age is not provided
+  } else if (!is.na(expBW)) { # filters based on BW if Age is not provided
     bw_col <- paste0("BW", suffix)
     Physio_params <- Physio_params %>%
       mutate(bw_diff = abs(!!sym(bw_col) - expBW)) %>% # calculate difference between the input BW and the one from the lifestage calculations

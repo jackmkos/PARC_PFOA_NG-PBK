@@ -11,6 +11,7 @@ ORAL_PBK_RUN <- function(A_init, parm.c, TIME){ # Input for ode
     with(as.list(c(state, parameters)), {
       
       ### Physiological ----
+      # SA_B <- SA_SkBc*((BW*1000)^0.666)  # cm2, Total body surface area (same as skin) 
       
       VIL <- VILc * BW                # L, Volume of intestinal lumen
       VI <- VIc * BW                  # L, Volume of intestine
@@ -45,6 +46,7 @@ ORAL_PBK_RUN <- function(A_init, parm.c, TIME){ # Input for ode
       
       QUr <- QUrc * BW              # L/d, Urine flow rate to the bladder 22 mL/kg BW/d [ICRP 89 page 161]
       GFR <- GFRc * QK              # L/d 18% of total renal plasma flow [ICRP 89 page 159] http://www.icrp.org/publication.asp?id=ICRP%20Publication%2089
+      # GFR <- GFRc*SA_B*1e-4
       QT <- QT                      # L/d, Proximal tubule fluid flow
       
       tco <- tco                    # /d, Bowel residence time in the colon

@@ -42,7 +42,7 @@ RUNandOUT <- function(exposure_type,
                                          tinterval = tinterval))
   )
   
-  write.csv(parm.c, file = here(OUTPUT, "ModelParameters.csv"), row.names = FALSE)
+  # write.csv(parm.c, file = here(OUTPUT, "ModelParameters.csv"), row.names = FALSE)
   
   
   # Add state
@@ -132,7 +132,7 @@ RUNandOUT <- function(exposure_type,
   
   # Creating data frames for data-analysis
   output.df <- output_PFOA %>% mutate(time = time/365)  # time in years
-  write.csv(output.df, file = here(OUTPUT, "PFOA_PBKoutput.csv"), row.names = FALSE)
+  # write.csv(output.df, file = here(OUTPUT, "PFOA_PBKoutput.csv"), row.names = FALSE)
   
   C_organs.df <- switch (exposure_type,
                          "Oral" = output.df %>% 
@@ -352,11 +352,15 @@ RUNandOUT <- function(exposure_type,
          units = "cm")
   
   return(list(
-    Plot_C_organs,
-    Plot_HalfLifes,
-    data = output.df,
-    AUC = AUC,
-    HalfLife = HalfLife
+    CALC_Parameters = parm.c,
+    OUT_RAW_data = output.df,
+    ANALYSED_data = data.frame(exposure_type = exposure_type,
+                               expAGE = expAGE,
+                               expBW = expBW,
+                               sex = sex,
+                               AUC = AUC,
+                               HalfLife = HalfLife),
+    OUT_Plots = list(Plot_C_organs, Plot_HalfLifes) # could be removed if it's too heavy for R
   ))
   
   

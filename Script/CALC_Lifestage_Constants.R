@@ -268,7 +268,7 @@ Variables_df = Variables_df %>%
   # Skin; compartment [10] in Ratier 2024
   mutate(Q_skinFraction_M = (V_skinFraction_M/0.0452)*0.052) %>% # sc_F[0-17] = (sc_V[i]  / sc_V_adult[i])  * sc_F_adult[i];
   mutate(Q_skinFraction_F = (V_skinFraction_F/0.0383)*0.051) %>% # sc_F[0-17] = (sc_V[i]  / sc_V_adult[i])  * sc_F_adult[i];
-  
+
   # Spleen; compartment [11] in Ratier 2024 (not used in our model, but needed for calculation of adipose tissue)
   mutate(Q_spleenFraction_M = (V_spleenFraction_M/0.0021)*0.031) %>% # sc_F[0-17] = (sc_V[i]  / sc_V_adult[i])  * sc_F_adult[i];
   mutate(Q_spleenFraction_F = (V_spleenFraction_F/0.0022)*0.031) %>% # sc_F[0-17] = (sc_V[i]  / sc_V_adult[i])  * sc_F_adult[i];
