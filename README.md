@@ -25,11 +25,12 @@ Git-hub branches structure:
 # Requirements for use:
 
 ## Needed packages:
-here
-tidyverse
-deSolve
-PKNCA
-pracma
+
+- here
+- tidyverse
+- deSolve
+- PKNCA
+- pracma
 
 ## Dependencies for running the DO_PFOA_PBK_4Population.R file:
 The user should create and INPUT.csv file, in the **same structure** as the _INPUT_dummy.csv_ file.
@@ -52,9 +53,20 @@ The user should also provide the simulation relevant information directly in the
 - **Tstop**: (time in days), time when the simulation should stop, can be longer or shorter than the exposure time
 - **Dt**: (time in days), this is the iteration steps, default is 1, decreasing them would improve the accuracy of the model but will compromise computing speed
 
-## Defaults and assumptions
+## Defaults, assumptions and calculations
+- Physiological constants (fractional organ volumes, blood flows, surface areas, GFR, kidney tubular flow, intestinal transit time) are selected based on the provided age, or bodyweight, in _CALC_Parameters.R_. The actual physiological parameters are calculated based on bodyweight in _PBK_model.R_.
 - If expAGE is not provided, then the physiological constants are selected based on the provided bodyweight. Physiological parameters are also calculated based on the provided bodyweight.
 - If expAGE is provided, then the physiological constants are selected based on the provided age. If expBW is also provided, then physiological parameters are calculated based on the actual bodyweight.
 - If neither expAGE and expBW are provided then the default bodyweight of 70kg is used.
 - If sex is not provided, then sex is assumed to be male (M). If sex is used then physiological constants are selected based on sex.
-- Default initial PFOA amounts in each organ are 0, if background PFOA organ concentrations are available, these can be directly added in the _RUN_and_OUTPUT.R_ file. 
+- The main model parameters are the same for all exposure scenarios. If dermal exposure is used, then the skin is added with the relevant parameters. If inhalation exposure is used, then the lungs are added and plasma is changed to arterial and venous plasma. The "Rest" organ and relevant parameters are updated accordingly.
+- Default initial PFOA amounts in each organ are 0, if background PFOA organ concentrations are available, these can be directly added in the _RUN_and_OUTPUT.R_ file.
+
+# Results
+
+Results are saved in an Output folder which is not synchronised in github. To change that update the git.ignore file.
+
+# The PBK model
+
+The basic PBK model 
+![PFOA_PBK_model](https://github.com/user-attachments/assets/8ca3f246-8781-4aba-b35e-36149908a123)
