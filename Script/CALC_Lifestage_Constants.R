@@ -7,32 +7,15 @@
 
 rm(list=ls()) # to clear out the global environment
 
-
-# Set working directory
-
-HOME = "C:/Users/pacho003/OneDrive - Wageningen University & Research/CP_L_R/PARC_PFOA_mechanistic"
-setwd(HOME)
-
-# Set input storage directory
-INPUT = file.path("Input", Sys.Date())
-dir.create(INPUT, recursive = TRUE)
-setwd(INPUT)
-
-
-# Load packages
-
-library(lubridate)
-library(ggplot2)
-library(deSolve)
-library(writexl)
-library(ggpubr)
+# Packages
+library(here)
 library(tidyverse)
-
-
-# For plotting
 library(showtext)
 font_add(family = "Garamond", regular = "GARA.TTF")
 showtext_auto()
+
+# Set storage directory
+INPUT <- here("Input")
 
 
 # LIFETIME EQUATIONS ####
@@ -46,22 +29,44 @@ TIME = seq(TSTART,TSTOP,by=DT)
 
 
 # Creating a dataframe for all the variables
-Variables_df = as.data.frame(list(TIME = TIME)) #df column 1 = simulation time, every step is 1 day
+Variables_df = as.data.frame(list(TIME = TIME)) # df column 1 = simulation time, every step is 1 day
 Variables_df = Variables_df %>%
   mutate(age = TIME/365) # add column 2 = age in days
 
 Variables_df = Variables_df %>%
   
-## Fractional Volumes ####
-# Body weight
-# BW_M_Ratier_2024 & BW_F_Ratier_2024 = Equation extracted from supplemental material from Ratier et al., 2024
-mutate(BW_M_Ratier_2024 = if_else(age <19.00093277, 74.16235828-(2*(74.16235828-57.19957758)/(exp(0.63466182*(age-13.31018000))+exp(0.05457656*(age-13.31018000)))),
-                                  -0.01129273*age^2 + 1.11817056*age + 56.74397436)) %>%
-  mutate(BW_F_Ratier_2024 = if_else(age <17.9374115, 62.95490567-(2*(62.95490567-49.36574299)/(exp(0.84039606*(age-11.56691488))+exp(0.06710088*(age-11.56691488)))),
-                                    -0.01258006*age^2 + 1.25029379*age + 44.4459234)) %>%
-  mutate(BDW_M_Ratier_2024 = 74.16235828-(2*(74.16235828-57.19957758)/(exp(0.63466182*(age-13.31018000))+exp(0.05457656*(age-13.31018000))))) %>%
-  mutate(BDW_F_Ratier_2024 = 62.95490567-(2*(62.95490567-49.36574299)/(exp(0.84039606*(age-11.56691488))+exp(0.06710088*(age-11.56691488)))))
+## Base Physiology ####
 
+# Body weight (kg), reference: Deepika et al. 2021, https://doi.org/10.1016/j.envres.2021.111287
+mutate(BW_M=3.382e+00+
+         2.866e+00*age+
+         (1.694e-01)*age^2-(1.169e-02)*age^3+
+         (2.577e-04)*age^4-(2.484e-06)*age^5+
+         (8.891e-09)*age^6,
+       BW_F=2.354+4.050*age +
+         -(3.240e-02)*age^2 +
+         -(3.057e-03)*age^3 +
+         (9.353e-05)*age^4 +
+         -(1.022e-06)*age^5 +
+         (3.918e-09)*age^6  ) %>% 
+# # BW_M_Ratier_2024 & BW_F_Ratier_2024 = Equation extracted from supplemental material from Ratier et al., 2024
+# mutate(BW_M_Ratier_2024 = if_else(age <19.00093277, 74.16235828-(2*(74.16235828-57.19957758)/(exp(0.63466182*(age-13.31018000))+exp(0.05457656*(age-13.31018000)))),
+#                                   -0.01129273*age^2 + 1.11817056*age + 56.74397436)) %>%
+#   mutate(BW_F_Ratier_2024 = if_else(age <17.9374115, 62.95490567-(2*(62.95490567-49.36574299)/(exp(0.84039606*(age-11.56691488))+exp(0.06710088*(age-11.56691488)))),
+#                                     -0.01258006*age^2 + 1.25029379*age + 44.4459234)) %>%
+#   mutate(BDW_M_Ratier_2024 = 74.16235828-(2*(74.16235828-57.19957758)/(exp(0.63466182*(age-13.31018000))+exp(0.05457656*(age-13.31018000))))) %>%
+#   mutate(BDW_F_Ratier_2024 = 62.95490567-(2*(62.95490567-49.36574299)/(exp(0.84039606*(age-11.56691488))+exp(0.06710088*(age-11.56691488)))))
+
+# Body height (cm2), reference: Deepika et al. 2021, https://doi.org/10.1016/j.envres.2021.111287
+  mutate(BH_M = (5.869e+01)+(1.265e+01)*age-(4.665e-01)*age^2+(7.198e-03)*age^3-(3.224e-05)*age^4-(2.512e-07)*age^5+(2.071e-09)*age^6,
+         BH_F = (5.373e+01)+(1.296e+01)*age-(5.506e-01)*age^2+(1.113e-02)*age^3-(1.106e-04)*age^4+(4.697e-07)*age^5-(4.416e-10)*age^6) %>% 
+  
+# Body Surface Area (m2), reference: Gastellu et al. 2024, 10.1016/j.envres.2024.120393 (supplementary file Physio_equations_detailed.xlsx, eq. from Pendse et al. 2020)
+  mutate(BSA_M = exp(-3.75 + 0.42*log(BH_M)+0.52*log(BW_M)),
+         BSA_F =  exp(-3.75 + 0.42*log(BH_F)+0.52*log(BW_F)))  
+
+
+  
 # Blood/Plasma/Hematocrit
 # Using Ratier et al. (2024) model, Fraction of arterial plasma, calculated from Filser 2000 p.43
 Fr_art_blood = 0.0178 / (0.0178 + 0.0533) #fraction of arterial blood 
@@ -90,12 +95,16 @@ a1_F = Param4_F - 3*b1_F
 b2_F = (Param5_F - Param4_F)/7
 a2_F = Param5_F - 10*b2_F
 
+
+
+## Fractional Volumes ####
+
 Variables_df = Variables_df %>%
-  select(TIME,age,BW_M_Ratier_2024,BW_F_Ratier_2024,BDW_M_Ratier_2024,BDW_F_Ratier_2024) %>%
-  rename(BW_M = BW_M_Ratier_2024) %>% #could actually be ignored as we only use BDW and not BW
-  rename(BW_F = BW_F_Ratier_2024) %>% #could actually be ignored as we only use BDW and not BW
-  rename(BDW_M = BDW_M_Ratier_2024) %>%
-  rename(BDW_F = BDW_F_Ratier_2024) %>%
+  # select(TIME,age,BW_M_Ratier_2024,BW_F_Ratier_2024,BDW_M_Ratier_2024,BDW_F_Ratier_2024) %>%
+  # rename(BW_M = BW_M_Ratier_2024) %>% #could actually be ignored as we only use BDW and not BW
+  # rename(BW_F = BW_F_Ratier_2024) %>% #could actually be ignored as we only use BDW and not BW
+  # rename(BDW_M = BDW_M_Ratier_2024) %>%
+  # rename(BDW_F = BDW_F_Ratier_2024) %>%
   
   # Adrenal; compartment [1] in Ratier 2024 (not used in our model, but needed for calculation of adipose tissue)
   mutate(V_adrenalFraction_M = 0.0002 + (0.00171 - 0.0002)*exp(-2.02*age)) %>%
@@ -108,8 +117,8 @@ Variables_df = Variables_df %>%
   mutate(V_bonenonperfusedFraction_F = 0.085 - V_boneFraction_F) %>%
   
   # Brain; compartment [3] in Ratier 2024 (not used in our model, but needed for calculation of adipose tissue)
-  mutate(V_brainFraction_M = (1.450 + (0.353 - 1.450) * exp (-0.440*age))/BDW_M) %>%
-  mutate(V_brainFraction_F = (1.300 + (0.347 - 1.300) * exp (-0.573*age))/BDW_F) %>%
+  mutate(V_brainFraction_M = (1.450 + (0.353 - 1.450) * exp (-0.440*age))/BW_M) %>%
+  mutate(V_brainFraction_F = (1.300 + (0.347 - 1.300) * exp (-0.573*age))/BW_F) %>%
   
   # Breast; compartment [4] in Ratier 2024 (not used in our model, but needed for calculation of adipose tissue)
   mutate(V_breastFraction_M = 3.42E-4*1/(1 + exp(-1.42*age + 20.1))) %>%
@@ -305,7 +314,37 @@ Variables_df = Variables_df %>%
   # Adipose tissue
   mutate(Q_adiposeFraction_M = (V_adiposeFraction_M/0.20)*0.052) %>% # sc_F[0-17] = (sc_V[i]  / sc_V_adult[i])  * sc_F_adult[i];
   mutate(Q_adiposeFraction_F = (V_adiposeFraction_F/0.3167)*0.087) # sc_F[0-17] = (sc_V[i]  / sc_V_adult[i])  * sc_F_adult[i];
-write.csv(Variables_df, "PhysioVariables.csv", row.names = FALSE)
+# write.csv(Variables_df, "PhysioVariables.csv", row.names = FALSE)
+
+
+## Glomerular Filtration Rate (L/day) : 
+## # Baseline neonatal GFR should be 20.0 mL/min: Qi = (20*0.9)/107.3 = 0.1678 mg/dL (Smeets 2022, https://doi.org/10.1681/ASN.2021101326)
+Variables_df <- Variables_df %>% 
+  # Initial age-dependent changes in GFR
+  mutate(
+    Q_GFRi_M = if_else(age < 18, 0.1678 + ((0.70  - 0.1678) / 18) * age,
+                       0.70),
+    Q_GFRi_F = if_else(age < 18, 0.1678 + ((0.90  - 0.1678) / 18) * age,
+                       0.90)) %>% 
+  # Baseline GFR for males and females (in L/day)
+  # (mL/min/1.73m^2 -> L/day)  # scale to actual BSA: SA_B*1e-4 / 1.73
+  mutate( 
+    Q_GFRBaseline_M = (107.3 * 1.44*(BSA_M)/1.73) / (0.9/Q_GFRi_M),
+    Q_GFRBaseline_F = (107.3 * 1.44*(BSA_M)/1.73) / (0.9/Q_GFRi_F)
+  ) %>% 
+  # Exponential decline after age 40
+  mutate(
+    Q_GFRc_M = if_else(age <= 40, Q_GFRBaseline_M,
+                       Q_GFRBaseline_M * 0.988^(age - 40)),
+    Q_GFRc_F = if_else(age <= 40, Q_GFRBaseline_F,
+                       Q_GFRBaseline_F * 0.988^(age - 40))
+  ) %>% 
+  mutate(
+    GFR_M = Q_GFRc_M*0.6944444444*1.73,
+    GFR_F = Q_GFRc_F*0.6944444444*1.73
+  )
+
+write.csv(Variables_df, here("Input", "PhysioVariables.csv"), row.names = FALSE)
 
 
 # ## Check mass balance volumes and flows ####
@@ -337,8 +376,8 @@ write.csv(Variables_df, "PhysioVariables.csv", row.names = FALSE)
 # 
 # PLOT_BWChanges =
 #   ggplot()+
-#   geom_path(data = Variables_M_df, aes(age, BDW_M, color = "Male")) +
-#   geom_path(data = Variables_F_df, aes(age, BDW_F, color = "Female")) +
+#   geom_path(data = Variables_M_df, aes(age, BW_M, color = "Male")) +
+#   geom_path(data = Variables_F_df, aes(age, BW_F, color = "Female")) +
 #   scale_color_manual(values = c("Male" = "mediumpurple",
 #                                 "Female" = "mediumpurple4"),
 #                      name = "") +
@@ -361,6 +400,20 @@ write.csv(Variables_df, "PhysioVariables.csv", row.names = FALSE)
 # 
 
 ## Plots ####
+
+ggplot() + 
+  geom_path(data = Variables_df, aes(age, GFR_M, colour = "Male")) +
+  geom_path(data = Variables_df, aes(age, GFR_F, colour = "Female")) +
+  scale_colour_manual(values = c("Male" = "orange",
+                                 "Female" = "brown"),
+                      name = "") +
+  theme_minimal()+
+  ylab("GFR (ml/min)") +
+  xlab("Age (years)")
+  
+
+## 
+## 
 # PLOT_VolumeChanges =
 #   ggplot()+
 #   geom_path(data = FemaleVariables_df, aes(age, V_liver_F, color = "Liver")) +

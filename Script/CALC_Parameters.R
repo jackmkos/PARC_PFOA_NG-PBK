@@ -40,30 +40,32 @@ BASE_PARAMS <- function(expAGE = NULL, expBW = NULL, sex = NULL) {
     mutate(BloodFlowSum = rowSums(select(., starts_with("Q_")))) %>% # 0.9935, total blood flow as the sum of the fractional blood flows of all organs on which we have data
     mutate(VolumesSum = rowSums(select(., starts_with("V_")))) # 0.96, total volume as the sum of the fractional organ volumes of all organs on which we have data
   
-  max_bw <- max(Physio_params[[paste0("BDW", suffix)]], na.rm = TRUE)
+  max_bw <- max(Physio_params[[paste0("BW", suffix)]], na.rm = TRUE)
   
   BW <- if (!is.na(expBW)) {
-    if (expBW <= max_bw) {
-      bw_col <- paste0("BW", suffix)
-      Physio_params %>% mutate(bw_diff = abs(!!sym(bw_col) - expBW)) %>%
-        filter(bw_diff == min(bw_diff, na.rm = TRUE)) %>%
-        pull(paste0("BDW", suffix))  
-    } else {
-      expBW
-    }
+    expBW
   } else {
-    Physio_params[[paste0("BDW", suffix)]]
-  }
-  # if (!is.na(expBW) && expBW < max_bw) {
-  #   BW <- Physio_params[[paste0("BDW", suffix)]]                  # L(kg),  Body weight
-  # } else { #if the actual BW is above what is calculated from the lifestage equations, then we should still take the BW of the person to be more precise
-  #   BW <- expBW
-  # }
-  
+    Physio_params[[paste0("BW", suffix)]]}
   
   QC <- Physio_params[[paste0("CardOut", suffix)]]              # L/d, This is corrected for hematocrit already so it's plasma
   Hct <- Physio_params[[paste0("Hct", suffix)]]                 # Hematocrit
   
+  BH <- Physio_params[[paste0("BW", suffix)]]                   # Height (cm)
+  BSA <- exp(-3.75 + 0.42*log(BH)+0.52*log(BW))*1e4             # Body Surface area (cm2)
+  
+  # To estimate GFR based on BSA and BW
+  Q <- if(sex == "F"){                                       # Q
+    if_else(expAGE < 18, 0.1678 + ((0.90  - 0.1678) / 18) * expAGE,
+                       0.90)
+  } else {
+    if_else(expAGE < 18, 0.1678 + ((0.70  - 0.1678) / 18) * expAGE,
+                       0.70)
+  } 
+  
+  GFRb = (107.3 * 1.44*(BSA*1e-4)/1.73) / (0.9/Q)            # Baseline GFR (L/day), (mL/min/1.73m^2 -> L/day)  # scale to actual BSA: BSA*1e-4 / 1.73
+  
+  GFR = if_else(expAGE <= 40, GFRb, GFRb * 0.988^(expAGE - 40)) # Actual GFR (L/day), exponential decline after expAGE 40
+
   
   ### Organ volumes -------------------------
   
@@ -132,7 +134,6 @@ BASE_PARAMS <- function(expAGE = NULL, expBW = NULL, sex = NULL) {
   
   QUrc = 0.022                # L/d, Urine flow rate to the bladder 22 mL/kg BW/d [ICRP 89 page 161]
   GFRc = 0.18                 # L/d 18% of total renal plasma flow [ICRP 89 page 159] http://www.icrp.org/publication.asp?id=ICRP%20Publication%2089
-  # GFRc = Physio_params[[paste0("Q_GFRFraction", suffix)]]
   QT = 43.2*60*24/1000        # L/d, Tubular flow rate at the end of the proximal tubule, 43.2 ml/min TFR from Scotcher et al. 2016 https://doi.org/10.1016/j.ejps.2016.03.018 and Pletz
   
   
@@ -304,6 +305,7 @@ BASE_PARAMS <- function(expAGE = NULL, expBW = NULL, sex = NULL) {
    QKc = QKc,
    QAc = QAc,
    QUrc = QUrc,
+   GFR = GFR,
    GFRc = GFRc,
    QT = QT,
    tco = tco,
