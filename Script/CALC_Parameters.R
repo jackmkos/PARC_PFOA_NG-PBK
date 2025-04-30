@@ -365,6 +365,15 @@ DERMAL_PARAMS <- function(expAGE = NULL, expBW = NULL, sex = "M", base.parm.c) {
   
   Physio_params <- Physio_params %>% select(ends_with(suffix))
   
+  
+  BW <- if (!is.na(expBW)) {
+    expBW
+  } else {
+    Physio_params[[paste0("BW", suffix)]]}
+  BH <- Physio_params[[paste0("BW", suffix)]]                   # Height (cm)
+  BSA <- exp(-3.75 + 0.42*log(BH)+0.52*log(BW))*1e4             # Body Surface area (cm2), reference: Gastellu et al. 2024, 10.1016/j.envres.2024.120393 (supplementary file Physio_equations_detailed.xlsx, eq. from Pendse et al. 2020)
+  # Trine calculated the surface area based on the BodyWeight with this formula: SA_SkB = 9.1*(BW*1000)^0.666  # cm2, total body area of the skin (Husoy)
+  # Another option: BSA = 0.02350*BH^0.4226*BW^0.51456, ref. https://www.rivm.nl/bibliotheek/rapporten/090013003.pdf
 
   # Physiological Parameters ####
   Physio_params <- Physio_params %>% 
@@ -374,14 +383,11 @@ DERMAL_PARAMS <- function(expAGE = NULL, expBW = NULL, sex = "M", base.parm.c) {
   
   # Skin
   VSkc <- Physio_params[[paste0("V_skinFraction", suffix)]]  # fractional skin volume
-  SA_SkB = 15670                   # cm2, total body surface area except head, SCCS 2021 table 4 (https://health.ec.europa.eu/document/download/89af1a70-a2b1-44da-a868-e7d80a8e736c_en?filename=sccs_o_250.pdf)
-  # SA_SkBc =  9.1                   # cm2, surface area constant, based on the equation from Trine's model, this is for the total body surface area
-  
-  H_SkB = 83.1                     # cm, average thickness of the skin barrier, 83.7 +- 16.6 J.Sandby-Moller et al. 2003, Table II DOI: 10.1080/00015550310015419
-  VSkB = SA_SkB*H_SkB * 1e-3       # L, volume of the skin barrier 
-  # # Notes Chrysa: Trine calculated the surface area based on the BodyWeight with this formula: SA_SkB = 9.1*(BW*1000)^0.666  # cm2, total body area of the skin (Husoy)
-  # # Trine's value provides the surface total surface area, but according to the SCCS, if we take the body lotion,then we should remove the surface area of the head from our calculations
-  # # The general equation is SA = 0.02350*H^0.4226*W^0.51456, ref. https://www.rivm.nl/bibliotheek/rapporten/090013003.pdf
+  SA_SkB <- BSA                       # cm2, total body surface area
+  # SA_SkB <- 15670                   # cm2, total body surface area except head, SCCS 2021 table 4 (https://health.ec.europa.eu/document/download/89af1a70-a2b1-44da-a868-e7d80a8e736c_en?filename=sccs_o_250.pdf)
+
+  H_SkB <- 83.1                     # cm, average thickness of the skin barrier, 83.7 +- 16.6 J.Sandby-Moller et al. 2003, Table II DOI: 10.1080/00015550310015419
+  VSkB <- SA_SkB*H_SkB * 1e-3       # L, volume of the skin barrier 
   
   QSkc <- Physio_params[[paste0("Q_skinFraction", suffix)]]  # fractional skin blood flow
   

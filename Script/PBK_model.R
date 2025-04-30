@@ -5,7 +5,7 @@
 # --------------------------------------------------------------------------- #
 
 # ORAL ####
-ORAL_PBK_RUN <- function(A_init, parm.c, TIME){ # Input for ode
+ORAL_PBK_RUN <- function(y, parms, times){ # Input for ode
   
   PBK.model <- function(t, state, parameters){
     with(as.list(c(state, parameters)), {
@@ -48,7 +48,7 @@ ORAL_PBK_RUN <- function(A_init, parm.c, TIME){ # Input for ode
       # GFR <- GFR
       QT <- QT                      # L/d, Proximal tubule fluid flow
       
-      tco <- tco                    # /d, Bowel residence time in the colon
+      tco <- tco                    # /d, Bowel residence times in the colon
       
       
       ### Physicochemical ----
@@ -221,17 +221,16 @@ ORAL_PBK_RUN <- function(A_init, parm.c, TIME){ # Input for ode
     })
   }
   
-  output_PFOA <-lsoda(y = A_init, 
-                      times = TIME, 
+  output_PBK <-lsoda(y = y, 
+                      times = times, 
                       func = PBK.model,
-                      parms = parm.c
-                      )
+                      parms = parms)
   
-  return(as.data.frame(output_PFOA))
+  return(as.data.frame(output_PBK))
 }
   
 # DERMAL ####
-DERMAL_PBK_RUN <- function(A_init, parm.c, TIME){ # Input for ode
+DERMAL_PBK_RUN <- function(y, parms, times){ # Input for ode
   
   
   PBK.model <- function(t, state, parameters){
@@ -280,7 +279,7 @@ DERMAL_PBK_RUN <- function(A_init, parm.c, TIME){ # Input for ode
       # GFR <- GFR
       QT <- QT                      # L/d, Proximal tubule fluid flow
       
-      tco <- tco                    # /d, Bowel residence time in the colon
+      tco <- tco                    # /d, Bowel residence times in the colon
       
       
       ### Physicochemical ----
@@ -472,18 +471,17 @@ DERMAL_PBK_RUN <- function(A_init, parm.c, TIME){ # Input for ode
     })
   }
   
-  output_PFOA <-lsoda(y = A_init, 
-                      times = TIME, 
+  output_PBK <-lsoda(y = y, 
+                      times = times, 
                       func = PBK.model,
-                      parms = parm.c
-  )
+                      parms = parms)
   
-  return(as.data.frame(output_PFOA))
+  return(as.data.frame(output_PBK))
 }
 
 
 # ORAL & DERMAL ####
-ORAL_DERMAL_PBK_RUN <- function(A_init, parm.c, TIME){ # Input for ode
+ORAL_DERMAL_PBK_RUN <- function(y, parms, times){ # Input for ode
   
   
   PBK.model <- function(t, state, parameters){
@@ -532,7 +530,7 @@ ORAL_DERMAL_PBK_RUN <- function(A_init, parm.c, TIME){ # Input for ode
       # GFR <- GFR
       QT <- QT                      # L/d, Proximal tubule fluid flow
       
-      tco <- tco                    # /d, Bowel residence time in the colon
+      tco <- tco                    # /d, Bowel residence times in the colon
       
       
       ### Physicochemical ----
@@ -729,19 +727,17 @@ ORAL_DERMAL_PBK_RUN <- function(A_init, parm.c, TIME){ # Input for ode
     })
   }
   
-  output_PFOA <-lsoda(y = A_init, 
-                      times = TIME, 
+  output_PBK <-lsoda(y = y, 
+                      times = times, 
                       func = PBK.model,
-                      parms = parm.c
-  )
+                      parms = parms)
   
-  return(as.data.frame(output_PFOA))
+  return(as.data.frame(output_PBK))
 }
 
 
-
 # INHALATION ####
-INHALATION_PBK_RUN <- function(A_init, parm.c, TIME){ # Input for ode
+INHALATION_PBK_RUN <- function(y, parms, times){ # Input for ode
   
   
   PBK.model <- function(t, state, parameters){
@@ -791,7 +787,7 @@ INHALATION_PBK_RUN <- function(A_init, parm.c, TIME){ # Input for ode
       # GFR <- GFR
       QT <- QT                      # L/d, Proximal tubule fluid flow
       
-      tco <- tco                    # /d, Bowel residence time in the colon
+      tco <- tco                    # /d, Bowel residence times in the colon
       
       
       ### Physicochemical ----
@@ -978,13 +974,12 @@ INHALATION_PBK_RUN <- function(A_init, parm.c, TIME){ # Input for ode
     })
   }
   
-  output_PFOA <-lsoda(y = A_init, 
-                      times = TIME, 
+  output_PBK <-lsoda(y = y, 
+                      times = times, 
                       func = PBK.model,
-                      parms = parm.c
-  )
+                      parms = parms)
   
-  return(as.data.frame(output_PFOA))
+  return(as.data.frame(output_PBK))
 }
 
 
