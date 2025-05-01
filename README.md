@@ -7,14 +7,15 @@ Git-hub branches structure:
   
 # Git-hub file structure:
 ## Input folder contains:
-- **INPUT_dummy.csv**: file which is an example of how the input file from biomonitoring data should look like. Needed for running the _Do_PFOA_PBK_4Population.R_ file.
+- **INPUT_dummy.csv**: file which is an example of how the input file from biomonitoring data should look like. Needed for running the _DO_PFOA_PBK.R_ file. In the file, Idcode should be a numeric value (it's only used to link PBK results of that number to the relvant input information from this file)
 - **HalfLives.csv**: file which contains the observed half-lifes from human biomonitoring data, details regarding sex, number of subjects per study, reference and other study information are found in the file. Needed for compairing predicted with observed halflife in _RUN_and_OUTPUT.R_ and _PLOT_ObservedVSPredicted.R_ files.
 - **PhysioVariables.csv**: file which contains the calculated physiological constants, based on the lifestage equations from Ratier et al. 2024. File calculated in _CALC_Lifestage_Constants.R_ file. Needed for calculating the PBK model input parameters in _CALC_Parameters.R_ file.
 - **TissueComposition.csv**: file which contains the updated tissue composition (fractional volume of membrane lipids, albumine, structural proteins, water, fatty acids binding protein) per tissue. Needed for calculating the tissue-plasma partition coefficients in _CALC_Parameters.R_ file.
 
 ## Script folder contains:
-- **DO_PFOA_PBK_4Population.R**: the only file that the user needs to use. The file should be used together with human biomonitoring data. It has a loop to run the PBK model and save the PBK predictions per person(subject).
-- **DO_PFOA_PBK.R**: same file as above, but the user should manually add the relevant input data. The file only runs for one subject.
+- **DO_PFOA_PBK.R**: **the only file that a user needs**
+    - For multi-person modeling: the user should input the relevant input data (for example from HBM data) in the same format as the *INPUT-dummy.csv file*.
+    - For 1-person modeling: the user should manually add the relevant input data.
 - **RUN_and_OUTPUT.R**: file which contains the code for calculating the input parameters, running the PBK model and analysing the results depending on exposure type
 - **PBK_model.R**: file which contains the actual PFOA PBK model code for all three types of exposure
 - **CALC_Parameters.R**: file which contains the code for calculating the input parameters for the PBK model
@@ -22,20 +23,26 @@ Git-hub branches structure:
 - **PLOT_ObservedVSPredicted.R**: file with the code for ploting observed vs predicted concentration over time curves and observed vs predicted halflife distributions.
 
 
-# Requirements for use:
+# Dependencies for running the DO_PFOA_PBK.R file:
 
 ## Needed packages:
 
-- here
-- tidyverse
-- deSolve
-- PKNCA
-- pracma
+1. here
+2. tidyverse
+3. deSolve
+4. PKNCA
+5. pracma
 
-## Dependencies for running the DO_PFOA_PBK_4Population.R file:
-The user should create and INPUT.csv file, in the **same structure** as the _INPUT_dummy.csv_ file.
+## Inputs:
 
-- **Idcode**: (number) subject Id (used to link PBK results to the input information)
+The user should choose between:
+- **Lifestage > "Yes":** to re-calculate human physiological input data per simulated year. **The data is re-calculated based on age, therefore expAGE is a mandatory input to run this option**
+  - **Lifestage > "No":** indicates that the model assumes the same physiology throughout the whole simulation time. (For example, for a simulated person that is 30 years old with a bodyweight of 60kg, if the simulation is run for 50 year it is assumed that the bodyweight stays at 60kg during the 50 years.)
+    
+- **Population > "Yes":** if multuple people are run (for example in the case of running exposure data from HBM studies)
+  - **Population > "No":** indicates that the user will input data related to a one person exposure
+
+Required input to run the model:
 - **sex**: (M or F)subject sex
 - **expBW**: (kg) if available the bodyweight of the subject at the time of exposure
 - **expAGE**: (number in years) if available the age of the subject at the begining of exposure
@@ -46,14 +53,21 @@ The user should create and INPUT.csv file, in the **same structure** as the _INP
 - **expSTOP**: (number in days), time after which the exposure should stop
 - **Tinput**: (number in days), time that it takes for the exposure to happen, or where each exposure lasts (for example the dermal application of a make-up product is 8hours) (for oral exposure via water or food it's minimal and can be assumed 1)
 - **tinterval**: (number in days), time between each exposure (for example the interval between each dermal application of a make-up product is 24h) (for oral exposure it can be assumed 1)
-
-The user should also provide the simulation relevant information directly in the R file:
-
-- **Tstart**: (time in days), time when the exposure started, default is 0
+- - **Tstart**: (time in days), time when the exposure started, default is 0
 - **Tstop**: (time in days), time when the simulation should stop, can be longer or shorter than the exposure time
 - **Dt**: (time in days), this is the iteration steps, default is 1, decreasing them would improve the accuracy of the model but will compromise computing speed
 
+How to provide the input data:
+
+- For running a population (from HBM data) model: the user should create and INPUT.csv file, in the **same structure** as the _INPUT_dummy.csv_ file. 
+- For running a -one person- model: the user should add the relevant data directly in the .R file. 
+
+
+The user should also provide the simulation relevant information directly in the R file:
+
+
 ## Defaults, calculations and assumptions  
+- To run with the lifestage option, exposure age (expAGE) is requred. Noting also that the bodyweight is predicted based on the age so even a bodyweight is provided it will be over-run by the predicted one. 
 - Physiological constants (fractional organ volumes, blood flows, surface areas, GFR, kidney tubular flow, intestinal transit time) are selected based on the provided age, or bodyweight, in _CALC_Parameters.R_. The actual physiological parameters are calculated based on bodyweight in _PBK_model.R_.
 - If expAGE is not provided, then the physiological constants are selected based on the provided bodyweight. Physiological parameters are also calculated based on the provided bodyweight.
 - If expAGE is provided, then the physiological constants are selected based on the provided age. If expBW is also provided, then physiological parameters are calculated based on the actual bodyweight.
