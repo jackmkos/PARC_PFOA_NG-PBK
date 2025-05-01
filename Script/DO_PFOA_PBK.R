@@ -13,15 +13,15 @@
   library(PKNCA)
   library(pracma)
   
-  # Set exposure type, choose between "Oral", "Dermal", "Oral_Dermal" (if exposure is both Oral and Dermal), Inhalation"
-  exposure_type = "Inhalation"
+  # Set output storage directory
+  OUTPUT <- here("Output", format(Sys.Date(), "%Y-%m-%d"), format(Sys.time(), "%H-%M-%S"))
+  dir.create(OUTPUT, recursive = TRUE)
   
   # Choose if physiology should change with age ("Yes" to include physiological changes due to age and "No" to assume the same physiology over time)
-  lifestagePhysiology = "No" #No Yes
+  Lifestage = "Yes" 
   
-  # Set output storage directory
-  OUTPUT <- here("Output", format(Sys.Date(), "%Y-%m-%d"), format(Sys.time(), "%H-%M-%S"), exposure_type)
-  dir.create(OUTPUT, recursive = TRUE)
+  # Choose to include population or individual exposure ("Yes" to include population based and "No" to only run the model for one person)
+  Population = "Yes" 
   
   # Load files
   Physio.c <- read_csv(here("Input", "PhysioVariables.csv"))
@@ -29,80 +29,237 @@
   source(here("Script", "RUN_and_OUTPUT.R"))
   
   
-  # Add input information
+  # Load input ----
   
-  # Exposure-relevant information
-  exposure_type = exposure_type # type of exposure
-  expCONC = 0.024 + 0.024 # ug/kg/day concentration
-  expCONC_Oral = 0.024 # ug/kg/day concentration to be used only when both oral and dermal are used
-  expCONC_Dermal = 0.024 # ug/kg/day concentration to be used only when both oral and dermal are used
-  Tinput = 1 # for repeated exposure or so default = 1
-  tinterval = 1 # for repeated exposure or so default = 1
-  expSTOP = 40*356 # time in days after which the exposure stopped
-  
-  # Subject-relevant information
-  expAGE = 30 # years old age at exposure if not provided then age argument is not used physiology is based on BW
-  expBW = NA # kg if not provided then the BW of the corresponding age and sex is taken; if both BW and Age are not given then a default BW = 70 is taken; if BW is higher than the BW from the lifestage equations then the actual BW overwrites the calculated one
-  sex = "M" # sex either "F" or "M" if none then default is "M"
-  
-  # Simulation relevant information
-  Tstart = 0 # days start of the simulation
-  Tstop = 50*356 # days stop of the simulation
-  Dt = 1 # days iteration steps (decrease/increase depending on run time)
-  
-
-  RESULTS <- if(!lifestagePhysiology == "Yes"){
+  if(Population == "Yes"){
     
-    RUNandOUT(
+    INPUT_dummy <- read.csv(here("Input", "INPUT_dummy.csv")) 
+    Input <- INPUT_dummy
+    
+    if(Lifestage == "Yes" && any(is.na(INPUT_dummy$expAGE))){
       
-      # Exposure-relevant information
-      exposure_type = exposure_type, 
-      expCONC = expCONC, 
-      expCONC_Oral = expCONC_Oral, 
-      expCONC_Dermal = expCONC_Dermal, 
-      Tinput = Tinput, 
-      tinterval = tinterval, 
-      expSTOP = expSTOP, 
+      warning("Removing ", sum(is.na(INPUT_dummy$expAGE)), " samples as they had NA(s) as expAGE; exposure AGE is needed to run the lifestage model")
+      Input <- filter (INPUT_dummy, !is.na(expAGE))
       
-      # Subject-relevant information
-      expAGE = expAGE, 
-      expBW = expBW, 
-      sex = sex, 
-      
-      # Simulation relevant information
-      Tstart = Tstart, 
-      Tstop = Tstop, 
-      Dt = Dt 
-      
+    } 
+    
+    nPeople <- as.numeric(nrow(Input)) # number of people
+    Pop.RESULTS <- list(
+      CALC_Parameters = vector("list", nPeople), # list of length nPeople
+      OUT_RAW_data = vector("list", nPeople),
+      ANALYSED_data = vector("list", nPeople),
+      OUT_Plots = vector("list", nPeople) # could be removed if it's too heavy for R
     )
     
-  } else {
     
-    RUNandOUT_lifestage(
-      
-      # Exposure-relevant information
-      exposure_type = exposure_type, 
-      expCONC = expCONC, 
-      expCONC_Oral = expCONC_Oral, 
-      expCONC_Dermal = expCONC_Dermal, 
-      Tinput = Tinput, 
-      tinterval = tinterval, 
-      expSTOP = expSTOP, 
-      
-      # Subject-relevant information
-      expAGE = expAGE, 
-      expBW = expBW, 
-      sex = sex, 
-      
-      # Simulation relevant information
-      Tstart = Tstart, 
-      Tstop = Tstop, 
-      Dt = Dt 
-      
+    } else {
+    
+    # Set exposure type, choose between "Oral", "Dermal", "Oral_Dermal" (if exposure is both Oral and Dermal), Inhalation"
+    exposure_type = "Inhalation"
+    
+    # Add input information
+    
+    # Exposure-relevant information
+    exposure_type = exposure_type # type of exposure
+    expCONC_Oral = 0.024 # ug/kg/day concentration to be used only when both oral and dermal are used
+    expCONC_Dermal = 0.024 # ug/kg/day concentration to be used only when both oral and dermal are used
+    expCONC = expCONC_Oral + expCONC_Dermal # ug/kg/day concentration
+    Tinput = 1 # for repeated exposure or so default = 1
+    tinterval = 1 # for repeated exposure or so default = 1
+    expSTOP = 40*356 # time in days after which the exposure stopped
+    
+    # Subject-relevant information
+    expAGE = 30 # years old age at exposure if not provided then age argument is not used physiology is based on BW
+    expBW = NA # kg if not provided then the BW of the corresponding age and sex is taken; if both BW and Age are not given then a default BW = 70 is taken; if BW is higher than the BW from the lifestage equations then the actual BW overwrites the calculated one
+    sex = "F" # sex either "F" or "M" if none then default is "M"
+    
+    # Simulation relevant information
+    Tstart = 0 # days start of the simulation
+    Tstop = 50*356 # days stop of the simulation
+    Dt = 10 # days iteration steps (decrease/increase depending on run time)
+    
+    
+    # List for storing results
+    RESULTS <- list(
+      CALC_Parameters = vector("list", 1), 
+      OUT_RAW_data = vector("list", 1),
+      ANALYSED_data = vector("list", 1),
+      OUT_Plots = vector("list", 1) 
     )
+    
+    if(Lifestage == "Yes"){
+      
+      expBW <- NA # forcing BW to be NA as BW is taken based on age in the lifestage model
+      if(is.na(expAGE)){
+        stop("expAGE required to run the lifestage option")
+      }
+      
+    }
     
   }
 
+  
+  # Run model ----
+  
+  MODEL_OUTPUT <- if(Population == "Yes"){ # Population exposure
+    
+    if(Lifestage == "Yes"){ # Population and lifestage
+      
+      for (i in 1:nPeople) {
+        
+        # Run the model per person
+        Pop.MODEL_OUTPUT <- RUNandOUT_lifestage(
+          
+          exposure_type = as.character(Input[i, "exposure_type"]),            # Exposure type, choose between "Oral", "Dermal", "Oral_Dermal" (if exposure is both Oral and Dermal), Inhalation"
+          expCONC = as.numeric(Input[i, "expCONC"]),                           # ug/kg/day concentration (total exposure concentration)
+          expCONC_Oral = ifelse(is.na(Input[i, "expCONC_Oral"]), 0,
+                                 as.numeric(Input[i, "expCONC_Oral"])),        # ug/kg/day concentration to be used only when both oral and dermal are used
+          expCONC_Dermal = ifelse(is.na(Input[i, "expCONC_Dermal"]), 0,
+                                   as.numeric(Input[i, "expCONC_Dermal"])),    # ug/kg/day concentration to be used only when both oral and dermal are used
+          Tinput = ifelse(is.na(Input[i, "Tinput"]), 1,
+                           as.numeric(Input[i, "Tinput"])),          # for repeated exposure or so default = 1
+          tinterval = ifelse(is.na(Input[i, "tinterval"]), 1,
+                              as.numeric(Input[i, "tinterval"])),    # for repeated exposure or so default = 1
+          expSTOP = as.numeric(Input[i, "expSTOP"]),                # time in days after which the exposure stopped
+          
+          # Subject-relevant information
+          expAGE = ifelse(is.na(Input[i, "expAGE"]), stop("Error as expAGE required to run the lifestage model"),
+                           as.numeric(Input[i, "expAGE"])),     # years old age at exposure
+          expBW = if(!is.na(Input[i, "expBW"])){
+            warning("expBW overwritten as NA as it should be automatically calculated based on age in the lifestage model")      # kg
+            NA
+          } else { Input[i, "expBW"] },
+          sex = ifelse(is.na(Input[i, "sex"]), "M",
+                        as.character(Input[i, "sex"])),         # sex either "F" or "M" if none then default is "M"
+          
+          # Simulation relevant information
+          Tstart = as.numeric(Input[i, "Tstart"]),          # days, start of the simulation
+          Tstop = as.numeric(Input[i, "Tstop"]),      # days, stop of the simulation
+          Dt = as.numeric(Input[i, "Dt"])               # days, iteration steps (decrease/increase depending on run time)
+          
+        )
+        
+        # Collect population results together
+        Pop.RESULTS$CALC_Parameters[[i]] <- Pop.MODEL_OUTPUT$CALC_Parameters
+        Pop.RESULTS$OUT_RAW_data[[i]] <- Pop.MODEL_OUTPUT$OUT_RAW_data
+        Pop.RESULTS$ANALYSED_data[[i]] <- Pop.MODEL_OUTPUT$ANALYSED_data
+        Pop.RESULTS$OUT_Plots[[i]] <- Pop.MODEL_OUTPUT$OUT_Plots # could be removed if it's too heavy for R
+        
+        
+        
+      }
+      
+    } else { # Population but no lifestage
+      
+      # Run the model for the population
+      for (i in 1:nPeople) {
+        
+        # Run the model per person
+        Pop.MODEL_OUTPUT <- RUNandOUT(
+          
+          exposure_type = as.character(Input[i, "exposure_type"]),            # Exposure type, choose between "Oral", "Dermal", "Oral_Dermal" (if exposure is both Oral and Dermal), Inhalation"
+          expCONC = as.numeric(Input[i, "expCONC"]),                           # ug/kg/day concentration (total exposure concentration)
+          expCONC_Oral = ifelse(is.na(Input[i, "expCONC_Oral"]), 0,
+                                 as.numeric(Input[i, "expCONC_Oral"])),        # ug/kg/day concentration to be used only when both oral and dermal are used
+          expCONC_Dermal = ifelse(is.na(Input[i, "expCONC_Dermal"]), 0,
+                                   as.numeric(Input[i, "expCONC_Dermal"])),    # ug/kg/day concentration to be used only when both oral and dermal are used
+          Tinput = ifelse(is.na(Input[i, "Tinput"]), 1,
+                           as.numeric(Input[i, "Tinput"])),          # for repeated exposure or so default = 1
+          tinterval = ifelse(is.na(Input[i, "tinterval"]), 1,
+                              as.numeric(Input[i, "tinterval"])),    # for repeated exposure or so default = 1
+          expSTOP = as.numeric(Input[i, "expSTOP"]),                # time in days after which the exposure stopped
+          
+          # Subject-relevant information
+          expAGE = ifelse(is.na(Input[i, "expAGE"]), NA,
+                           as.numeric(Input[i, "expAGE"])),     # years old age at exposure if not provided then age argument is not used physiology is based on BW
+          expBW = ifelse(is.na(Input[i, "expBW"]), NA,
+                          as.numeric(Input[i, "expBW"])),       # kg if not provided then the BW of the corresponding age and sex is taken; if both BW and Age are NA, then a default BW = 70 is taken; if BW is higher than the BW from the lifestage equations then the actual BW overwrites the calculated one
+          sex = ifelse(is.na(Input[i, "sex"]), "M",
+                        as.character(Input[i, "sex"])),         # sex either "F" or "M" if none then default is "M"
+          
+          # Simulation relevant information
+          Tstart = as.numeric(Input[i, "Tstart"]),          # days, start of the simulation
+          Tstop = as.numeric(Input[i, "Tstop"]),      # days, stop of the simulation
+          Dt = as.numeric(Input[i, "Dt"])               # days, iteration steps (decrease/increase depending on run time)
+          
+        )
+        
+        # Collect population results together
+        Pop.RESULTS$CALC_Parameters[[i]] = Pop.MODEL_OUTPUT$CALC_Parameters
+        Pop.RESULTS$OUT_RAW_data[[i]] = Pop.MODEL_OUTPUT$OUT_RAW_data
+        Pop.RESULTS$ANALYSED_data[[i]] = Pop.MODEL_OUTPUT$ANALYSED_data
+        Pop.RESULTS$OUT_Plots[[i]] = Pop.MODEL_OUTPUT$OUT_Plots # could be removed if it's too heavy for R
+        
+      }
+      
+    }
+    
+    
+  } else { # Individual
+    
+    if(Lifestage == "Yes"){ # Individual and lifestage
+      
+      RUNandOUT_lifestage(
+        
+        # Exposure-relevant information
+        exposure_type = exposure_type, 
+        expCONC = expCONC, 
+        expCONC_Oral = expCONC_Oral, 
+        expCONC_Dermal = expCONC_Dermal, 
+        Tinput = Tinput, 
+        tinterval = tinterval, 
+        expSTOP = expSTOP, 
+        
+        # Subject-relevant information
+        expAGE = expAGE, 
+        expBW = expBW, 
+        sex = sex, 
+        
+        # Simulation relevant information
+        Tstart = Tstart, 
+        Tstop = Tstop, 
+        Dt = Dt 
+        
+        )
+      
+    } else { # Individual, no lifestage
+      
+      RUNandOUT(
+        
+        # Exposure-relevant information
+        exposure_type = exposure_type, 
+        expCONC = expCONC, 
+        expCONC_Oral = expCONC_Oral, 
+        expCONC_Dermal = expCONC_Dermal, 
+        Tinput = Tinput, 
+        tinterval = tinterval, 
+        expSTOP = expSTOP, 
+        
+        # Subject-relevant information
+        expAGE = expAGE, 
+        expBW = expBW, 
+        sex = sex, 
+        
+        # Simulation relevant information
+        Tstart = Tstart, 
+        Tstop = Tstop, 
+        Dt = Dt 
+        
+      )
+      
+    }
+    
+  }
+  
+  
+  # Save Results ----
+
+  if(Population == "Yes"){
+    RESULTS <- Pop.RESULTS
+    } else {
+    RESULTS <- MODEL_OUTPUT
+    }
+  
   save(RESULTS, file = here(OUTPUT, "RESULTS_PFOA_PBK.RData"))
   
  

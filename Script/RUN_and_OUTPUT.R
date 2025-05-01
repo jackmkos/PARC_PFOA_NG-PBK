@@ -6,7 +6,7 @@
 
 # Without physiological changes with lifestage (depending on age) ####
 RUNandOUT <- function(exposure_type, 
-                      expCONC, expCONC_Oral = NULL, expCONC_Dermal = NULL, 
+                      expCONC_Oral = NULL, expCONC_Dermal = NULL, expCONC, 
                       Tinput, tinterval, expSTOP, 
                       expAGE = NULL, expBW = NULL, sex = "M", 
                       Tstart, Tstop, Dt) {
@@ -360,12 +360,16 @@ RUNandOUT <- function(exposure_type,
   return(list(
     CALC_Parameters = parm.c,
     OUT_RAW_data = output.df,
-    ANALYSED_data = data.frame(exposure_type = exposure_type,
-                               expAGE = expAGE,
-                               expBW = expBW,
-                               sex = sex,
-                               AUC = AUC,
-                               HalfLife = HalfLife),
+    ANALYSED_data = data.frame(exposure_type = paste(exposure_type, "unitless", sep = "_"),
+                               expCONC = paste(round(expCONC, digits = 4),"ug/kg/day", sep = "_"),
+                               expAGE = paste(expAGE, "years", sep = "_"),
+                               Tstart = paste(round(Tstart/365, digits = 4), "years", sep = "_"),
+                               expSTOP = paste(round(expSTOP/365, digits = 4), "years", sep = "_"),
+                               Tstop = paste(round(Tstop/365, digits = 4), "years", sep = "_"),
+                               expBW = paste(round(expBW, digits = 4), "kg", sep = "_"),
+                               sex = paste(sex, "unitless", sep = "_"),
+                               AUC = paste(round(AUC, digits = 4), "ug*day/L", sep = "_"),
+                               HalfLife = paste(round(HalfLife, digits = 4), "years", sep = "_")),
     OUT_Plots = list(Plot_C_organs, Plot_HalfLifes) # could be removed if it's too heavy for R
   ))
   
@@ -375,7 +379,7 @@ RUNandOUT <- function(exposure_type,
 
 # With physiological changes with lifestage (depending on age) ####
 RUNandOUT_lifestage <- function(exposure_type, 
-                      expCONC, expCONC_Oral = NULL, expCONC_Dermal = NULL, 
+                      expCONC_Oral = NULL, expCONC_Dermal = NULL, expCONC, 
                       Tinput, tinterval, expSTOP, 
                       expAGE = NULL, expBW = NULL, sex = "M", 
                       Tstart, Tstop, Dt) {
@@ -765,12 +769,26 @@ RUNandOUT_lifestage <- function(exposure_type,
   return(list(
     CALC_Parameters = parm.c,
     OUT_RAW_data = output.df,
-    ANALYSED_data = data.frame(exposure_type = exposure_type,
-                               expAGE = expAGE,
-                               expBW = expBW,
-                               sex = sex,
-                               AUC = AUC,
-                               HalfLife = HalfLife),
+    ANALYSED_data = data.frame(exposure_type = paste(exposure_type, "unitless", sep = "_"),
+                               expCONC = paste(round(expCONC, digits = 4),"ug/kg/day", sep = "_"),
+                               expAGE = paste(expAGE, "years", sep = "_"),
+                               Tstart = paste(round(Tstart/365, digits = 4), "years", sep = "_"),
+                               expSTOP = paste(round(expSTOP/365, digits = 4), "years", sep = "_"),
+                               Tstop = paste(round(Tstop/365, digits = 4), "years", sep = "_"),
+                               expBW = paste(round(expBW, digits = 4), "kg", sep = "_"),
+                               sex = paste(sex, "unitless", sep = "_"),
+                               AUC = paste(round(AUC, digits = 4), "ug*day/L", sep = "_"),
+                               HalfLife = paste(round(HalfLife, digits = 4), "years", sep = "_")),
+    # ANALYSED_data = data.frame(exposure_type = exposure_type,
+    #                            expCONC = expCONC,
+    #                            expAGE = expAGE,
+    #                            Tstart = Tstart/365,
+    #                            expSTOP = expSTOP/365,
+    #                            Tstop = Tstop/365,
+    #                            expBW = expBW,
+    #                            sex = sex,
+    #                            AUC = AUC,
+    #                            HalfLife = HalfLife),
     OUT_Plots = list(Plot_C_organs, Plot_HalfLifes) # could be removed if it's too heavy for R
   ))
   
