@@ -22,31 +22,6 @@ dir.create(OUTPUT, recursive = TRUE)
 
 
 # Validate against Olsen data ####
-cal Department, 3M Company, St. Paul, Minnesota, USA; 2Pace Analytical Laboratory, St. Paul, Minnesota, USA
-BACKGROUND: The presence of perﬂuorooctanesulfonate (PFOS), perﬂuorohexanesulfonate (PFHS),
-and perﬂuorooctanoate (PFOA) has been reported in humans and wildlife. Pharmacokinetic differ-
-ences have been observed in laboratory animals.
-O BJECTIVE : The purpose of this observational study was to estimate the elimination half-life of
-PFOS, PFHS, and PFOA from human serum.
-METHODS: Twenty-six (24 male, 2 female) retired ﬂuorochemical production workers, with no addi-
-tional occupational exposure, had periodic blood samples collected over 5 years, with serum stored in
-plastic vials at –80°C. At the end of the study, we used HPLC-mass spectrometry to analyze the
-samples, with quantiﬁcation based on the ion ratios for PFOS and PFHS and the internal standard
-18O2-PFOS. For PFOA, quantitation was based on the internal standard 13C2-PFOA.
-R ESULTS : The arithmetic mean initial serum concentrations were as follows: PFOS, 799 ng/mL
-(range, 145–3,490); PFHS, 290 ng/mL (range, 16–1,295); and PFOA, 691 ng/mL (range,
-72–5,100). For each of the 26 subjects, the elimination appeared linear on a semi-log plot of con-
-centration versus time; therefore, we used a ﬁrst-order model for estimation. The arithmetic and
-geometric mean half-lives of serum elimination, respectively, were 5.4 years [95% conﬁdence inter-
-val (CI), 3.9–6.9] and 4.8 years (95% CI, 4.0–5.8) for PFOS; 8.5 years (95% CI, 6.4–10.6) and
-7.3 years (95% CI, 5.8–9.2) for PFHS; and 3.8 years (95% CI, 3.1–4.4) and 3.5 years (95% CI,
-3.0–4.1) for PFOA.
-CONCLUSIONS: Based on these data, humans appear to have a long half-life of serum elimination of
-PFOS, PFHS, and PFOA. Differences in species-speciﬁc pharmacokinetics may be due, in part, to a
-saturable renal resorption process.
-KEY WORDS: biomonitoring, perﬂuoroalkyl acids, perﬂuorohexanesulfonate, perﬂuorooctanesulfonate,
-perﬂuorooctanoate, PFHS, PFOA, PFOS, pharmacokinetics. Environ Health Perspect 115:1298–1305
-(2007). doi:10.1289/ehp.10009 available via http://dx.doi.org/ [Online 12 June 2007]
 # This should be done after performing reverse dosimetry to define which exposure concentration is needed to reach the measured plasma concentration for each participant of the study of Olsen et al. 
 # Concentration at Olsen experiment start
 # Results of reverse dosimetry and exposure scenario is found in OlsenData.csv and can be used directly as input to the model
