@@ -12,6 +12,9 @@
   library(deSolve)
   library(PKNCA)
   library(pracma)
+  library(showtext)
+  font_add(family = "Garamond", regular = "GARA.TTF")
+  showtext_auto()
   
   # Set output storage directory
   OUTPUT <- here("Output", format(Sys.Date(), "%Y-%m-%d"), format(Sys.time(), "%H-%M-%S"))
@@ -28,19 +31,19 @@
   Tissue.c <- read_csv(here("Input", "TissueComposition.csv"))
   source(here("Script", "RUN_and_OUTPUT.R"))
   
+  OlsenData <- read_csv(here("Input", "OlsenData.csv"))
   
   # Load input ----
   
   if(Population == "Yes"){
     
     INPUT_dummy <- read.csv(here("Input", "INPUT_dummy.csv")) 
-    Input <- INPUT_dummy
     
     if(Lifestage == "Yes" && any(is.na(INPUT_dummy$expAGE))){
       
       warning("Removing ", sum(is.na(INPUT_dummy$expAGE)), " samples as they had NA(s) as expAGE; exposure AGE is needed to run the lifestage model")
       Input <- filter (INPUT_dummy, !is.na(expAGE))
-      
+      Input <- Input %>% filter(Idcode %in% 1:26)
     } 
     
     nPeople <- as.numeric(nrow(Input)) # number of people
@@ -55,27 +58,27 @@
     } else {
     
     # Set exposure type, choose between "Oral", "Dermal", "Oral_Dermal" (if exposure is both Oral and Dermal), Inhalation"
-    exposure_type = "Inhalation"
+    exposure_type = "Dermal"
     
     # Add input information
     
     # Exposure-relevant information
     exposure_type = exposure_type # type of exposure
-    expCONC_Oral = 0.024 # ug/kg/day concentration to be used only when both oral and dermal are used
-    expCONC_Dermal = 0.024 # ug/kg/day concentration to be used only when both oral and dermal are used
+    expCONC_Oral = 0 # ug/kg/day concentration to be used only when both oral and dermal are used
+    expCONC_Dermal = 1E-3 # ug/kg/day concentration to be used only when both oral and dermal are used
     expCONC = expCONC_Oral + expCONC_Dermal # ug/kg/day concentration
     Tinput = 1 # for repeated exposure or so default = 1
     tinterval = 1 # for repeated exposure or so default = 1
-    expSTOP = 40*356 # time in days after which the exposure stopped
+    expSTOP = 27*365 # time in days after which the exposure stopped
     
     # Subject-relevant information
-    expAGE = 30 # years old age at exposure if not provided then age argument is not used physiology is based on BW
+    expAGE = 36.1 # years old age at exposure if not provided then age argument is not used physiology is based on BW
     expBW = NA # kg if not provided then the BW of the corresponding age and sex is taken; if both BW and Age are not given then a default BW = 70 is taken; if BW is higher than the BW from the lifestage equations then the actual BW overwrites the calculated one
     sex = "F" # sex either "F" or "M" if none then default is "M"
     
     # Simulation relevant information
     Tstart = 0 # days start of the simulation
-    Tstop = 50*356 # days stop of the simulation
+    Tstop = 43.9*365 # days stop of the simulation
     Dt = 10 # days iteration steps (decrease/increase depending on run time)
     
     

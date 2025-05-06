@@ -1,7 +1,7 @@
 # --------------------------------------------------------------------------- #
 # SCRIPT FOR COMPARING SIMULATED AGAINST OBSERVED DATA
 # By: Chrysanthi Pachoulide
-# Date: 14-04-2025
+# Date: 06-05-2025
 # --------------------------------------------------------------------------- #
 
 rm(list=ls()) # to clear out the global environment
@@ -9,106 +9,271 @@ rm(list=ls()) # to clear out the global environment
 # Packages
 library(here)
 library(tidyverse)
-library(ggplot2)
-
+library(deSolve)
+library(PKNCA)
+library(pracma)
+library(showtext)
+font_add(family = "Garamond", regular = "GARA.TTF")
+showtext_auto()
 
 # Set output storage directory
 OUTPUT <- here("Output", format(Sys.Date(), "%Y-%m-%d"), format(Sys.time(), "%H-%M-%S"))
 dir.create(OUTPUT, recursive = TRUE)
 
-# Load input files
-load(here("Output", "2025-04-14", "23-52-28", "Oral", "RESULTS_PFOA_PBK.RData"))
-ObsHalfLifes <- read_csv(here("Input", "HalfLifes.csv"))
-ObsPlasmaConc <- read_csv(here("Input", "ObservedPFOA_CPlasma.csv"))
 
-# Plot Halflife ####
+# Validate against Olsen data ####
+cal Department, 3M Company, St. Paul, Minnesota, USA; 2Pace Analytical Laboratory, St. Paul, Minnesota, USA
+BACKGROUND: The presence of perﬂuorooctanesulfonate (PFOS), perﬂuorohexanesulfonate (PFHS),
+and perﬂuorooctanoate (PFOA) has been reported in humans and wildlife. Pharmacokinetic differ-
+ences have been observed in laboratory animals.
+O BJECTIVE : The purpose of this observational study was to estimate the elimination half-life of
+PFOS, PFHS, and PFOA from human serum.
+METHODS: Twenty-six (24 male, 2 female) retired ﬂuorochemical production workers, with no addi-
+tional occupational exposure, had periodic blood samples collected over 5 years, with serum stored in
+plastic vials at –80°C. At the end of the study, we used HPLC-mass spectrometry to analyze the
+samples, with quantiﬁcation based on the ion ratios for PFOS and PFHS and the internal standard
+18O2-PFOS. For PFOA, quantitation was based on the internal standard 13C2-PFOA.
+R ESULTS : The arithmetic mean initial serum concentrations were as follows: PFOS, 799 ng/mL
+(range, 145–3,490); PFHS, 290 ng/mL (range, 16–1,295); and PFOA, 691 ng/mL (range,
+72–5,100). For each of the 26 subjects, the elimination appeared linear on a semi-log plot of con-
+centration versus time; therefore, we used a ﬁrst-order model for estimation. The arithmetic and
+geometric mean half-lives of serum elimination, respectively, were 5.4 years [95% conﬁdence inter-
+val (CI), 3.9–6.9] and 4.8 years (95% CI, 4.0–5.8) for PFOS; 8.5 years (95% CI, 6.4–10.6) and
+7.3 years (95% CI, 5.8–9.2) for PFHS; and 3.8 years (95% CI, 3.1–4.4) and 3.5 years (95% CI,
+3.0–4.1) for PFOA.
+CONCLUSIONS: Based on these data, humans appear to have a long half-life of serum elimination of
+PFOS, PFHS, and PFOA. Differences in species-speciﬁc pharmacokinetics may be due, in part, to a
+saturable renal resorption process.
+KEY WORDS: biomonitoring, perﬂuoroalkyl acids, perﬂuorohexanesulfonate, perﬂuorooctanesulfonate,
+perﬂuorooctanoate, PFHS, PFOA, PFOS, pharmacokinetics. Environ Health Perspect 115:1298–1305
+(2007). doi:10.1289/ehp.10009 available via http://dx.doi.org/ [Online 12 June 2007]
+# This should be done after performing reverse dosimetry to define which exposure concentration is needed to reach the measured plasma concentration for each participant of the study of Olsen et al. 
+# Concentration at Olsen experiment start
+# Results of reverse dosimetry and exposure scenario is found in OlsenData.csv and can be used directly as input to the model
+OlsenData <- read.csv(here("Input", "OlsenData.csv"))
 
-Observed.df <- ObsHalfLifes %>%
-  filter(species == "human",
-         chemical == "pfoa",
-         parameter== "HalfLife") %>%
-  select(c(value_average,n)) %>%
-  rename(HalfLife = value_average) %>%
-  mutate(value = 1,
-         Origin = "Observed")
-Observed.df$HalfLife <- as.numeric(Observed.df$HalfLife) # years
-Observed.df$n <- as.numeric(Observed.df$n)
+PredictedObserved.df <- data.frame(
+  Idcode = OlsenData$Idcode,
+  expSTOP = OlsenData$expSTOP/365,
+  CP_initial = OlsenData$CP_initial, # plasma PFOA concentration at the begining of the study
+  CP_final = OlsenData$CP_final,
+  expCONC = OlsenData$expCONC
+)
 
-Predicted.df <- data.frame(
-  HalfLife = HalfLife, #RESULTS$HalfLife,
-  Origin = "Predicted",
-  value = 1, n = 1)
-Observed.df <- data.frame(
-  HalfLife = Observed.df$HalfLife,
-  Origin = "Observed",
-  value = 1,
-  n = Observed.df$n)
+## Regression on the plasma concentration ####
 
-HalfLifes <- rbind(Predicted.df, Observed.df)
+# Import RESULTS from the PBK simulation
+PBK_OUT <- RESULTS$OUT_RAW_data
 
-range <- c(min(Observed.df$n), max(Observed.df$n))
-
-Plot_HalfLifes <- ggplot() +
-  geom_violin(
-    data = Observed.df,
-    aes(value, HalfLife),
-    color = "transparent",
-    fill = "grey89") +
-  geom_point(
-    data = Observed.df,
-    aes(value, HalfLife, size = n),  
-    color = "black",
-    alpha = 0.5,  
-    shape = 20) +
-  geom_point(
-    data = Predicted.df,
-    aes(value, HalfLife),
-    color = "red",
-    alpha = 0.7,
-    size = 10,
-    shape = 18) +
-  labs(y = "Half life (years)") + 
-  scale_size_continuous(range = c(1, 10), 
-                        name = "Sample size") + 
-  theme_minimal() +
-  theme(
-    axis.text.x = element_blank(),
-    axis.ticks.x = element_blank(),
-    axis.title.x = element_blank(),
-    axis.text = element_text(size = 10),
-    axis.title = element_text(size = 10),
-    legend.position = "top"
+PredictedObserved.df <- PredictedObserved.df %>%
+  mutate(
+    CPatexpSTOP = map2_dbl( # Find the predicted concentration at the time of the stop of exposure to check if it's the same as the one measured
+      PBK_OUT,
+      expSTOP,
+      ~ {
+        idx <- which.min(abs(.x$time - .y))
+        .x$CP[idx]
+      }
+    )
+  ) %>%
+  mutate(
+    CP_final_predicted = map_dbl( # Find the predicted concentration at the end of the study
+      PBK_OUT,
+      ~ {
+        last_row <- nrow(.x)
+        .x$CP[last_row]
+      }
+    )
   )
-Plot_HalfLifes
-ggsave(filename = here(OUTPUT, "ExpVsSimHalfLife.png"), 
+
+CRegression <- lm(CP_final~CP_final_predicted, data=PredictedObserved.df)
+summary(CRegression)
+
+
+## Regression on the half life ####
+
+ANALYSED_data <- RESULTS$ANALYSED_data
+
+PredictedObserved.df <- PredictedObserved.df %>% mutate(
+  Idcode = seq_along(ANALYSED_data),
+  HalfLife = sapply(ANALYSED_data, function(x) x$HalfLife)
+  ) %>%
+  separate(col = HalfLife, into = c("HL_predicted", "unit"), sep = "_") %>%
+  mutate(
+    HL_predicted = as.numeric(HL_predicted),
+    HL_predicted = round(HL_predicted,1)
+  ) %>% 
+  mutate(
+    HL_observed = c(3.6,
+                 2.3,
+                 2.8,
+                 3.6,
+                 3.3,
+                 2.3,
+                 3.3,
+                 6.9,
+                 3.8,
+                 3,
+                 4.2,
+                 1.5,
+                 3.5,
+                 2.8,
+                 9.1,
+                 4.8,
+                 3.8,
+                 1.6,
+                 7,
+                 2.9,
+                 4,
+                 3.4,
+                 3.7,
+                 4.6,
+                 3.3,
+                 2.9)
+  ) 
+
+HLRegression <- lm(HL_observed~HL_predicted, data=PredictedObserved.df)
+summary(HLRegression)
+
+## Plots ####
+PlotHLRegression <- HLRegression %>%
+  ggplot(aes(log(HL_predicted), log(HL_observed))) +
+  geom_smooth(method='lm', color = "black", se = TRUE) +
+  geom_abline(intercept = 0, slope = 1, linetype = "solid", linewidth = 0.5, color = "grey50") +  
+  geom_abline(intercept = log(1.1), slope = 1, linetype = "dashed", linewidth = 0.5, color = "grey50") +  # +10% line
+  geom_abline(intercept = log(0.9), slope = 1, linetype = "dashed", linewidth = 0.5, color = "grey50") +  # -10% line
+  geom_abline(intercept = log(2), slope = 1, linetype = "dotted", linewidth = 0.5, color = "grey50") +  # 2-fold upper
+  geom_abline(intercept = log(0.5), slope = 1, linetype = "dotted", linewidth = 0.5, color = "grey50") +  # 2-fold lower
+  geom_point(color = "darkred", size = 1) +
+  theme_minimal() +
+  labs(title = "Predicted Vs Observed Halflife (log years)",
+       x = "Predicted", y = "Observed") +
+  theme(plot.title = element_text(size = 10, margin = margin(b = 20)),
+        axis.title = element_text(size = 10),
+        axis.text = element_text(size = 8))
+PlotHLRegression
+ggsave(filename = here(OUTPUT, "PlotHLRegression.png"), 
        dpi = 300,
-       width = 17,      
+       width = 12,      
        height = 8,      
        units = "cm")
 
 
-# ## Plot Concentration over time ####
+PlotCRegression <- CRegression %>%
+  ggplot(aes(x = log(CP_final_predicted), y = log(CP_final))) +
+  geom_smooth(method = 'lm', color = "black", se = TRUE) +
+  geom_abline(intercept = 0, slope = 1, linetype = "solid", linewidth = 0.5, color = "grey50") +  
+  geom_abline(intercept = log(1.1), slope = 1, linetype = "dashed", linewidth = 0.5, color = "grey50") +  # +10% line
+  geom_abline(intercept = log(0.9), slope = 1, linetype = "dashed", linewidth = 0.5, color = "grey50") +  # -10% line
+  geom_abline(intercept = log(2), slope = 1, linetype = "dotted", linewidth = 0.5, color = "grey50") +  # 2-fold upper
+  geom_abline(intercept = log(0.5), slope = 1, linetype = "dotted", linewidth = 0.5, color = "grey50") +  # 2-fold lower
+  labs(title = "Predicted Vs Observed Serum Concentration (log ng/ml)",
+       x = "Predicted", y = "Observed") +
+  geom_point(color = "darkred", size = 1) +
+  theme_minimal()+
+  theme(plot.title = element_text(size = 10, margin = margin(b = 20)),
+        axis.title = element_text(size = 10),
+        axis.text = element_text(size = 8))
+PlotCRegression
+ggsave(filename = here(OUTPUT, "PlotCRegression.png"), 
+       dpi = 300,
+       width = 12,      
+       height = 8,      
+       units = "cm")
+
+
 # 
-# ObsPlasma <- ObsPlasmaConc %>%
-#   filter(Timedays <= 450.00) %>% 
-#   mutate(Timedays = Timedays/365) %>% #to years
-#   rename(time = Timedays) %>% 
-#   rename(CP = MPFOAugperL) %>%    # ug/L or ng/ml
-#   mutate(CP = CP - 0.130) %>%     # substracting the pre-existing level of 0.130ug/L from their previous study, as also done in the ref. article: https://doi.org/10.1016/j.envint.2024.109047 (table 3)
-#   mutate(Origin = "Observed")
+# ObsHalfLifes <- read_csv(here("Input", "HalfLifes.csv"))
+# ObsPlasmaConc <- read_csv(here("Input", "ObservedPFOA_CPlasma.csv"))
 # 
-# SimData <- RESULTS$data
-# SimPlasma <- SimData %>% 
-#   select(time, CP) %>% 
-#   mutate(time = time) %>% 
-#   mutate(Origin = "Predicted")
+# # Plot Halflife ####
 # 
-# Plot_Plasma <- ggplot() +
-#   geom_path(data = SimData, aes(x = time, y = CP), color = "red", linewidth = 1.5)+
-#   geom_point(data = ObsPlasma, aes(x = time, y = CP), color = "black")+
-#   theme_minimal()+
-#   ylab("Plasma (ng/ml)")+
-#   xlab("Time (years)")
-# Plot_Plasma
-# ggsave(here(OUTPUT, "ObsVsSimConcOverTime.png"), dpi = 300)
+# Observed.df <- ObsHalfLifes %>%
+#   filter(species == "human",
+#          chemical == "pfoa",
+#          parameter== "HalfLife") %>%
+#   select(c(value_average,n)) %>%
+#   rename(HalfLife = value_average) %>%
+#   mutate(value = 1,
+#          Origin = "Observed")
+# Observed.df$HalfLife <- as.numeric(Observed.df$HalfLife) # years
+# Observed.df$n <- as.numeric(Observed.df$n)
 # 
+# Predicted.df <- data.frame(
+#   HalfLife = HalfLife, #RESULTS$HalfLife,
+#   Origin = "Predicted",
+#   value = 1, n = 1)
+# Observed.df <- data.frame(
+#   HalfLife = Observed.df$HalfLife,
+#   Origin = "Observed",
+#   value = 1,
+#   n = Observed.df$n)
+# 
+# HalfLifes <- rbind(Predicted.df, Observed.df)
+# 
+# range <- c(min(Observed.df$n), max(Observed.df$n))
+# 
+# Plot_HalfLifes <- ggplot() +
+#   geom_violin(
+#     data = Observed.df,
+#     aes(value, HalfLife),
+#     color = "transparent",
+#     fill = "grey89") +
+#   geom_point(
+#     data = Observed.df,
+#     aes(value, HalfLife, size = n),  
+#     color = "black",
+#     alpha = 0.5,  
+#     shape = 20) +
+#   geom_point(
+#     data = Predicted.df,
+#     aes(value, HalfLife),
+#     color = "red",
+#     alpha = 0.7,
+#     size = 10,
+#     shape = 18) +
+#   labs(y = "Half life (years)") + 
+#   scale_size_continuous(range = c(1, 10), 
+#                         name = "Sample size") + 
+#   theme_minimal() +
+#   theme(
+#     axis.text.x = element_blank(),
+#     axis.ticks.x = element_blank(),
+#     axis.title.x = element_blank(),
+#     axis.text = element_text(size = 10),
+#     axis.title = element_text(size = 10),
+#     legend.position = "top"
+#   )
+# Plot_HalfLifes
+# ggsave(filename = here(OUTPUT, "ExpVsSimHalfLife.png"), 
+#        dpi = 300,
+#        width = 17,      
+#        height = 8,      
+#        units = "cm")
+# 
+# 
+# # ## Plot Concentration over time ####
+# # 
+# # ObsPlasma <- ObsPlasmaConc %>%
+# #   filter(Timedays <= 450.00) %>% 
+# #   mutate(Timedays = Timedays/365) %>% #to years
+# #   rename(time = Timedays) %>% 
+# #   rename(CP = MPFOAugperL) %>%    # ug/L or ng/ml
+# #   mutate(CP = CP - 0.130) %>%     # substracting the pre-existing level of 0.130ug/L from their previous study, as also done in the ref. article: https://doi.org/10.1016/j.envint.2024.109047 (table 3)
+# #   mutate(Origin = "Observed")
+# # 
+# # SimData <- RESULTS$data
+# # SimPlasma <- SimData %>% 
+# #   select(time, CP) %>% 
+# #   mutate(time = time) %>% 
+# #   mutate(Origin = "Predicted")
+# # 
+# # Plot_Plasma <- ggplot() +
+# #   geom_path(data = SimData, aes(x = time, y = CP), color = "red", linewidth = 1.5)+
+# #   geom_point(data = ObsPlasma, aes(x = time, y = CP), color = "black")+
+# #   theme_minimal()+
+# #   ylab("Plasma (ng/ml)")+
+# #   xlab("Time (years)")
+# # Plot_Plasma
+# # ggsave(here(OUTPUT, "ObsVsSimConcOverTime.png"), dpi = 300)
+# # 
