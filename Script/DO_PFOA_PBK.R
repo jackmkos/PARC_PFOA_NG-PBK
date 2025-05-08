@@ -21,7 +21,7 @@
   dir.create(OUTPUT, recursive = TRUE)
   
   # Choose if physiology should change with age ("Yes" to include physiological changes due to age and "No" to assume the same physiology over time)
-  Lifestage = "No" 
+  Lifestage = "Yes" 
   
   # Choose to include population or individual exposure ("Yes" to include population based and "No" to only run the model for one person)
   Population = "Yes" 
@@ -38,14 +38,14 @@
   if(Population == "Yes"){
     
     INPUT_dummy <- read.csv(here("Input", "INPUT_dummy.csv")) 
-    Input <- INPUT_dummy %>% filter(Idcode %in% 1:3) # Only include for Olsen data
+    Input <- INPUT_dummy %>% filter(Idcode %in% 1:26) # Only include for Olsen data
     
     
     if(Lifestage == "Yes" && any(is.na(INPUT_dummy$expAGE))){
       
       warning("Removing ", sum(is.na(INPUT_dummy$expAGE)), " samples as they had NA(s) as expAGE; exposure AGE is needed to run the lifestage model")
       Input <- filter (INPUT_dummy, !is.na(expAGE))
-      Input <- Input %>% filter(Idcode %in% 1:3) # Only include Olsen data
+      Input <- Input %>% filter(Idcode %in% 1:26) # Only include Olsen data
     } 
     
     nPeople <- as.numeric(nrow(Input)) # number of people
