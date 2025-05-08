@@ -60,18 +60,18 @@ BASE_PARAMS <- function(expAGE = NULL, expBW = NULL, sex = NULL) {
   BH <- Physio_params[[paste0("BW", suffix)]]                   # Height (cm)
   BSA <- exp(-3.75 + 0.42*log(BH)+0.52*log(BW))*1e4             # Body Surface area (cm2)
   
-  # # To estimate GFR based on BSA and BW
-  # Q <- if(sex == "F"){                                       # Q
-  #   if_else(expAGE < 18, 0.1678 + ((0.90  - 0.1678) / 18) * expAGE,
-  #                      0.90)
-  # } else {
-  #   if_else(expAGE < 18, 0.1678 + ((0.70  - 0.1678) / 18) * expAGE,
-  #                      0.70)
-  # } 
-  # 
-  # GFRb = (107.3 * 1.44*(BSA*1e-4)/1.73) / (0.9/Q)            # Baseline GFR (L/day), (mL/min/1.73m^2 -> L/day)  # scale to actual BSA: BSA*1e-4 / 1.73
-  # 
-  # GFR = if_else(expAGE <= 40, GFRb, GFRb * 0.988^(expAGE - 40)) # Actual GFR (L/day), exponential decline after expAGE 40
+  # To estimate GFR based on BSA and BW
+  Q <- if(sex == "F"){                                       # Q
+    if_else(expAGE < 18, 0.1678 + ((0.90  - 0.1678) / 18) * expAGE,
+                       0.90)
+  } else {
+    if_else(expAGE < 18, 0.1678 + ((0.70  - 0.1678) / 18) * expAGE,
+                       0.70)
+  }
+
+  GFRb = (107.3 * 1.44*(BSA*1e-4)/1.73) / (0.9/Q)            # Baseline GFR (L/day), (mL/min/1.73m^2 -> L/day)  # scale to actual BSA: BSA*1e-4 / 1.73
+
+  GFR = if_else(expAGE <= 40, GFRb, GFRb * 0.988^(expAGE - 40)) # Actual GFR (L/day), exponential decline after expAGE 40
 
   
   ### Organ volumes -------------------------
@@ -312,7 +312,7 @@ BASE_PARAMS <- function(expAGE = NULL, expBW = NULL, sex = NULL) {
    QKc = QKc,
    QAc = QAc,
    QUrc = QUrc,
-   # GFR = GFR,
+   GFR = GFR,
    GFRc = GFRc,
    QT = QT,
    tco = tco,
