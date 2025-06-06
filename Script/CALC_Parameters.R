@@ -49,11 +49,11 @@ BASE_PARAMS <- function(expAGE = NULL, expBW = NULL, sex = NULL) {
   
   # max_bw <- max(Physio_params[[paste0("BW", suffix)]], na.rm = TRUE)
   
-  # BW <- if (!is.na(expBW)) { 
-  #   expBW # BW is the actual BW at the time of measurement
-  # } else {
-  #   Physio_params[[paste0("BW", suffix)]]}
-  BW <- Physio_params[[paste0("BW", suffix)]]   # Body weight calculated only from the lifestage equations
+  BW <- if (!is.na(expBW)) {
+    expBW # BW is the actual BW at the time of measurement
+  } else {
+    Physio_params[[paste0("BW", suffix)]]}
+  # BW <- Physio_params[[paste0("BW", suffix)]]   # Body weight calculated only from the lifestage equations
   
   QC <- Physio_params[[paste0("CardOut", suffix)]]              # L/d, This is corrected for hematocrit already so it's plasma
   Hct <- Physio_params[[paste0("Hct", suffix)]]                 # Hematocrit
@@ -381,11 +381,12 @@ DERMAL_PARAMS <- function(expAGE = NULL, expBW = NULL, sex = "M", base.parm.c) {
   Physio_params <- Physio_params %>% select(ends_with(suffix))
   
   
-  # BW <- if (!is.na(expBW)) {
-  #   expBW
-  # } else {
-  #   Physio_params[[paste0("BW", suffix)]]}
-  BW <- Physio_params[[paste0("BW", suffix)]]   # Body weight calculated only from the lifestage equations
+  BW <- if (!is.na(expBW)) {
+    expBW
+  } else {
+    Physio_params[[paste0("BW", suffix)]]}
+  # BW <- Physio_params[[paste0("BW", suffix)]]   # Body weight calculated only from the lifestage equations
+  
   BH <- Physio_params[[paste0("BH", suffix)]]                   # Height (cm)
   BSA <- exp(-3.75 + 0.42*log(BH)+0.52*log(BW))*1e4             # Body Surface area (cm2), reference: Gastellu et al. 2024, 10.1016/j.envres.2024.120393 (supplementary file Physio_equations_detailed.xlsx, eq. from Pendse et al. 2020)
   # Trine calculated the surface area based on the BodyWeight with this formula: SA_SkB = 9.1*(BW*1000)^0.666  # cm2, total body area of the skin (Husoy)
