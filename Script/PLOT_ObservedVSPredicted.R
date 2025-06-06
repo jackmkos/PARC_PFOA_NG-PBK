@@ -24,10 +24,10 @@ dir.create(OUTPUT, recursive = TRUE)
 # Should be used together with the INPUT_dummy.csv file and simulation results after running it
 
 ObsHalfLifes <- read_csv(here("Input", "HalfLifes.csv"))
-Oral.F <- RESULTS$ANALYSED_data[[4]]$HalfLife
-Oral.M <- RESULTS$ANALYSED_data[[5]]$HalfLife
-Dermal.F <- RESULTS$ANALYSED_data[[6]]$HalfLife
-Inhalation.F <- RESULTS$ANALYSED_data[[2]]$HalfLife
+# Oral.F <- RESULTS$ANALYSED_data[[4]]$HalfLife
+# Oral.M <- RESULTS$ANALYSED_data[[5]]$HalfLife
+# Dermal.F <- RESULTS$ANALYSED_data[[6]]$HalfLife
+# Inhalation.F <- RESULTS$ANALYSED_data[[2]]$HalfLife
 
 # Prepare observed data
 
@@ -49,13 +49,13 @@ Observed.df <- rbind(Observed.df, Observed2.df)
 
 # Prepare predicted data for each Exposure and sex
 Predicted.df <- data.frame(
-  Exposure = c(rep("Oral", length(c(Oral.F, Oral.M))),
-               rep("Dermal", length(Dermal.F)),
-               rep("Inhalation", length(Inhalation.F))),
-  Sex = c(rep("F", length(Oral.F)),
-          rep("M", length(Oral.M)),
-          rep("F", length(Dermal.F)),
-          rep("F", length(Inhalation.F))), 
+  # Exposure = c(rep("Oral", length(c(Oral.F, Oral.M))),
+  #              rep("Dermal", length(Dermal.F)),
+  #              rep("Inhalation", length(Inhalation.F))),
+  # Sex = c(rep("F", length(Oral.F)),
+  #         rep("M", length(Oral.M)),
+  #         rep("F", length(Dermal.F)),
+  #         rep("F", length(Inhalation.F))), 
   HalfLife = c(Oral.F, Oral.M, Dermal.F, Inhalation.F),
   Origin = "Predicted") %>% 
   mutate(
@@ -68,28 +68,28 @@ Predicted.df <- data.frame(
 
 
 # Plot
-NoLifestageHalf <- 
+Halflifeplot <- 
   ggplot() +
   geom_violin(data = Observed.df, aes(x = 0.75, y = HalfLife), 
               fill = "grey89", color = NA, width = 0.5, trim = FALSE) +
   geom_point(data = Observed.df, aes(x = 0.75, y = HalfLife, size = n),
              color = "grey70", alpha = 0.5, position = position_jitter(width = 0.05)) +
-  geom_point(data = filter(Predicted.df, Sex == "F"), 
-             aes(x = 0.75, y = HalfLife, color = Exposure), 
-             shape = 18, size = 5, alpha = 0.9, position = position_jitter(width = 0.25)) +
-  
-  geom_violin(
-    data = Observed.df, aes(x = 1.5, y = HalfLife),
-    fill = "grey89", color = NA, width = 0.5, trim = FALSE) +
-  geom_point(data = Observed.df, aes(x = 1.5, y = HalfLife, size = n),
-             color = "grey70", alpha = 0.5, position = position_jitter(width = 0.05)) +
-  geom_point(data = filter(Predicted.df, Sex == "M"),
-             aes(x = 1.5, y = HalfLife, color = Exposure),
-             shape = 18, size = 5,  alpha = 0.9, position = position_jitter(width = 0.01)) +
-  
-  scale_color_manual(values = c("Oral" = "#8934AA",
-                                "Dermal" = "#238EFF", 
-                                "Inhalation" = "#F5D475")) +
+  # geom_point(data = filter(Predicted.df), 
+  #            aes(x = 0.75, y = HalfLife, color = Exposure), 
+  #            shape = 18, size = 5, alpha = 0.9, position = position_jitter(width = 0.25)) +
+  # 
+  # geom_violin(
+  #   data = Observed.df, aes(x = 1.5, y = HalfLife),
+  #   fill = "grey89", color = NA, width = 0.5, trim = FALSE) +
+  # geom_point(data = Observed.df, aes(x = 1.5, y = HalfLife, size = n),
+  #            color = "grey70", alpha = 0.5, position = position_jitter(width = 0.05)) +
+  # geom_point(data = filter(Predicted.df, Sex == "M"),
+  #            aes(x = 1.5, y = HalfLife, color = Exposure),
+  #            shape = 18, size = 5,  alpha = 0.9, position = position_jitter(width = 0.01)) +
+  # 
+  # scale_color_manual(values = c("Oral" = "#8934AA",
+  #                               "Dermal" = "#238EFF", 
+  #                               "Inhalation" = "#F5D475")) +
   scale_x_continuous(breaks = c(0.75, 1.5),       
                      labels = c("Female", "Male")) + 
   scale_size_continuous(range = c(1, 5)) +
@@ -100,7 +100,7 @@ NoLifestageHalf <-
   theme(axis.title.x = element_text(size = 12),
         axis.text.x = element_text(size = 11),
         legend.position = "right")
-NoLifestageHalf
+Halflifeplot
 ggsave(filename = here(OUTPUT, "NoLifestageHalf.life.png"), 
        dpi = 300,
        width = 12,      

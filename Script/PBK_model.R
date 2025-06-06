@@ -101,7 +101,7 @@ ORAL_PBK_RUN <- function(y, parms, times){ # Input for ode
       if(t<expSTOP){DoseOn=1} else{DoseOn=0}
       
       ## Oral exposure ##
-      DOral = COral*BW*DoseOn         # ug, PFOA oral dose
+      DOral = expOral*BW*DoseOn         # ug, PFOA oral dose
       OralD = DOral/Tinput*(t %% tinterval<Tinput)
       
       ## Concentrations -------------------------
@@ -337,7 +337,7 @@ DERMAL_PBK_RUN <- function(y, parms, times){ # Input for ode
       if(t<expSTOP){DoseOn=1} else{DoseOn=0}
       
       ## Dermal exposure ##
-      DDermal = CDermal*BW*DoseOn         # ug, PFOA dermal dose
+      DDermal = expDermal*BW*DoseOn         # ug, PFOA dermal dose
       DermalD = DDermal/Tinput*(t %% tinterval<Tinput)
       
       ## Concentrations -------------------------
@@ -588,11 +588,11 @@ ORAL_DERMAL_PBK_RUN <- function(y, parms, times){ # Input for ode
       if(t<expSTOP){DoseOn=1} else{DoseOn=0}
       
       ## Oral exposure ##
-      DOral = COral*BW*DoseOn         # ug, PFOA oral dose
+      DOral = expOral*BW*DoseOn         # ug, PFOA oral dose
       OralD = DOral/Tinput*(t %% tinterval<Tinput)
       
       ## Dermal exposure ##
-      DDermal = CDermal*BW*DoseOn         # ug, PFOA dermal dose
+      DDermal = expDermal*BW*DoseOn         # ug, PFOA dermal dose
       DermalD = DDermal/Tinput*(t %% tinterval<Tinput)
       
       ## Concentrations -------------------------
@@ -841,7 +841,7 @@ INHALATION_PBK_RUN <- function(y, parms, times){ # Input for ode
       if(t<expSTOP){DoseOn=1} else{DoseOn=0}
       
       ## Inhalation exposure ##
-      DLung = CLung*BW*DoseOn         # ug, PFOA inhalation dose
+      DLung = expLung*BW*DoseOn         # ug, PFOA inhalation dose
       LungD = DLung/Tinput*(t %% tinterval<Tinput)
       
       ## Concentrations -------------------------

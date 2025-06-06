@@ -31,21 +31,20 @@
   Tissue.c <- read_csv(here("Input", "TissueComposition.csv"))
   source(here("Script", "RUN_and_OUTPUT.R"))
   
-  OlsenData <- read_csv(here("Input", "OlsenData.csv"))
-  
+
   # Load input ----
   
   if(Population == "Yes"){
     
     INPUT_dummy <- read.csv(here("Input", "INPUT_dummy.csv")) 
-    Input <- INPUT_dummy %>% filter(Idcode %in% 1:26) # Only include for Olsen data
+    Input <- INPUT_dummy #%>% filter(Idcode %in% 27:30) # Choose range to run only part of the dataset
     
     
     if(Lifestage == "Yes" && any(is.na(INPUT_dummy$expAGE))){
       
       warning("Removing ", sum(is.na(INPUT_dummy$expAGE)), " samples as they had NA(s) as expAGE; exposure AGE is needed to run the lifestage model")
       Input <- filter (INPUT_dummy, !is.na(expAGE))
-      Input <- Input %>% filter(Idcode %in% 1:26) # Only include Olsen data
+      Input <- Input #%>% filter(Idcode %in% 27:30) # Choose range to run only part of the dataset
     } 
     
     nPeople <- as.numeric(nrow(Input)) # number of people
@@ -66,22 +65,22 @@
     
     # Exposure-relevant information
     exposure_type = exposure_type # type of exposure
-    exp_Oral = 0 # ug/kg/day concentration to be used only when both oral and dermal are used
-    exp_Dermal = 1E-3 # ug/kg/day concentration to be used only when both oral and dermal are used
-    exp = exp_Oral + exp_Dermal # ug/kg/day concentration
+    exp_Oral = 0 # ug/kg/day, to be used only when both oral and dermal are used
+    exp_Dermal = 1E-3 # ug/kg/day, to be used only when both oral and dermal are used
+    exp = exp_Oral + exp_Dermal # ug/kg/day 
     Tinput = 1 # for repeated exposure or so default = 1
     tinterval = 1 # for repeated exposure or so default = 1
     expSTOP = 27*365 # time in days after which the exposure stopped
     
     # Subject-relevant information
-    expAGE = 36.1 # years old age at exposure if not provided then age argument is not used physiology is based on BW
-    expBW = NA # kg if not provided then the BW of the corresponding age and sex is taken; if both BW and Age are not given then a default BW = 70 is taken; if BW is higher than the BW from the lifestage equations then the actual BW overwrites the calculated one
+    expAGE = 36.1 # years, old age at exposure if not provided then age argument is not used physiology is based on BW
+    expBW = NA # kg, if not provided then the BW of the corresponding age and sex is taken; if both BW and Age are not given then a default BW = 70 is taken; if BW is higher than the BW from the lifestage equations then the actual BW overwrites the calculated one
     sex = "F" # sex either "F" or "M" if none then default is "M"
     
     # Simulation relevant information
-    Tstart = 0 # days start of the simulation
-    Tstop = 43.9*365 # days stop of the simulation
-    Dt = 10 # days iteration steps (decrease/increase depending on run time)
+    Tstart = 0 # days, start of the simulation
+    Tstop = 43.9*365 # days, stop of the simulation
+    Dt = 10 # days, iteration steps (decrease/increase depending on run time)
     
     
     # List for storing results
@@ -116,26 +115,26 @@
         Pop.MODEL_OUTPUT <- RUNandOUT_lifestage(
           
           exposure_type = as.character(Input[i, "exposure_type"]),            # Exposure type, choose between "Oral", "Dermal", "Oral_Dermal" (if exposure is both Oral and Dermal), Inhalation"
-          exp = as.numeric(Input[i, "exp"]),                           # ug/kg/day concentration (total exposure concentration)
+          exp = as.numeric(Input[i, "exp"]),                           # ug/kg/day,(total exposure)
           exp_Oral = ifelse(is.na(Input[i, "exp_Oral"]), 0,
-                                 as.numeric(Input[i, "exp_Oral"])),        # ug/kg/day concentration to be used only when both oral and dermal are used
+                                 as.numeric(Input[i, "exp_Oral"])),        # ug/kg/day, to be used only when both oral and dermal are used
           exp_Dermal = ifelse(is.na(Input[i, "exp_Dermal"]), 0,
-                                   as.numeric(Input[i, "exp_Dermal"])),    # ug/kg/day concentration to be used only when both oral and dermal are used
+                                   as.numeric(Input[i, "exp_Dermal"])),    # ug/kg/day, to be used only when both oral and dermal are used
           Tinput = ifelse(is.na(Input[i, "Tinput"]), 1,
                            as.numeric(Input[i, "Tinput"])),          # for repeated exposure or so default = 1
           tinterval = ifelse(is.na(Input[i, "tinterval"]), 1,
                               as.numeric(Input[i, "tinterval"])),    # for repeated exposure or so default = 1
-          expSTOP = as.numeric(Input[i, "expSTOP"]),                # time in days after which the exposure stopped
+          expSTOP = as.numeric(Input[i, "expSTOP"]),                # days, time after which the exposure stopped
           
           # Subject-relevant information
           expAGE = ifelse(is.na(Input[i, "expAGE"]), stop("Error as expAGE required to run the lifestage model"),
-                           as.numeric(Input[i, "expAGE"])),     # years old age at exposure
+                           as.numeric(Input[i, "expAGE"])),     # years old, age at exposure
           expBW = if(!is.na(Input[i, "expBW"])){
             warning("expBW overwritten as NA as it should be automatically calculated based on age in the lifestage model")      # kg
             NA
           } else { Input[i, "expBW"] },
           sex = ifelse(is.na(Input[i, "sex"]), "M",
-                        as.character(Input[i, "sex"])),         # sex either "F" or "M" if none then default is "M"
+                        as.character(Input[i, "sex"])),         # sex, either "F" or "M" if none then default is "M"
           
           # Simulation relevant information
           Tstart = as.numeric(Input[i, "Tstart"]),          # days, start of the simulation
@@ -163,11 +162,11 @@
         Pop.MODEL_OUTPUT <- RUNandOUT(
           
           exposure_type = as.character(Input[i, "exposure_type"]),            # Exposure type, choose between "Oral", "Dermal", "Oral_Dermal" (if exposure is both Oral and Dermal), Inhalation"
-          exp = as.numeric(Input[i, "exp"]),                           # ug/kg/day concentration (total exposure concentration)
+          exp = as.numeric(Input[i, "exp"]),                           # ug/kg/day, (total exposure)
           exp_Oral = ifelse(is.na(Input[i, "exp_Oral"]), 0,
-                                 as.numeric(Input[i, "exp_Oral"])),        # ug/kg/day concentration to be used only when both oral and dermal are used
+                                 as.numeric(Input[i, "exp_Oral"])),        # ug/kg/day, to be used only when both oral and dermal are used
           exp_Dermal = ifelse(is.na(Input[i, "exp_Dermal"]), 0,
-                                   as.numeric(Input[i, "exp_Dermal"])),    # ug/kg/day concentration to be used only when both oral and dermal are used
+                                   as.numeric(Input[i, "exp_Dermal"])),    # ug/kg/day, to be used only when both oral and dermal are used
           Tinput = ifelse(is.na(Input[i, "Tinput"]), 1,
                            as.numeric(Input[i, "Tinput"])),          # for repeated exposure or so default = 1
           tinterval = ifelse(is.na(Input[i, "tinterval"]), 1,
@@ -178,9 +177,9 @@
           expAGE = ifelse(is.na(Input[i, "expAGE"]), NA,
                            as.numeric(Input[i, "expAGE"])),     # years old age at exposure if not provided then age argument is not used physiology is based on BW
           expBW = ifelse(is.na(Input[i, "expBW"]), NA,
-                          as.numeric(Input[i, "expBW"])),       # kg if not provided then the BW of the corresponding age and sex is taken; if both BW and Age are NA, then a default BW = 70 is taken; if BW is higher than the BW from the lifestage equations then the actual BW overwrites the calculated one
+                          as.numeric(Input[i, "expBW"])),       # kg, if not provided then the BW of the corresponding age and sex is taken; if both BW and Age are NA, then a default BW = 70 is taken; if BW is higher than the BW from the lifestage equations then the actual BW overwrites the calculated one
           sex = ifelse(is.na(Input[i, "sex"]), "M",
-                        as.character(Input[i, "sex"])),         # sex either "F" or "M" if none then default is "M"
+                        as.character(Input[i, "sex"])),         # sex, either "F" or "M" if none then default is "M"
           
           # Simulation relevant information
           Tstart = as.numeric(Input[i, "Tstart"]),          # days, start of the simulation
