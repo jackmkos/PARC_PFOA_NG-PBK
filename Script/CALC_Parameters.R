@@ -244,7 +244,7 @@ BASE_PARAMS <- function(expAGE = NULL, expBW = NULL, sex = NULL) {
   ### Uptake from the gastro-intestinal duct -------------------------
   
   # Input data, in vitro clearance
-  Papp_SI = 7.31 * 1e-6                         # cm/s, 7.31 ± 0.43, Janssen et al. 2024
+  Papp_SI = 7.31 * 1e-6                       # cm/s, 7.31 ± 0.43, Janssen et al. 2024
   
   
   ### Uptake to the liver -------------------------
@@ -266,8 +266,8 @@ BASE_PARAMS <- function(expAGE = NULL, expBW = NULL, sex = NULL) {
   
   ### Biliary clearance -------------------------
   # Input data, in vitro clearance
-  VmaxBSEPc <- 7.1                            # umol/min/mg BSEP, Average active transport of bile acids, assuming that the maximum velocity of PFOA transport by BSEP corresponds to that of bile acids [de Bruijn et al. 2024 https://doi.org/10.14573/altex.2302011] 
-  KmBSEPc <- 16.4                             # ug/L, uM, Average affinity constant of bile acids to BSEP, following the above assumption [de Bruijn et al. 2024 https://doi.org/10.14573/altex.2302011]
+  VmaxBSEPc <- 7.1 * 1000                           # umol/min/mg BSEP, Average active transport of bile acids, assuming that the maximum velocity of PFOA transport by BSEP corresponds to that of bile acids [de Bruijn et al. 2024 https://doi.org/10.14573/altex.2302011] 
+  KmBSEPc <- 16.4                           # ug/L, uM, Average affinity constant of bile acids to BSEP, following the above assumption [de Bruijn et al. 2024 https://doi.org/10.14573/altex.2302011]
   
   # IVIVE 
   mgBSEP.HC <-  0.839 * 140000 * 1e-9         # mg BSEP/1e6 hepatocytes (0.839 pmole BSEP/1e6 hepatocytes (amound of BSEP per hepatocyte) * 140000 g/mole (MW BSEP) -> pg * 1e-9 -> mg) [de Bruijn et al. 2024 https://doi.org/10.14573/altex.2302011]

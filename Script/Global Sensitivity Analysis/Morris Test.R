@@ -374,7 +374,6 @@
   save(save.y, file = "y.RData")
   
   y <- t(y)
-  
   tell(Morris, y)
   
   

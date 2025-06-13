@@ -80,7 +80,7 @@
     
     # Simulation relevant information
     Tstart = 0 # days, start of the simulation
-    Tstop = 500 # days, stop of the simulation
+    Tstop = 450 # days, stop of the simulation
     Dt = 1/10 # days, iteration steps (decrease/increase depending on run time)
     
     
@@ -103,9 +103,7 @@
     
   }
 
-  
-  # Run model ----
-  
+ 
   MODEL_OUTPUT <- if(Population == "Yes"){ # Population exposure
     
     if(Lifestage == "Yes"){ # Population and lifestage
