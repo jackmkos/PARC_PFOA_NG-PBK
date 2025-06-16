@@ -349,9 +349,9 @@
   
   # Perform Morris test
   Morris <- morris(model =  NULL, 
-                   factors = Morris.factors, 
-                   r = Morris.r, 
-                   design = Morris.design, 
+                   factors = Morris.factors, # number of parameters
+                   r = Morris.r,  # number of repetitions
+                   design = Morris.design,  
                    binf = binf,  
                    bsup = bsup, 
                    scale = TRUE)
@@ -368,12 +368,13 @@
   dev.off()
   save(Morris, file = "ExperienceFull.RData")
   
+  results <- apply(design, 1,  SENSI_model) # Runs r (n of repetitions) * (param+1) simulations * (n) model outputs * (n=4501) model outputs per time
   
-  y <- apply(design, 1,  SENSI_model) # Runs r (n of repetitions) * (param+1) simulations * (n) model outputs * (n=4501) model outputs per time
+  y <- results
   save.y <- as.data.frame(y) %>% mutate(Tout = "times = seq(0, 5*365,by=1/10)")
   save(save.y, file = "y.RData")
   
-  y <- t(y)
+  y <- t(y) #transpose, depending on the structure of y you might need to transpose or not!
   tell(Morris, y)
   
   
