@@ -436,14 +436,14 @@ ggsave(filename = here(OUTPUT, "NoLifestageHalf.life.png"),
 # This should be done after performing reverse dosimetry to define which exposure concentration is needed to reach the measured plasma concentration for each participant of the study of Olsen et al. 
 # Concentration at Olsen experiment start
 # Results of reverse dosimetry and exposure scenario is found in OlsenData.csv and can be used directly as input to the model
-OlsenData <- read.csv(here("Input", "OlsenData.csv"))
+InputData <- read.csv(here("Input", "INPUT_dummy.csv"))
 
-PredictedObserved.df <- data.frame(
-  Idcode = OlsenData$Idcode,
-  expSTOP = OlsenData$expSTOP/365,
-  CP_initial = OlsenData$CP_initial, # plasma PFOA concentration at the begining of the study
-  CP_final = OlsenData$CP_final,
-  expCONC = OlsenData$expCONC
+CPredictedObserved.df <- data.frame(
+  Idcode = INPUT_dummy$Idcode,
+  exp = INPUT_dummy$exp,
+  expSTOP = INPUT_dummy$expSTOP, # this is the time of the stop of exposure in days
+  CP_measured = INPUT_dummy$CP_measured, # measured plasma PFOA concentration
+  samplingT = INPUT_dummy$samplingT # time at which the plasma concentration was measured
 )
 
 ## Regression on the plasma concentration 
@@ -451,29 +451,20 @@ PredictedObserved.df <- data.frame(
 # Import RESULTS from the PBK simulation
 PBK_OUT <- RESULTS$OUT_RAW_data
 
-PredictedObserved.df <- PredictedObserved.df %>%
+CPredictedObserved.df <- CPredictedObserved.df %>%
+  # Fint the predicted concentration at the time sampling time (samplingT)
   mutate(
-    CPatexpSTOP = map2_dbl( # Find the predicted concentration at the time of the stop of exposure to check if it's the same as the one measured
-      PBK_OUT,
-      expSTOP,
+    CP_predicted = map2_dbl( 
+      PBK_OUT,samplingT,
       ~ {
         idx <- which.min(abs(.x$time - .y))
         .x$CP[idx]
       }
     )
-  ) %>%
-  mutate(
-    CP_final_predicted = map_dbl( # Find the predicted concentration at the end of the study
-      PBK_OUT,
-      ~ {
-        last_row <- nrow(.x)
-        .x$CP[last_row]
-      }
-    )
-  )
+  ) 
 
-CRegression <- lm(CP_final~CP_final_predicted, data=PredictedObserved.df)
-summary(CRegression)
+CPRegression <- lm(CP_predicted~CP_measured, data=PredictedObserved.df) #lm(y~x) (y is the dependent variable)
+summary(CPRegression)
 
 
 ## Regression on the half life 
