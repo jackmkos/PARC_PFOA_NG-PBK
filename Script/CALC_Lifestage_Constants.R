@@ -38,32 +38,34 @@ Variables_df = Variables_df %>%
 ## Base Physiology ####
 
 # Body weight (kg), reference: Deepika et al. 2021, https://doi.org/10.1016/j.envres.2021.111287
-mutate(BW_M=3.382e+00+
-         2.866e+00*age+
-         (1.694e-01)*age^2-(1.169e-02)*age^3+
-         (2.577e-04)*age^4-(2.484e-06)*age^5+
-         (8.891e-09)*age^6,
-       BW_F=2.354+4.050*age +
-         -(3.240e-02)*age^2 +
-         -(3.057e-03)*age^3 +
-         (9.353e-05)*age^4 +
-         -(1.022e-06)*age^5 +
-         (3.918e-09)*age^6  ) %>% 
-# # BW_M_Ratier_2024 & BW_F_Ratier_2024 = Equation extracted from supplemental material from Ratier et al., 2024
-# mutate(BW_M_Ratier_2024 = if_else(age <19.00093277, 74.16235828-(2*(74.16235828-57.19957758)/(exp(0.63466182*(age-13.31018000))+exp(0.05457656*(age-13.31018000)))),
-#                                   -0.01129273*age^2 + 1.11817056*age + 56.74397436)) %>%
-#   mutate(BW_F_Ratier_2024 = if_else(age <17.9374115, 62.95490567-(2*(62.95490567-49.36574299)/(exp(0.84039606*(age-11.56691488))+exp(0.06710088*(age-11.56691488)))),
-#                                     -0.01258006*age^2 + 1.25029379*age + 44.4459234)) %>%
-#   mutate(BDW_M_Ratier_2024 = 74.16235828-(2*(74.16235828-57.19957758)/(exp(0.63466182*(age-13.31018000))+exp(0.05457656*(age-13.31018000))))) %>%
-#   mutate(BDW_F_Ratier_2024 = 62.95490567-(2*(62.95490567-49.36574299)/(exp(0.84039606*(age-11.56691488))+exp(0.06710088*(age-11.56691488)))))
+# mutate(BW_M=3.382e+00+
+#          2.866e+00*age+
+#          (1.694e-01)*age^2-(1.169e-02)*age^3+
+#          (2.577e-04)*age^4-(2.484e-06)*age^5+
+#          (8.891e-09)*age^6,
+#        BW_F=2.354+4.050*age +
+#          -(3.240e-02)*age^2 +
+#          -(3.057e-03)*age^3 +
+#          (9.353e-05)*age^4 +
+#          -(1.022e-06)*age^5 +
+#          (3.918e-09)*age^6  ) %>% 
+# BW_M_Ratier_2024 & BW_F_Ratier_2024 = Equation extracted from supplemental material from Ratier et al., 2024
+mutate(BW_M_Ratier_2024 = if_else(age <19.00093277, 74.16235828-(2*(74.16235828-57.19957758)/(exp(0.63466182*(age-13.31018000))+exp(0.05457656*(age-13.31018000)))),
+                                  -0.01129273*age^2 + 1.11817056*age + 56.74397436)) %>%
+  mutate(BW_F_Ratier_2024 = if_else(age <17.9374115, 62.95490567-(2*(62.95490567-49.36574299)/(exp(0.84039606*(age-11.56691488))+exp(0.06710088*(age-11.56691488)))),
+                                    -0.01258006*age^2 + 1.25029379*age + 44.4459234)) %>%
+  mutate(BDW_M_Ratier_2024 = 74.16235828-(2*(74.16235828-57.19957758)/(exp(0.63466182*(age-13.31018000))+exp(0.05457656*(age-13.31018000))))) %>% 
+  mutate(BDW_F_Ratier_2024 = 62.95490567-(2*(62.95490567-49.36574299)/(exp(0.84039606*(age-11.56691488))+exp(0.06710088*(age-11.56691488))))) 
 
 # Body height (cm2), reference: Deepika et al. 2021, https://doi.org/10.1016/j.envres.2021.111287
+Variables_df = Variables_df %>% 
   mutate(BH_M = (5.869e+01)+(1.265e+01)*age-(4.665e-01)*age^2+(7.198e-03)*age^3-(3.224e-05)*age^4-(2.512e-07)*age^5+(2.071e-09)*age^6,
-         BH_F = (5.373e+01)+(1.296e+01)*age-(5.506e-01)*age^2+(1.113e-02)*age^3-(1.106e-04)*age^4+(4.697e-07)*age^5-(4.416e-10)*age^6) %>% 
-  
+         BH_F = (5.373e+01)+(1.296e+01)*age-(5.506e-01)*age^2+(1.113e-02)*age^3-(1.106e-04)*age^4+(4.697e-07)*age^5-(4.416e-10)*age^6) 
+
 # Body Surface Area (m2), reference: Gastellu et al. 2024, 10.1016/j.envres.2024.120393 (supplementary file Physio_equations_detailed.xlsx, eq. from Pendse et al. 2020)
-  mutate(BSA_M = exp(-3.75 + 0.42*log(BH_M)+0.52*log(BW_M)),
-         BSA_F =  exp(-3.75 + 0.42*log(BH_F)+0.52*log(BW_F)))  
+Variables_df = Variables_df %>%  
+  mutate(BSA_M = exp(-3.75 + 0.42*log(BH_M)+0.52*log(BW_M_Ratier_2024)),
+         BSA_F =  exp(-3.75 + 0.42*log(BH_F)+0.52*log(BW_F_Ratier_2024)))  
 
 
   
@@ -101,10 +103,10 @@ a2_F = Param5_F - 10*b2_F
 
 Variables_df = Variables_df %>%
   # select(TIME,age,BW_M_Ratier_2024,BW_F_Ratier_2024,BDW_M_Ratier_2024,BDW_F_Ratier_2024) %>%
-  # rename(BW_M = BW_M_Ratier_2024) %>% #could actually be ignored as we only use BDW and not BW
-  # rename(BW_F = BW_F_Ratier_2024) %>% #could actually be ignored as we only use BDW and not BW
-  # rename(BDW_M = BDW_M_Ratier_2024) %>%
-  # rename(BDW_F = BDW_F_Ratier_2024) %>%
+  rename(BW_M = BW_M_Ratier_2024) %>% #could actually be ignored as we only use BDW and not BW
+  rename(BW_F = BW_F_Ratier_2024) %>% #could actually be ignored as we only use BDW and not BW
+  rename(BDW_M = BDW_M_Ratier_2024) %>%
+  rename(BDW_F = BDW_F_Ratier_2024) %>%
   
   # Adrenal; compartment [1] in Ratier 2024 (not used in our model, but needed for calculation of adipose tissue)
   mutate(V_adrenalFraction_M = 0.0002 + (0.00171 - 0.0002)*exp(-2.02*age)) %>%
@@ -400,52 +402,173 @@ write.csv(Variables_df, here("Input", "PhysioVariables.csv"), row.names = FALSE)
 # 
 
 ## Plots ####
+Flows <- Variables_df %>% 
+  mutate(FGFR_M = Q_kidneyFraction_M*CardOut_M*0.18, 
+         FGFR_F = Q_kidneyFraction_F*CardOut_F*0.18) %>% 
+  mutate(QK_M = Q_kidneyFraction_M*CardOut_M,
+         QK_F = Q_kidneyFraction_M*CardOut_F) %>% 
+  mutate(QA_M = Q_adiposeFraction_M*CardOut_M,
+         QA_F = Q_adiposeFraction_F*CardOut_F,
+         QL_M = Q_liverFraction_M*CardOut_M,
+         QL_F = Q_liverFraction_F*CardOut_F,
+         QG_M = Q_gutFraction_M*CardOut_M,
+         QG_F = Q_gutFraction_F*CardOut_F)
+
+Flows %>% 
+  ggplot()+
+  geom_path(aes(age, QL_M, color = "Liver", linetype = "Male")) +
+  geom_path(aes(age, QL_F, color = "Liver", linetype = "Female")) +
+  geom_path(aes(age, QK_M, color = "Kidney", linetype = "Male")) +
+  geom_path(aes(age, QK_F, color = "Kidney", linetype = "Female")) +
+  geom_path(aes(age, QA_M, color = "Adipose", linetype = "Male")) +
+  geom_path(aes(age, QA_F, color = "Adipose", linetype = "Female")) +
+  geom_path(aes(age, QG_M, color = "Gut", linetype = "Male")) +
+  geom_path(aes(age, QG_F, color = "Gut", linetype = "Female")) +
+  scale_color_manual(values = c("Liver" = "goldenrod2",
+                                "Kidney" = "royalblue2",
+                                "Adipose" = "seagreen2",
+                                "Gut" = "turquoise2",
+                                "Skin" = "deeppink2"),
+                     name = "") +
+  scale_linetype_manual(values = c("Male" = "dashed",
+                                   "Female" = "solid"),
+                        name = "") +
+  theme_minimal()+
+  ylab("Blood flow (L/d)") +
+  xlab("Age (years)")+
+  theme(axis.title = element_text(size = 15),
+        axis.text = element_text(size = 14),
+        legend.position = "bottom", 
+        legend.text = element_text(size = 14))
+ggsave(filename = here("OrganFlows.png"), 
+       dpi = 300,
+       width = 12,      
+       height = 8,      
+       units = "cm")
+
 
 ggplot() + 
-  geom_path(data = Variables_df, aes(age, GFR_M, colour = "Male")) +
-  geom_path(data = Variables_df, aes(age, GFR_F, colour = "Female")) +
-  scale_colour_manual(values = c("Male" = "orange",
-                                 "Female" = "brown"),
+  geom_path(data = Variables_df, aes(age, GFR_M, linetype = "Male", color = "Creatinine")) +
+  geom_path(data = Variables_df, aes(age, GFR_F, linetype = "Female", color = "Creatinine")) +
+  geom_path(data = Flows, aes(age, FGFR_M, linetype = "Male", color = "Filtration fraction")) +
+  geom_path(data = Flows, aes(age, FGFR_F, linetype = "Female", color = "Filtration fraction")) +
+  scale_linetype_manual(values = c("Male" = "dashed",
+                                 "Female" = "solid"),
                       name = "") +
+  scale_color_manual(values = c("Creatinine" = "orange",
+                                "Filtration fraction" = "purple"),
+                                name = "")+
   theme_minimal()+
   ylab("GFR (ml/min)") +
-  xlab("Age (years)")
-  
+  xlab("Age (years)")+
+  theme(axis.title = element_text(size = 15),
+        axis.text = element_text(size = 14),
+        legend.position = "bottom", 
+        legend.text = element_text(size = 14))
+ggsave(filename = here("GFR.png"), 
+       dpi = 300,
+       width = 10,      
+       height = 8,      
+       units = "cm")
 
-## 
-## 
-# PLOT_VolumeChanges =
-#   ggplot()+
-#   geom_path(data = FemaleVariables_df, aes(age, V_liver_F, color = "Liver")) +
-#   geom_path(data = FemaleVariables_df, aes(age, V_kidney_F, color = "Kidney")) +
-#   # geom_path(data = FemaleVariables_df, aes(age, V_adipose_F, color = "Adipose")) +
-#   geom_path(data = FemaleVariables_df, aes(age, V_gut_F, color = "Gut")) +
-#   geom_path(data = FemaleVariables_df, aes(age, V_skin_F, color = "Skin")) +
-#   scale_color_manual(values = c("Liver" = "goldenrod2",
-#                                 "Kidney" = "royalblue2",
-#                                 #"Adipose" = "seagreen2",
-#                                 "Gut" = "turquoise2",
-#                                 "Skin" = "deeppink2"),
-#                      name = "") +
-#   ylab("Organ Volumes (Kg)") +
-#   xlab("Age (years)") +
-#   theme_CP()
-# PLOT_VolumeChanges
-# 
-# PLOT_FlowChanges =
-#   ggplot()+
-#   geom_path(data = FemaleVariables_df, aes(age, Q_liver_F, color = "Liver")) +
-#   geom_path(data = FemaleVariables_df, aes(age, Q_kidney_F, color = "Kidney")) +
-#   # geom_path(data = FemaleVariables_df, aes(age, Q_adipose_F, color = "Adipose")) +
-#   geom_path(data = FemaleVariables_df, aes(age, Q_gut_F, color = "Gut")) +
-#   geom_path(data = FemaleVariables_df, aes(age, Q_skin_F, color = "Skin")) +
-#   scale_color_manual(values = c("Liver" = "goldenrod2",
-#                                 "Kidney" = "royalblue2",
-#                                 #"Adipose" = "seagreen2",
-#                                 "Gut" = "turquoise2",
-#                                 "Skin" = "deeppink2"),
-#                      name = "") +
-#   ylab("Organ Blood Flows (L/h)") +
-#   xlab("Age (years)") +
-#   theme_CP()
-# PLOT_FlowChanges
+ggplot() + 
+  geom_path(data = Variables_df, aes(age, BW_M, linetype = "Male")) +
+  geom_path(data = Variables_df, aes(age, BW_F, linetype = "Female")) +
+  scale_linetype_manual(values = c("Male" = "dashed",
+                                   "Female" = "solid"),
+                        name = "") +
+  theme_minimal()+
+  ylab("BW (kg)") +
+  xlab("Age (years)")+
+  theme(axis.title = element_text(size = 15),
+        axis.text = element_text(size = 14),
+        legend.position = "bottom", 
+        legend.text = element_text(size = 14))
+ggsave(filename = here("BW.png"), 
+       dpi = 300,
+       width = 12,      
+       height = 8,      
+       units = "cm")
+
+ggplot() + 
+  geom_path(data = Variables_df, aes(age, CardOut_M, linetype = "Male")) +
+  geom_path(data = Variables_df, aes(age, CardOut_F, linetype = "Female")) +
+  scale_linetype_manual(values = c("Male" = "dashed",
+                                   "Female" = "solid"),
+                        name = "") +
+  theme_minimal()+
+  ylab("QC (L/d)") +
+  xlab("Age (years)")
+  theme(axis.title = element_text(size = 15),
+        axis.text = element_text(size = 14),
+        legend.position = "bottom", 
+        legend.text = element_text(size = 14))
+ggsave(filename = here("QC.png"), 
+       dpi = 300,
+       width = 12,      
+       height = 8,      
+       units = "cm")
+
+Volumes <-Variables_df %>% 
+  mutate(VK_M = V_kidneyFraction_M*BW_M,
+         VK_F = V_kidneyFraction_M*BW_F,
+         VA_M = V_adiposeFraction_M*BW_M,
+         VA_F = V_adiposeFraction_F*BW_F,
+         VL_M = V_liverFraction_M*BW_M,
+         VL_F = V_liverFraction_F*BW_F,
+         VG_M = V_gutFraction_M*BW_M,
+         VG_F = V_gutFraction_F*BW_F)
+
+Volumes %>% 
+  ggplot()+
+  geom_path(aes(age, VL_M, color = "Liver", linetype = "Male")) +
+  geom_path(aes(age, VL_F, color = "Liver", linetype = "Female")) +
+  geom_path(aes(age, VK_M, color = "Kidney", linetype = "Male")) +
+  geom_path(aes(age, VK_F, color = "Kidney", linetype = "Female")) +
+  geom_path(aes(age, VA_M, color = "Adipose", linetype = "Male")) +
+  geom_path(aes(age, VA_F, color = "Adipose", linetype = "Female")) +
+  geom_path(aes(age, VG_M, color = "Gut", linetype = "Male")) +
+  geom_path(aes(age, VG_F, color = "Gut", linetype = "Female")) +
+  scale_color_manual(values = c("Liver" = "goldenrod2",
+                                "Kidney" = "royalblue2",
+                                "Adipose" = "seagreen2",
+                                "Gut" = "turquoise2",
+                                "Skin" = "deeppink2"),
+                     name = "") +
+    scale_linetype_manual(values = c("Male" = "dashed",
+                                   "Female" = "solid"),
+                        name = "") +
+  theme_minimal()+
+  ylab("Weight (Kg)") +
+  xlab("Age (years)")+
+  theme(axis.title = element_text(size = 15),
+        axis.text = element_text(size = 14),
+        legend.position = "bottom", 
+        legend.text = element_text(size = 14))
+ggsave(filename = here("OrganVolumes.png"), 
+       dpi = 300,
+       width = 12,      
+       height = 8,      
+       units = "cm")
+
+CalcPhysioParams <- cbind(Flows, Volumes)
+write.csv(CalcPhysioParams, here("Input", "CalculatedPhysiologicalParams.csv"), row.names = FALSE)
+
+# Get the corresponding value from column U
+BW.EFSAstudy <- data.frame(
+  BW.infant_M = CalcPhysioParams$BW_M[which.min(abs(CalcPhysioParams$age - 0.002))],
+  BW.toddler_M = CalcPhysioParams$BW_M[which.min(abs(CalcPhysioParams$age - 1))],
+  BW.child_M = CalcPhysioParams$BW_M[which.min(abs(CalcPhysioParams$age - 4))],
+  BW.teenager_M = CalcPhysioParams$BW_M[which.min(abs(CalcPhysioParams$age - 12))],
+  BW.adult_M = CalcPhysioParams$BW_M[which.min(abs(CalcPhysioParams$age - 18))],
+  BW.elderly_M = CalcPhysioParams$BW_M[which.min(abs(CalcPhysioParams$age - 60))],
+  BW.veryelderly_M = CalcPhysioParams$BW_M[which.min(abs(CalcPhysioParams$age - 70))],
+  BW.infant_F = CalcPhysioParams$BW_F[which.min(abs(CalcPhysioParams$age - 0.002))],
+  BW.toddler_F = CalcPhysioParams$BW_F[which.min(abs(CalcPhysioParams$age - 1))],
+  BW.child_F = CalcPhysioParams$BW_F[which.min(abs(CalcPhysioParams$age - 4))],
+  BW.teenager_F = CalcPhysioParams$BW_F[which.min(abs(CalcPhysioParams$age - 12))],
+  BW.adult_F = CalcPhysioParams$BW_F[which.min(abs(CalcPhysioParams$age - 18))],
+  BW.elderly_F = CalcPhysioParams$BW_F[which.min(abs(CalcPhysioParams$age - 60))],
+  BW.veryelderly_F = CalcPhysioParams$BW_F[which.min(abs(CalcPhysioParams$age - 70))]
+)
+write.csv(BW.EFSAstudy, here("Input", "BW.EFSAstudy.csv"), row.names = FALSE)

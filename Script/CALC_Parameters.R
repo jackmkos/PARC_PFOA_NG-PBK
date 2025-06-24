@@ -10,13 +10,15 @@
 BASE_PARAMS <- function(expAGE = NULL, expBW = NULL, sex = NULL) { 
   
   ## Function conditions ####
-  if (expAGE > 80) {
+  if (is.na(expAGE) && is.na(expBW)) {
+    expBW <- 70  # Default body weight
+  } 
+  
+  if (!is.na(expAGE) && expAGE > 80) {
     warning("Age above 80 which is the max age in the lifestage model. Physiological parameters assumed as those of an 80 year old")
     expAGE <- 80
   } 
-  if (is.na(expAGE) && is.na(expBW)) {
-    expBW <- 70  # Default body weight
-  }
+  
   if (is.na(sex)) {
     sex <- "M"  # Default sex to male
   }
@@ -348,13 +350,15 @@ BASE_PARAMS <- function(expAGE = NULL, expBW = NULL, sex = NULL) {
 DERMAL_PARAMS <- function(expAGE = NULL, expBW = NULL, sex = "M", base.parm.c) { 
   
   ## Function conditions ####
-  if (expAGE > 80) {
-    warning("Age above 80 which is the max age in the lifestage model. Physiological parameters assumed as those of an 80 year old")
-    expAGE <- 80
-  }
   if (is.na(expAGE) && is.na(expBW)) {
     expBW <- 70  # Default body weight
-  }
+  } 
+  
+  if (!is.na(expAGE) && expAGE > 80) {
+    warning("Age above 80 which is the max age in the lifestage model. Physiological parameters assumed as those of an 80 year old")
+    expAGE <- 80
+  } 
+  
   if (is.na(sex)) {
     sex <- "M"  # Default sex to male
   }
@@ -502,13 +506,15 @@ INHALATION_PARAMS <- function(expAGE = NULL, expBW = NULL, sex = "M", base.parm.
   
   
   ## Function conditions ####
-  if (expAGE > 80) {
-    warning("Age above 80 which is the max age in the lifestage model. Physiological parameters assumed as those of an 80 year old")
-    expAGE <- 80
-  }
   if (is.na(expAGE) && is.na(expBW)) {
     expBW <- 70  # Default body weight
-  }
+  } 
+  
+  if (!is.na(expAGE) && expAGE > 80) {
+    warning("Age above 80 which is the max age in the lifestage model. Physiological parameters assumed as those of an 80 year old")
+    expAGE <- 80
+  } 
+  
   if (is.na(sex)) {
     sex <- "M"  # Default sex to male
   }
