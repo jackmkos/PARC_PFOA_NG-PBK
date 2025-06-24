@@ -394,7 +394,6 @@ DERMAL_PBK_RUN <- function(y, parms, times){ # Input for ode
         + (Vmax_OATP1B3/(Km_OATP1B3 + (CL_ec*fup)))*CL_ec*fup +
         - (VmaxBSEP/(KmBSEP + (CL_ic*fu_Lic)))*CL_ic*fu_Lic                       # ug/d, Liver intracellular space
       
-      
       dAPTT <- QK*(CP - CPTT) + 
         + (Vmax_OAT4/(Km_OAT4+(CPTL*fu_PTL)))*CPTL*fu_PTL        # ug/d, Proximal tubule tissue 
       

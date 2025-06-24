@@ -117,8 +117,6 @@ ggsave(filename = here(OUTPUT, "HL_Regression_plot.png"),
        width = 9,height = 7, units = "cm")
 
 ## Plot predicted half lives over those reported in literature ####
-
-
 HL_literature <- Lit.HalfLifes %>%
   filter(species == "human", chemical == "pfoa", parameter == "HalfLife") %>%
   select(c(value_average, n, sex)) %>%

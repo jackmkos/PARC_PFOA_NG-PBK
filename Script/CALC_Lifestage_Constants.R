@@ -324,10 +324,10 @@ Variables_df = Variables_df %>%
 Variables_df <- Variables_df %>% 
   # Initial age-dependent changes in GFR
   mutate(
-    Q_GFRi_M = if_else(age < 18, 0.1678 + ((0.70  - 0.1678) / 18) * age,
-                       0.70),
-    Q_GFRi_F = if_else(age < 18, 0.1678 + ((0.90  - 0.1678) / 18) * age,
-                       0.90)) %>% 
+    Q_GFRi_M = if_else(age < 18, 0.1678 + ((0.90  - 0.1678) / 18) * age,
+                       0.90),
+    Q_GFRi_F = if_else(age < 18, 0.1678 + ((0.70  - 0.1678) / 18) * age,
+                    0.70)) %>% 
   # Baseline GFR for males and females (in L/day)
   # (mL/min/1.73m^2 -> L/day)  # scale to actual BSA: SA_B*1e-4 / 1.73
   mutate( 
@@ -555,20 +555,20 @@ CalcPhysioParams <- cbind(Flows, Volumes)
 write.csv(CalcPhysioParams, here("Input", "CalculatedPhysiologicalParams.csv"), row.names = FALSE)
 
 # Get the corresponding value from column U
-BW.EFSAstudy <- data.frame(
-  BW.infant_M = CalcPhysioParams$BW_M[which.min(abs(CalcPhysioParams$age - 0.002))],
-  BW.toddler_M = CalcPhysioParams$BW_M[which.min(abs(CalcPhysioParams$age - 1))],
-  BW.child_M = CalcPhysioParams$BW_M[which.min(abs(CalcPhysioParams$age - 4))],
-  BW.teenager_M = CalcPhysioParams$BW_M[which.min(abs(CalcPhysioParams$age - 12))],
-  BW.adult_M = CalcPhysioParams$BW_M[which.min(abs(CalcPhysioParams$age - 18))],
-  BW.elderly_M = CalcPhysioParams$BW_M[which.min(abs(CalcPhysioParams$age - 60))],
-  BW.veryelderly_M = CalcPhysioParams$BW_M[which.min(abs(CalcPhysioParams$age - 70))],
-  BW.infant_F = CalcPhysioParams$BW_F[which.min(abs(CalcPhysioParams$age - 0.002))],
-  BW.toddler_F = CalcPhysioParams$BW_F[which.min(abs(CalcPhysioParams$age - 1))],
-  BW.child_F = CalcPhysioParams$BW_F[which.min(abs(CalcPhysioParams$age - 4))],
-  BW.teenager_F = CalcPhysioParams$BW_F[which.min(abs(CalcPhysioParams$age - 12))],
-  BW.adult_F = CalcPhysioParams$BW_F[which.min(abs(CalcPhysioParams$age - 18))],
-  BW.elderly_F = CalcPhysioParams$BW_F[which.min(abs(CalcPhysioParams$age - 60))],
-  BW.veryelderly_F = CalcPhysioParams$BW_F[which.min(abs(CalcPhysioParams$age - 70))]
-)
-write.csv(BW.EFSAstudy, here("Input", "BW.EFSAstudy.csv"), row.names = FALSE)
+# BW.EFSAstudy <- data.frame(
+#   BW.infant_M = CalcPhysioParams$BW_M[which.min(abs(CalcPhysioParams$age - 0.002))],
+#   BW.toddler_M = CalcPhysioParams$BW_M[which.min(abs(CalcPhysioParams$age - 1))],
+#   BW.child_M = CalcPhysioParams$BW_M[which.min(abs(CalcPhysioParams$age - 4))],
+#   BW.teenager_M = CalcPhysioParams$BW_M[which.min(abs(CalcPhysioParams$age - 12))],
+#   BW.adult_M = CalcPhysioParams$BW_M[which.min(abs(CalcPhysioParams$age - 18))],
+#   BW.elderly_M = CalcPhysioParams$BW_M[which.min(abs(CalcPhysioParams$age - 60))],
+#   BW.veryelderly_M = CalcPhysioParams$BW_M[which.min(abs(CalcPhysioParams$age - 70))],
+#   BW.infant_F = CalcPhysioParams$BW_F[which.min(abs(CalcPhysioParams$age - 0.002))],
+#   BW.toddler_F = CalcPhysioParams$BW_F[which.min(abs(CalcPhysioParams$age - 1))],
+#   BW.child_F = CalcPhysioParams$BW_F[which.min(abs(CalcPhysioParams$age - 4))],
+#   BW.teenager_F = CalcPhysioParams$BW_F[which.min(abs(CalcPhysioParams$age - 12))],
+#   BW.adult_F = CalcPhysioParams$BW_F[which.min(abs(CalcPhysioParams$age - 18))],
+#   BW.elderly_F = CalcPhysioParams$BW_F[which.min(abs(CalcPhysioParams$age - 60))],
+#   BW.veryelderly_F = CalcPhysioParams$BW_F[which.min(abs(CalcPhysioParams$age - 70))]
+# )
+# write.csv(BW.EFSAstudy, here("Input", "BW.EFSAstudy.csv"), row.names = FALSE)
