@@ -143,8 +143,7 @@ if (params$Population == "Yes") {
 #| echo: false
 
 if(params$Population == "Yes" && 
-    !is.character(Pop.POST.RUN_RESULTS[[8]]) && 
-    !is.na(Pop.POST.RUN_RESULTS[[8]])) {
+    !is.character(Pop.POST.RUN_RESULTS[[8]])) {
   ggplotly(Pop.POST.RUN_RESULTS[[8]])
   } else {}
 
@@ -155,8 +154,7 @@ if(params$Population == "Yes" &&
 #| echo: false
 
 if (params$Population == "Yes" && 
-    !is.character(Pop.POST.RUN_RESULTS[[9]]) && 
-    !is.na(Pop.POST.RUN_RESULTS[[9]])) {
+    !is.character(Pop.POST.RUN_RESULTS[[9]])) {
   ggplotly(Pop.POST.RUN_RESULTS[[9]])
   } else {}
 

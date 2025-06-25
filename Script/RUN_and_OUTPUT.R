@@ -899,7 +899,7 @@ Pop.POST.Run <- function(Input,
     summary(CP_Regression)
     
     CP_Regression_plot <- CP_Regression %>%
-      ggplot(aes(log(CP_predicted), log(CP_observed))) +
+      ggplot(aes(log(CP_observed), log(CP_predicted))) +
       # geom_smooth(method='lm', color = "black", se = TRUE) +
       geom_abline(intercept = 0, slope = 1, linetype = "solid", linewidth = 0.3, color = "grey50") +  
       geom_abline(intercept = log(2), slope = 1, linetype = "dashed", linewidth = 0.2, color = "grey50") + #2 fold
@@ -909,8 +909,8 @@ Pop.POST.Run <- function(Input,
       geom_point(color = "black", size = 1) +
       CP_theme +
       labs(title="Observed vs predicted plasma concentrations",
-           x="\n log10 (Predicted concentration) (\u03BCg/L)", 
-           y=" log10 (Observed concentration) (\u03BCg/L)\n") 
+           x="\n log10 (Observed concentration) (\u03BCg/L)", 
+           y=" log10 (Predicted concentration) (\u03BCg/L)\n") 
     CP_Regression_plot
   } else{ CP_Regression_plot <- "no regression plot as no observed data"
     message("Predicted Vs Observed Plasma concentrations cannot be plotted as observed plasma concentrations have not been provided")} 
@@ -922,7 +922,7 @@ Pop.POST.Run <- function(Input,
     summary(HL_Regression)
     
     HL_Regression_plot <- HL_Regression %>%
-      ggplot(aes(log10(HL_predicted), log10(HL_observed))) +
+      ggplot(aes(log10(HL_observed), log10(HL_predicted))) +
       # geom_smooth(method='lm', color = "black", se = TRUE) +
       geom_abline(intercept = 0, slope = 1, linetype = "solid", linewidth = 0.3, color = "grey50") +  
       geom_abline(intercept = log10(2), slope = 1, linetype = "dashed", linewidth = 0.2, color = "grey50") +  #2 fold
@@ -932,8 +932,8 @@ Pop.POST.Run <- function(Input,
       geom_point(color = "black", size = 1) +
       CP_theme +
       labs(title="Observed vs predicted half lives",
-           x = "log10 (Predicted Half life) (years)", 
-           y = "log10 (Observed Half life) (years)")
+           x = "log10 (Observed Half life) (years)", 
+           y = "log10 (Predicted Half life) (years)")
     HL_Regression_plot
   } else{ HL_Regression_plot <- "no regression plot as no observed data"
   message("Predicted Vs Observed half lives cannot be plotted as observed half lives have not been provided")}

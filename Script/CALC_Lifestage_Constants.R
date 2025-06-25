@@ -330,7 +330,7 @@ Variables_df <- Variables_df %>%
   mutate(
     SCrQ_M = if_else(age < 18, 0.1678 + ((0.90  - 0.1678) / 18) * age,
                      SCr_M),
-    SCrQ_F = if_else(age < 18, 0.1678 + ((0.70  - 0.1305) / 18) * age,
+    SCrQ_F = if_else(age < 18, 0.1305 + ((0.70  - 0.1305) / 18) * age,
                      SCr_F)) %>% 
   # Baseline GFR for males and females (in L/day)
   # (mL/min/1.73m^2 -> L/day)  # scale to actual BSA: SA_B*1e-4 / 1.73
