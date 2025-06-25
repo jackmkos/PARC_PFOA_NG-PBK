@@ -36,13 +36,13 @@
   INPUT_dummy <- read.csv(here("Input", "INPUT_dummy.csv")) 
   
   # Choose if physiology should change with age ("Yes" to include physiological changes due to age and "No" to assume the same physiology over time)
-  Lifestage = "Yes" 
+  Lifestage = "No" 
   
   # Choose to include population or individual exposure ("Yes" to include population based and "No" to only run the model for one person)
   Population = "Yes" 
   
   # Choose study from input file, or ID_range
-  Test_study = "Olsen" #Arvidsjaur
+  Test_study = "EffectOfLifestageEq" #Arvidsjaur
   # ID_range = c(201:300)
   
   
