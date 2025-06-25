@@ -69,7 +69,7 @@ Variables_df = Variables_df %>%
 
 
   
-# Blood/Plasma/Hematocrit
+# Blood/Plasma/Hematocrit/Creatinine
 # Using Ratier et al. (2024) model, Fraction of arterial plasma, calculated from Filser 2000 p.43
 Fr_art_blood = 0.0178 / (0.0178 + 0.0533) #fraction of arterial blood 
 
@@ -97,6 +97,9 @@ a1_F = Param4_F - 3*b1_F
 b2_F = (Param5_F - Param4_F)/7
 a2_F = Param5_F - 10*b2_F
 
+# Default serum creatinine values
+SCr_M = 0.90
+SCr_F = 0.70
 
 
 ## Fractional Volumes ####
@@ -320,31 +323,32 @@ Variables_df = Variables_df %>%
 
 
 ## Glomerular Filtration Rate (L/day) : 
+
 ## # Baseline neonatal GFR should be 20.0 mL/min: Qi = (20*0.9)/107.3 = 0.1678 mg/dL (Smeets 2022, https://doi.org/10.1681/ASN.2021101326)
 Variables_df <- Variables_df %>% 
-  # Initial age-dependent changes in GFR
+  # Calculate default population SCrQ values for children and adults
   mutate(
-    Q_GFRi_M = if_else(age < 18, 0.1678 + ((0.90  - 0.1678) / 18) * age,
-                       0.90),
-    Q_GFRi_F = if_else(age < 18, 0.1678 + ((0.70  - 0.1678) / 18) * age,
-                    0.70)) %>% 
+    SCrQ_M = if_else(age < 18, 0.1678 + ((0.90  - 0.1678) / 18) * age,
+                     SCr_M),
+    SCrQ_F = if_else(age < 18, 0.1678 + ((0.70  - 0.1678) / 18) * age,
+                     SCr_F)) %>% 
   # Baseline GFR for males and females (in L/day)
   # (mL/min/1.73m^2 -> L/day)  # scale to actual BSA: SA_B*1e-4 / 1.73
   mutate( 
-    Q_GFRBaseline_M = (107.3 * 1.44*(BSA_M)/1.73) / (0.9/Q_GFRi_M),
-    Q_GFRBaseline_F = (107.3 * 1.44*(BSA_M)/1.73) / (0.9/Q_GFRi_F)
+    GFR_M_base = (107.3 * 1.44*(BSA_M)/1.73) / (SCr_M/SCrQ_M),
+    GFR_F_base = (107.3 * 1.44*(BSA_F)/1.73) / (SCr_F/SCrQ_F)
   ) %>% 
   # Exponential decline after age 40
   mutate(
-    Q_GFRc_M = if_else(age <= 40, Q_GFRBaseline_M,
-                       Q_GFRBaseline_M * 0.988^(age - 40)),
-    Q_GFRc_F = if_else(age <= 40, Q_GFRBaseline_F,
-                       Q_GFRBaseline_F * 0.988^(age - 40))
-  ) %>% 
-  mutate(
-    GFR_M = Q_GFRc_M*0.6944444444*1.73,
-    GFR_F = Q_GFRc_F*0.6944444444*1.73
-  )
+    GFR_M = if_else(age <= 40, GFR_M_base,
+                    GFR_M_base * 0.988^(age - 40)),
+    GFR_F = if_else(age <= 40, GFR_F_base,
+                    GFR_F_base * 0.988^(age - 40))
+  )#%>% 
+  # mutate(
+  #   GFR_M = Q_GFRc_M*0.6944444444*1.73,
+  #   GFR_F = Q_GFRc_F*0.6944444444*1.73
+  # )
 
 write.csv(Variables_df, here("Input", "PhysioVariables.csv"), row.names = FALSE)
 

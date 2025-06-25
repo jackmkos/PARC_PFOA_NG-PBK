@@ -714,7 +714,7 @@ Pop.POST.Run <- function(Input,
   GFR <- sapply(Parameters, function(x) x$GFR)
   QKc <- sapply(Parameters, function(x) x$QKc)
   QC <- sapply(Parameters, function(x) x$QC)
-  GFR.ff <- 0.18*QKc*QC
+  # GFR.ff <- 0.18*QKc*QC
   
   
   PredictedObserved <- data.frame(
@@ -729,8 +729,8 @@ Pop.POST.Run <- function(Input,
     sex = Input$sex,
     expAGE = Input$expAGE,
     BW = BW,
-    GFR = GFR,
-    GFR.ff = GFR.ff
+    GFR = GFR #,
+    # GFR.ff = GFR.ff
   ) 
   PredictedObserved <- PredictedObserved %>% 
     mutate(log_exp = log10(exp),
@@ -759,16 +759,24 @@ Pop.POST.Run <- function(Input,
   
   ## Plots ####
   
-  hist(PredictedObserved$exp)
-  hist(PredictedObserved$exp_Oral)
-  hist(PredictedObserved$exp_Dermal)
-  hist(PredictedObserved$log_exp)
-  hist(PredictedObserved$log_exp_Oral)
-  hist(PredictedObserved$log_exp_Dermal)
+  PredictedObserved_long <- PredictedObserved %>% 
+    select(exp, exp_Oral, exp_Dermal, log_exp, log_exp_Oral, log_exp_Dermal,
+           CP_observed, HL_observed) %>%
+    pivot_longer(exp:HL_observed, 
+                 names_to = "Variable", 
+                 values_to = "Value")
   
-  hist(PredictedObserved$CP_observed)
-  hist(PredictedObserved$HL_observed)
-  
+  # Create faceted histograms
+  Histograms_variables <- ggplot(PredictedObserved_long, aes(x = Value)) +
+    geom_histogram() +
+    facet_wrap(~ Variable, scales = "free") +
+    CP_theme +
+    theme(axis.text = element_text(size = 5),
+          axis.title = element_text(size = 7),
+          plot.margin = margin(0, 0, 0, 0, "cm") 
+    )
+    
+  Histograms_variables
   
   ### Exposure estimate vs predicted plasma concentration ####
   Plot_exp_vs_P_CP <- PredictedObserved %>% 
@@ -793,8 +801,8 @@ Pop.POST.Run <- function(Input,
   ### GFR  vs predicted plasma concentration ####
   Plot_GFR_vs_P_CP <- PredictedObserved %>% 
     ggplot() +
-    geom_point(aes(GFR, CP_predicted), color = "black", size = 0.5) +
-    geom_point(aes(GFR.ff, CP_predicted), color = "blue", size = 0.5) +
+    geom_point(aes(GFR, CP_predicted), color = "black", size = 1) +
+    # geom_point(aes(GFR.ff, CP_predicted), color = "blue", size = 1) +
     CP_theme +
     labs(title="Glomerular filtration rate vs predicted plasma concentration",
          x="\n GFR (L/d)", 
@@ -804,7 +812,7 @@ Pop.POST.Run <- function(Input,
   ### Exposure estimate vs predicted plasma concentration ####
   Plot_exp_vs_P_HL <- PredictedObserved %>% 
     ggplot(aes(exp, HL_predicted)) +
-    geom_point(color = "black", size = 0.5) +
+    geom_point(color = "black", size = 1) +
     CP_theme +
     labs(title="Exposure vs predicted half life",
          x="\n Exposure (\u03BCg/kg bw/dayL)", 
@@ -814,7 +822,7 @@ Pop.POST.Run <- function(Input,
   ### Exposure age vs predicted half life ####
   Plot_age_vs_P_HL <- PredictedObserved %>% 
     ggplot(aes(expAGE, HL_predicted)) +
-    geom_point(color = "black", size = 0.5) +
+    geom_point(color = "black", size = 1) +
     CP_theme +
     labs(title="Age at the start of exposure vs predicted half life",
          x="\n Exposure age (years)", 
@@ -824,54 +832,13 @@ Pop.POST.Run <- function(Input,
   ### GFRvs predicted plasma concentration ####
   Plot_GFR_vs_P_HL <- PredictedObserved %>% 
     ggplot() +
-    geom_point(aes(GFR, HL_predicted), color = "black", size = 0.5) +
-    geom_point(aes(GFR.ff, HL_predicted), color = "blue", size = 0.5) +
+    geom_point(aes(GFR, HL_predicted), color = "black", size = 1) +
+    # geom_point(aes(GFR.ff, HL_predicted), color = "blue", size = 1) +
     CP_theme +
     labs(title="Glomerular filtration rate vs predicted half life",
          x="\n GFR (L/d)", 
          y="Predicted half life (years)") 
   Plot_GFR_vs_P_HL
-  
-  
-  ### Observed vs Predicted plasma concentrations ####
-  CP_Regression <- lm(CP_predicted~CP_observed, data=PredictedObserved) #lm(y~x) (y is the dependent variable)
-  summary(CP_Regression)
-  
-  CP_Regression_plot <- CP_Regression %>%
-    ggplot(aes(log(CP_predicted), log(CP_observed))) +
-    # geom_smooth(method='lm', color = "black", se = TRUE) +
-    geom_abline(intercept = 0, slope = 1, linetype = "solid", linewidth = 0.3, color = "grey50") +  
-    geom_abline(intercept = log(2), slope = 1, linetype = "dashed", linewidth = 0.2, color = "grey50") + #2 fold
-    geom_abline(intercept = log(0.5), slope = 1, linetype = "dashed", linewidth = 0.2, color = "grey50") + #2 fold
-    geom_abline(intercept = log(3), slope = 1, linetype = "dotted", linewidth = 0.1, color = "grey50") +  #3 fold
-    geom_abline(intercept = log(1/3), slope = 1, linetype = "dotted", linewidth = 0.1, color = "grey50") + #3 fold
-    geom_point(color = "black", size = 0.2) +
-    CP_theme +
-    labs(title="Observed vs predicted plasma concentrations",
-         x="\n log10 (Predicted concentration) (\u03BCg/L)", 
-         y=" log10 (Observed concentration) (\u03BCg/L)\n") 
-  CP_Regression_plot
-  
-  
-  ### Observed vs Predicted half lives ####
-  HL_Regression <- lm(HL_predicted~HL_observed, data=PredictedObserved)
-  summary(HL_Regression)
-  
-  HL_Regression_plot <- HL_Regression %>%
-    ggplot(aes(log10(HL_predicted), log10(HL_observed))) +
-    # geom_smooth(method='lm', color = "black", se = TRUE) +
-    geom_abline(intercept = 0, slope = 1, linetype = "solid", linewidth = 0.3, color = "grey50") +  
-    geom_abline(intercept = log10(2), slope = 1, linetype = "dashed", linewidth = 0.2, color = "grey50") +  #2 fold
-    geom_abline(intercept = log10(0.5), slope = 1, linetype = "dashed", linewidth = 0.2, color = "grey50") + #2 fold
-    geom_abline(intercept = log10(3), slope = 1, linetype = "dotted", linewidth = 0.1, color = "grey50") +  #3 fold
-    geom_abline(intercept = log10(1/3), slope = 1, linetype = "dotted", linewidth = 0.1, color = "grey50") + #3 fold
-    geom_point(color = "black", size = 0.2) +
-    CP_theme +
-    labs(title="Observed vs predicted half lives",
-         x = "log10 (Predicted Half life) (years)", 
-         y = "log10 (Observed Half life) (years)")
-  HL_Regression_plot
-  
   
   ### Plot predicted half lives over those reported in literature ####
   HL_literature <- Lit.HalfLifes %>%
@@ -925,9 +892,56 @@ Pop.POST.Run <- function(Input,
     theme(legend.position = "right")
   HL_violin_plot
   
-  message("Post run analysis finished")
+  if(all(PredictedObserved$CP_observed > 0) &&
+     !any(is.na(PredictedObserved$CP_observed > 0))){
+    ### Observed vs Predicted plasma concentrations ####
+    CP_Regression <- lm(CP_predicted~CP_observed, data=PredictedObserved) #lm(y~x) (y is the dependent variable)
+    summary(CP_Regression)
+    
+    CP_Regression_plot <- CP_Regression %>%
+      ggplot(aes(log(CP_predicted), log(CP_observed))) +
+      # geom_smooth(method='lm', color = "black", se = TRUE) +
+      geom_abline(intercept = 0, slope = 1, linetype = "solid", linewidth = 0.3, color = "grey50") +  
+      geom_abline(intercept = log(2), slope = 1, linetype = "dashed", linewidth = 0.2, color = "grey50") + #2 fold
+      geom_abline(intercept = log(0.5), slope = 1, linetype = "dashed", linewidth = 0.2, color = "grey50") + #2 fold
+      geom_abline(intercept = log(3), slope = 1, linetype = "dotted", linewidth = 0.1, color = "grey50") +  #3 fold
+      geom_abline(intercept = log(1/3), slope = 1, linetype = "dotted", linewidth = 0.1, color = "grey50") + #3 fold
+      geom_point(color = "black", size = 1) +
+      CP_theme +
+      labs(title="Observed vs predicted plasma concentrations",
+           x="\n log10 (Predicted concentration) (\u03BCg/L)", 
+           y=" log10 (Observed concentration) (\u03BCg/L)\n") 
+    CP_Regression_plot
+  } else{ CP_Regression_plot <- "no regression plot as no observed data"
+    message("Predicted Vs Observed Plasma concentrations cannot be plotted as observed plasma concentrations have not been provided")} 
   
-  return(list(Plot_exp_vs_P_CP,
+  if(all(PredictedObserved$HL_observed >0) &&
+     !any(is.na(PredictedObserved$HL_observed))) {
+    ### Observed vs Predicted half lives ####
+    HL_Regression <- lm(HL_predicted~HL_observed, data=PredictedObserved)
+    summary(HL_Regression)
+    
+    HL_Regression_plot <- HL_Regression %>%
+      ggplot(aes(log10(HL_predicted), log10(HL_observed))) +
+      # geom_smooth(method='lm', color = "black", se = TRUE) +
+      geom_abline(intercept = 0, slope = 1, linetype = "solid", linewidth = 0.3, color = "grey50") +  
+      geom_abline(intercept = log10(2), slope = 1, linetype = "dashed", linewidth = 0.2, color = "grey50") +  #2 fold
+      geom_abline(intercept = log10(0.5), slope = 1, linetype = "dashed", linewidth = 0.2, color = "grey50") + #2 fold
+      geom_abline(intercept = log10(3), slope = 1, linetype = "dotted", linewidth = 0.1, color = "grey50") +  #3 fold
+      geom_abline(intercept = log10(1/3), slope = 1, linetype = "dotted", linewidth = 0.1, color = "grey50") + #3 fold
+      geom_point(color = "black", size = 1) +
+      CP_theme +
+      labs(title="Observed vs predicted half lives",
+           x = "log10 (Predicted Half life) (years)", 
+           y = "log10 (Observed Half life) (years)")
+    HL_Regression_plot
+  } else{ HL_Regression_plot <- "no regression plot as no observed data"
+  message("Predicted Vs Observed half lives cannot be plotted as observed half lives have not been provided")}
+  
+  message("Population post run analysis finished")
+  
+  return(list(Histograms_variables,
+              Plot_exp_vs_P_CP,
               Plot_age_vs_P_CP,
               Plot_GFR_vs_P_CP,
               Plot_exp_vs_P_HL,

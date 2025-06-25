@@ -20,7 +20,7 @@ BASE_PARAMS <- function(expAGE = NULL, expBW = NULL, sex = NULL) {
   } 
   
   if (is.na(sex)) {
-    sex <- "M"  # Default sex to male
+    sex <- "M"  # Default sex is male...
   }
   
   ## Input
@@ -28,15 +28,15 @@ BASE_PARAMS <- function(expAGE = NULL, expBW = NULL, sex = NULL) {
   
   suffix <- ifelse(sex == "F", "_F", "_M")
   
-  if (!is.na(expAGE)) { # filters based on age
+  if (!is.na(expAGE)) { # filter based on age
     Physio_params <- Physio_params %>% 
-      mutate(age_diff = abs(age - expAGE)) %>% #to find the simulated age that is the closest to the actual 
+      mutate(age_diff = abs(age - expAGE)) %>% 
       filter(age_diff == min(age_diff)) %>% 
       slice(1)
-  } else if (!is.na(expBW)) { # filters based on BW if age is not provided
+  } else if (!is.na(expBW)) { # filter based on BW if age is not provided
     bw_col <- paste0("BW", suffix)
     Physio_params <- Physio_params %>%
-      mutate(bw_diff = abs(!!sym(bw_col) - expBW)) %>% #to find the simulated bodyweight that is the closest to the actual 
+      mutate(bw_diff = abs(!!sym(bw_col) - expBW)) %>% 
       filter(bw_diff == min(bw_diff)) %>% 
       slice(1)
   }
@@ -48,8 +48,6 @@ BASE_PARAMS <- function(expAGE = NULL, expBW = NULL, sex = NULL) {
   Physio_params <- Physio_params %>% 
     mutate(BloodFlowSum = rowSums(select(., starts_with("Q_")))) %>% # 0.9935, total blood flow as the sum of the fractional blood flows of all organs on which we have data
     mutate(VolumesSum = rowSums(select(., starts_with("V_")))) # 0.96, total volume as the sum of the fractional organ volumes of all organs on which we have data
-  
-  # max_bw <- max(Physio_params[[paste0("BW", suffix)]], na.rm = TRUE)
   
   BW <- if (!is.na(expBW)) {
     expBW # BW is the actual BW at the time of measurement
@@ -63,19 +61,7 @@ BASE_PARAMS <- function(expAGE = NULL, expBW = NULL, sex = NULL) {
   BH <- Physio_params[[paste0("BH", suffix)]]                   # Height (cm)
   BSA <- exp(-3.75 + 0.42*log(BH)+0.52*log(BW))*1e4             # Body Surface area (cm2)
   
-  # To estimate GFR based on BSA and BW
-  Q <- if(sex == "F"){                                       # Q
-    if_else(expAGE < 18, 0.1678 + ((0.90  - 0.1678) / 18) * expAGE,
-                       0.90)
-  } else {
-    if_else(expAGE < 18, 0.1678 + ((0.70  - 0.1678) / 18) * expAGE,
-                       0.70)
-  }
-
-  GFRb = (107.3 * 1.44*(BSA*1e-4)/1.73) / (0.9/Q)            # Baseline GFR (L/day), (mL/min/1.73m^2 -> L/day)  # scale to actual BSA: BSA*1e-4 / 1.73
-
-  GFR = if_else(expAGE <= 40, GFRb, GFRb * 0.988^(expAGE - 40)) # Actual GFR (L/day), exponential decline after expAGE 40
-
+  GFR <- Physio_params[[paste0("GFR", suffix)]]                 # Age/creatinine dependent glomerular filtration rate (L/day)
   
   ### Organ volumes -------------------------
   
