@@ -39,10 +39,10 @@
   Lifestage = "Yes" 
   
   # Choose to include population or individual exposure ("Yes" to include population based and "No" to only run the model for one person)
-  Population = "Yes" 
+  Population = "No" 
   
   # Choose study from input file, or ID_range
-  Test_study = "EffectOfAge" #Arvidsjaur
+  Test_study = "Abraham" #Arvidsjaur
   # ID_range = c(201:300)
   
   
@@ -101,7 +101,7 @@
     # Simulation relevant information
     Tstart = 0 # days, start of the simulation
     Tstop = 450 # days, stop of the simulation
-    Dt = 1/10 # days, iteration steps (decrease/increase depending on run time)
+    Dt = 1/100 # days, iteration steps (decrease/increase depending on run time)
     
     
     RawData <- list(
