@@ -39,10 +39,10 @@
   Lifestage = "Yes" 
   
   # Choose to include population or individual exposure ("Yes" to include population based and "No" to only run the model for one person)
-  Population = "No" 
+  Population = "Yes" 
   
   # Choose study from input file, or ID_range
-  Test_study = "Abraham" #Arvidsjaur
+  Test_study = "EffectOfAge" #Arvidsjaur
   # ID_range = c(201:300)
   
   
