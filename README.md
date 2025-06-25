@@ -2,7 +2,6 @@ A mechanistic PBK model for PFOA that can be used together with biomonitoring da
 
 Git-hub branches structure:
 - **main** branch is the branch to be used together with HBM data
-- **GSA** branch is the branch with all information about the global sensitivity analysis
 - All other branches will be archived uppon publication
   
 # Git-hub file structure:
@@ -14,14 +13,11 @@ Git-hub branches structure:
 
 ## Script folder contains:
 - **DO_PFOA_PBK.R**: **the only file that a user needs**
-    - For multi-person modeling: the user should input the relevant input data (for example from HBM data) in the same format as the *INPUT-dummy.csv file*.
-    - For 1-person modeling: the user should manually add the relevant input data.
 - **RUN_and_OUTPUT.R**: file which contains the code for calculating the input parameters, running the PBK model and analysing the results depending on exposure type
 - **PBK_model.R**: file which contains the actual PFOA PBK model code for all three types of exposure
 - **CALC_Parameters.R**: file which contains the code for calculating the input parameters for the PBK model
 - **CALC_Lifestage_Constants.R**: file with all the lifestage calculations, to calculate the physiological constants (volumes and flows). For computation efficiency the file is actually not used every time but instead a csv file containing all the constants for all ages is used instead (_Input/PhysioVariables.csv_)
-- **PLOT_ObservedVSPredicted.R**: file with the code for ploting observed vs predicted concentration over time curves and observed vs predicted halflife distributions.
-
+- **PBK_Results_Report.qmd**: file that generates the final report containing the results of the simulation
 
 # Dependencies for running the DO_PFOA_PBK.R file:
 
@@ -32,6 +28,10 @@ Git-hub branches structure:
 3. deSolve
 4. PKNCA
 5. pracma
+6. glue
+7. patchwork
+8. quarto
+9. showtext
 
 ## Inputs:
 
@@ -42,7 +42,9 @@ The user should choose between:
 - **Population > "Yes":** if multuple people are run (for example in the case of running exposure data from HBM studies)
   - **Population > "No":** indicates that the user will input data related to a one person exposure
 
-Required input to run the model:
+- **Test_study**: manaually add the contents of the "Study" column (column 18) from the input_file (used to filter the relevant input information), or add a name to the test.
+
+Required input to run the model, provided in the *INPUT_dummy.csv* file, or mannualy in the document if a one-person simulation is run:
 - **sex**: (M or F)subject sex
 - **expBW**: (kg) if available the bodyweight of the subject at the time of exposure
 - **expAGE**: (number in years) if available the age of the subject at the begining of exposure
@@ -53,18 +55,13 @@ Required input to run the model:
 - **expSTOP**: (number in days), time after which the exposure should stop
 - **Tinput**: (number in days), time that it takes for the exposure to happen, or where each exposure lasts (for example the dermal application of a make-up product is 8hours) (for oral exposure via water or food it's minimal and can be assumed 1)
 - **tinterval**: (number in days), time between each exposure (for example the interval between each dermal application of a make-up product is 24h) (for oral exposure it can be assumed 1)
-- - **Tstart**: (time in days), time when the exposure started, default is 0
-- **Tstop**: (time in days), time when the simulation should stop, can be longer or shorter than the exposure time
+- **Tstart**: (time in days), time when the exposure started, default is 0
+- **Tstop**: (time in days), time when the **simulation** should stop, should be at least equal to "expSTOP", can be longer
 - **Dt**: (time in days), this is the iteration steps, default is 1, decreasing them would improve the accuracy of the model but will compromise computing speed
-
-How to provide the input data:
-
-- For running a population (from HBM data) model: the user should create and INPUT.csv file, in the **same structure** as the _INPUT_dummy.csv_ file. 
-- For running a -one person- model: the user should add the relevant data directly in the .R file. 
-
-
-The user should also provide the simulation relevant information directly in the R file:
-
+- **samplingT**: (time in days), time at which the observed serum samples were taken, usually equal to either "expSTOP" or "Tstop", cannot be longer than Tstop, used for plotting observed vs predicted _(not needed for running the one-person simulation)_
+- **CP_measured**: (in ug/ml), measured plasma/serum concentration, optional, used for plotting observed vs predicted _(not needed for running the one-person simulation)_
+- **HL_measured**: (in years), half life determined in the reference study, optional, used for plotting observed vs predicted _(not needed for running the one-person simulation)_
+- **Study**: (character), an indicative study name that will be used to filter out the test population
 
 ## Defaults, calculations and assumptions  
 - To run with the lifestage option, exposure age (expAGE) is requred. Noting also that the bodyweight is predicted based on the age so even a bodyweight is provided it will be over-run by the predicted one. 
@@ -80,8 +77,8 @@ The user should also provide the simulation relevant information directly in the
 - PFOA excretion to the bile is assumed to be the same as that of biliary acids.
 
 # Results
-
 Results are saved in an Output folder which is not synchronised in github. To change that update the git.ignore file.
+An html file is generated automatically to show a summary of the results and the plots.
 
 # The PBK model
 
