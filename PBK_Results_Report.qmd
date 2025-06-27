@@ -4,9 +4,22 @@ author: "Chrysanthi Pachoulide"
 editor: visual
 toc: true
 format: 
-  html: 
+  html:
     code-fold: true
-    fig-margin: 1.0 
+    fig-margin: 1.0
+    embed-resources: true
+    self-contained-math: true
+  pdf:
+    knitr:
+      opts_chunk:
+        screenshot.force: true
+    documentclass: report
+    geometry: 
+     - margin = 1in
+     - a4paper    
+    fig-width: 6.5
+    fig-height: 4.5
+    fig-align: center
 params:
   Lifestage: "Yes"  
   Population: "Yes"  
@@ -34,6 +47,10 @@ message("Study: ", params$Test_study)
   library(patchwork) 
   library(DT)
   library(plotly)
+  library(tinytex)
+  library(knitr)
+  library(kableExtra)
+  library(webshot2)
   library(showtext)
   font_add(family = "Garamond", regular = "GARA.TTF")
   showtext_auto()
@@ -57,14 +74,27 @@ message("Study: ", params$Test_study)
   Data_summary <- do.call(rbind, lapply(Pers.POST.RUN_RESULTS, function(x) x$ANALYSED_data))
   } else {
   Data_summary <- Pers.POST.RUN_RESULTS$ANALYSED_data
-    }
+  }
 
+if (knitr::is_html_output()) {
 
-datatable(Data_summary, 
-              options = list(pageLength = 10, 
-                             scrollX = TRUE, 
-                             scrollY = "50vh",
-                             scrollCollapse = TRUE))
+  datatable(Data_summary, 
+            options = list(pageLength = 10, 
+                           scrollX = TRUE, 
+                           scrollY = "50vh",
+                           scrollCollapse = TRUE))
+  } else {
+  kable(Data_summary, 
+        format = "latex",     
+        booktabs = TRUE,
+        caption = "Summary Table") %>%    # Center-align columns
+    kable_styling(
+      latex_options = c("striped", "hold_position", "scale_down"),  # Critical for fitting
+      font_size = 8,  # Reduce font size if needed
+      full_width = FALSE  # Prevents overflows
+    ) %>%
+    kableExtra::landscape()  
+}
 
 ```
 
@@ -75,8 +105,14 @@ datatable(Data_summary,
 #| echo: false
 
 if (params$Population == "Yes") {
-  ggplotly(Pop.POST.RUN_RESULTS[[1]])
-} else {}
+  if (knitr::is_html_output()) {
+    ggplotly(Pop.POST.RUN_RESULTS[[1]])
+  } else {
+    Pop.POST.RUN_RESULTS[[1]]  
+  }
+}
+
+
 ```
 
 ```{r}
@@ -84,8 +120,13 @@ if (params$Population == "Yes") {
 #| echo: false
 
 if (params$Population == "Yes") {
-  ggplotly(Pop.POST.RUN_RESULTS[[2]])
-} else {}
+  if (knitr::is_html_output()) {
+    ggplotly(Pop.POST.RUN_RESULTS[[2]])
+  } else {
+    Pop.POST.RUN_RESULTS[[2]]  
+  }
+}
+
 ```
 
 ```{r}
@@ -93,8 +134,13 @@ if (params$Population == "Yes") {
 #| echo: false
 
 if (params$Population == "Yes") {
-  ggplotly(Pop.POST.RUN_RESULTS[[3]])
-  } else {}
+  if (knitr::is_html_output()) {
+    ggplotly(Pop.POST.RUN_RESULTS[[3]])
+  } else {
+    Pop.POST.RUN_RESULTS[[3]]  # Directly print the ggplot object
+  }
+}
+
 
 ```
 
@@ -103,8 +149,13 @@ if (params$Population == "Yes") {
 #| echo: false
 
 if (params$Population == "Yes") {
-  ggplotly(Pop.POST.RUN_RESULTS[[4]])
-  } else {}
+  if (knitr::is_html_output()) {
+    ggplotly(Pop.POST.RUN_RESULTS[[4]])
+  } else {
+    Pop.POST.RUN_RESULTS[[4]]  
+  }
+}
+
 
 ```
 
@@ -113,8 +164,13 @@ if (params$Population == "Yes") {
 #| echo: false
 
 if (params$Population == "Yes") {
-  ggplotly(Pop.POST.RUN_RESULTS[[5]])
-  } else {}
+  if (knitr::is_html_output()) {
+    ggplotly(Pop.POST.RUN_RESULTS[[5]])
+  } else {
+    Pop.POST.RUN_RESULTS[[5]]  
+  }
+}
+
 
 ```
 
@@ -123,8 +179,13 @@ if (params$Population == "Yes") {
 #| echo: false
 
 if (params$Population == "Yes") {
-  ggplotly(Pop.POST.RUN_RESULTS[[6]])
-  } else {}
+  if (knitr::is_html_output()) {
+    ggplotly(Pop.POST.RUN_RESULTS[[6]])
+  } else {
+    Pop.POST.RUN_RESULTS[[6]]  
+  }
+}
+
 
 ```
 
@@ -133,8 +194,13 @@ if (params$Population == "Yes") {
 #| echo: false
 
 if (params$Population == "Yes") {
-  ggplotly(Pop.POST.RUN_RESULTS[[7]])
-  } else {}
+  if (knitr::is_html_output()) {
+    ggplotly(Pop.POST.RUN_RESULTS[[7]])
+  } else {
+    Pop.POST.RUN_RESULTS[[7]]  
+  }
+}
+
 
 ```
 
@@ -142,10 +208,15 @@ if (params$Population == "Yes") {
 #| label: Observed vs predicted CP
 #| echo: false
 
-if(params$Population == "Yes" && 
+if (params$Population == "Yes" && 
     !is.character(Pop.POST.RUN_RESULTS[[8]])) {
-  ggplotly(Pop.POST.RUN_RESULTS[[8]])
-  } else {}
+  if (knitr::is_html_output()) {
+    ggplotly(Pop.POST.RUN_RESULTS[[8]])
+  } else {
+    Pop.POST.RUN_RESULTS[[8]] 
+  }
+}
+
 
 ```
 
@@ -155,8 +226,12 @@ if(params$Population == "Yes" &&
 
 if (params$Population == "Yes" && 
     !is.character(Pop.POST.RUN_RESULTS[[9]])) {
-  ggplotly(Pop.POST.RUN_RESULTS[[9]])
-  } else {}
+  if (knitr::is_html_output()) {
+    ggplotly(Pop.POST.RUN_RESULTS[[9]])
+  } else {
+    Pop.POST.RUN_RESULTS[[9]]  
+  }
+}
 
 ```
 
@@ -165,8 +240,12 @@ if (params$Population == "Yes" &&
 #| echo: false
 
 if (params$Population == "Yes") {
-  ggplotly(Pop.POST.RUN_RESULTS[[10]])
-  } else {}
+  if (knitr::is_html_output()) {
+    ggplotly(Pop.POST.RUN_RESULTS[[10]])
+  } else {
+    Pop.POST.RUN_RESULTS[[10]]  
+  }
+}
 
 ```
 
@@ -175,8 +254,12 @@ if (params$Population == "Yes") {
 #| echo: false
 
 if (params$Population == "No") {
-  ggplotly(Pers.POST.RUN_RESULTS$OUT_Plots[[1]])
-  } else{}
+  if (knitr::is_html_output()) {
+    ggplotly(Pers.POST.RUN_RESULTS$OUT_Plots[[1]])
+  } else{
+    Pers.POST.RUN_RESULTS$OUT_Plots[[1]]
+  }
+}
 
 ```
 
@@ -185,8 +268,13 @@ if (params$Population == "No") {
 #| echo: false
 
 if (params$Population == "No") {
-  ggplotly(Pers.POST.RUN_RESULTS$OUT_Plots[[2]])
-  } else{}
+  if (knitr::is_html_output()) {
+    ggplotly(Pers.POST.RUN_RESULTS$OUT_Plots[[2]])
+  } else{
+    Pers.POST.RUN_RESULTS$OUT_Plots[[2]]
+  }
+}
+
 
 ```
 
@@ -195,7 +283,12 @@ if (params$Population == "No") {
 #| echo: false
 
 if (params$Population == "No") {
-  ggplotly(Pers.POST.RUN_RESULTS$OUT_Plots[[3]])
-  } else{}
+  if (knitr::is_html_output()) {
+    ggplotly(Pers.POST.RUN_RESULTS$OUT_Plots[[3]])
+  } else{
+    Pers.POST.RUN_RESULTS$OUT_Plots[[3]]
+  }
+}
+
 
 ```

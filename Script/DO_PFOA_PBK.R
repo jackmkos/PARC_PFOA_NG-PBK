@@ -15,6 +15,10 @@
   library(glue)
   library(patchwork)
   library(quarto)
+  library(tinytex)
+  library(webshot2)
+  library(knitr)
+  library(kableExtra)
   library(showtext)
   font_add(family = "Garamond", regular = "GARA.TTF")
   showtext_auto()
@@ -36,13 +40,13 @@
   INPUT_dummy <- read.csv(here("Input", "INPUT_dummy.csv")) 
   
   # Choose if physiology should change with age ("Yes" to include physiological changes due to age and "No" to assume the same physiology over time)
-  Lifestage = "No" 
+  Lifestage = "Yes" 
   
   # Choose to include population or individual exposure ("Yes" to include population based and "No" to only run the model for one person)
   Population = "Yes" 
   
   # Choose study from input file, or ID_range
-  Test_study = "EffectOfLifestageEq" #Arvidsjaur
+  Test_study = "EFSA" #Arvidsjaur
   # ID_range = c(201:300)
   
   
@@ -355,6 +359,14 @@
 
   
   # Create Report ----
+  quarto_render(input = (here("PBK_Results_Report.qmd")),
+                output_format = "pdf",
+                # output_file = (here(OUTPUT, "PBK_Results_Report.html")),
+                execute_params = list(Lifestage = Lifestage,
+                                      Population = Population,
+                                      Test_study = Test_study)
+  )
+  
   quarto_render(input = (here("PBK_Results_Report.qmd")),
                 output_format = "html",
                 # output_file = (here(OUTPUT, "PBK_Results_Report.html")),
