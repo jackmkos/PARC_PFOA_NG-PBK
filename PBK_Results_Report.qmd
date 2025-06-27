@@ -7,6 +7,7 @@ format:
   html: 
     code-fold: true
     fig-margin: 1.0 
+    embed-resources: true
 params:
   Lifestage: "Yes"  
   Population: "Yes"  
