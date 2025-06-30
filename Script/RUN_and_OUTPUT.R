@@ -345,14 +345,39 @@ POST.Run <- function(exposure_type,
   MB_plot
   
   ## Plot organ concentrations ####
+
+  # For liver and kidney
+  BW <- RawData$CALC_Parameters$BW
+  VKc <- RawData$CALC_Parameters$VKc
+  VK <- VKc * BW                    # L, Volume of kidney
+  VPTc <- RawData$CALC_Parameters$VPTc
+  VPT <- VPTc * VK                  # L, Volume of proximal tubule
+  VPTTc <- RawData$CALC_Parameters$VPTTc 
+  VPTT <- VPT * VPTTc              # L, Volume of proximal tubule tissue
+  VPTLc <- RawData$CALC_Parameters$VPTLc  
+  VPTL <- VPT * VPTLc
+  VRKLc <- RawData$CALC_Parameters$VRKLc  
+  VRKL <- (VK - VPT) *  VRKLc    # L, Volume of rest of kidney lumen
+  cVRKL <- VK/VRKL
+  VRKT <- VK - VPTT - VPTL - VRKL # L, Volume of rest of kidney tissue, used in the model
+  VRKTc <- VK/VRKT
+  
+  VLc <- RawData$CALC_Parameters$VLc
+  VL <- VLc * BW
+  VL_icc <- RawData$CALC_Parameters$VL_icc 
+  VL_ic <- VL_icc * VL              # L, Volume liver intracellular                 
+  VL_ecc <- RawData$CALC_Parameters$VL_ecc
+  VL_ec <- VL_ecc * VL              # L, Volume liver extracellular
+
+  
   # Create df with organ concentrations
   C_organs.df <- switch (exposure_type,
                          "Oral" = PBK_OUTPUT %>% 
                            transmute(
                              time = time,
-                             CI = CI + CIL,
-                             CL = CL_ec + CL_ic,
-                             CK = CPTT + CPTL + CRKT + CRKL,
+                             CI = CI,
+                             CK = (CPTT/(VPTTc/VPTc)/(VPTTc/VPTc)) + (CRKT*(VRKTc)/(VRKTc)), 
+                             CL = (CL_ic/(VL_icc/VL_icc)) + (CL_ec*(VL_ecc/VL_ecc)),
                              CA, CR, CP  
                            ) %>% 
                            rename("Intestine" = CI, 
