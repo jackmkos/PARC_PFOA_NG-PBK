@@ -390,9 +390,9 @@ POST.Run <- function(exposure_type,
                          "Dermal" = PBK_OUTPUT %>% 
                            transmute(
                              time = time,
-                             CI = CI + CIL,
-                             CL = CL_ec + CL_ic,
-                             CK = CPTT + CPTL + CRKT + CRKL,
+                             CI = CI,
+                             CK = (CPTT/(VPTTc/VPTc)/(VPTTc/VPTc)) + (CRKT*(VRKTc)/(VRKTc)), 
+                             CL = (CL_ic/(VL_icc/VL_icc)) + (CL_ec*(VL_ecc/VL_ecc)),
                              CSk, CA, CR, CP  
                            ) %>% 
                            rename("Intestine" = CI, 
@@ -406,9 +406,9 @@ POST.Run <- function(exposure_type,
                          "Oral_Dermal" = PBK_OUTPUT %>% 
                            transmute(
                              time = time,
-                             CI = CI + CIL,
-                             CL = CL_ec + CL_ic,
-                             CK = CPTT + CPTL + CRKT + CRKL,
+                             CI = CI,
+                             CK = (CPTT/(VPTTc/VPTc)/(VPTTc/VPTc)) + (CRKT*(VRKTc)/(VRKTc)), 
+                             CL = (CL_ic/(VL_icc/VL_icc)) + (CL_ec*(VL_ecc/VL_ecc)),
                              CSk, CA, CR, CP  
                            ) %>% 
                            rename("Intestine" = CI, 
@@ -422,9 +422,9 @@ POST.Run <- function(exposure_type,
                          "Inhalation" = PBK_OUTPUT %>% 
                            transmute(
                              time = time,
-                             CI = CI + CIL,
-                             CL = CL_ec + CL_ic,
-                             CK = CPTT + CPTL + CRKT + CRKL,
+                             CI = CI,
+                             CK = (CPTT/(VPTTc/VPTc)/(VPTTc/VPTc)) + (CRKT*(VRKTc)/(VRKTc)), 
+                             CL = (CL_ic/(VL_icc/VL_icc)) + (CL_ec*(VL_ecc/VL_ecc)),
                              CLu, CA, CR, CP  
                            ) %>% 
                            rename("Intestine" = CI, 
