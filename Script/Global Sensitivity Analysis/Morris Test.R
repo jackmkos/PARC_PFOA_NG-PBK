@@ -5,66 +5,44 @@
   
   rm(list=ls()) # to clear out the global environment
   
-  # Set working directory
-  HOME <- "C:/Users/pacho003/OneDrive - Wageningen University & Research/CP_L_R/PARC_PFOA_mechanistic"
-  setwd(HOME)
-  
-  
-  # Set output storage directory
-  workingtime <- gsub(":", "-", Sys.time())
-  OUTPUT <- file.path("Output", Sys.Date(), workingtime)
-  dir.create(OUTPUT, recursive = TRUE)
-  setwd(OUTPUT)
-  
-  
   # Load packages
-  
+  library(here)
   library(ggplot2)
   library(deSolve)
   library(tidyverse)
   library(sensitivity)
   library(ggrepel)
-  
+  library(scales)
+  library(patchwork)
+  library(readxl)
   
   # For plotting
   library(showtext)
   font_add(family = "Garamond", regular = "GARA.TTF")
   showtext_auto()
-  theme_CP <- function() {
-    theme_bw()+
-      theme(
-        text = element_text(size = 45, lineheight = unit(0.5, "lines")), # lineheight is adjusting the space between lines
-        axis.title = element_text(size = 40),
-        axis.text = element_text(size = 40),
-        axis.line = element_line(colour = "grey"),
-        axis.ticks = element_line(colour = "grey"),
-        # plot.margin = margin(0.2, 0.2, 0.2, 0.2, "cm"),
-        panel.border = element_blank(), 
-        panel.background = element_rect((fill = "white")),
-        panel.grid = element_line(linewidth = 0.1,5, colour = "grey"), 
-        strip.background = element_blank(),
-        legend.position = "bottom",
-        legend.title = element_blank(),
-        legend.box.margin = margin(0, 0, 0, 0, "cm"),
-        legend.key.width = unit(0.2, "cm"),  
-        legend.key.height = unit(0.2, "cm"),
-        legend.text = element_text(size = 15)
-      )
-  }
+  CP_theme <- theme_minimal() +
+    theme(
+      axis.text = element_text(size = 56),
+      axis.title = element_text(size = 62),
+      plot.title = element_text(size = 65, face = "bold", hjust = 0.5),
+      plot.subtitle = element_text(size = 56, hjust = 0.5),
+      legend.position = "none",
+      plot.margin = margin(0.3, 0.3, 0.3, 0.3, "cm") 
+    )
   
-
-  # PBK MODEL ####
-  # ---------------------------------------------------------------------------- #
+  # Set output storage directory
+  # OUTPUT <- here("Output", format(Sys.Date(), "%Y-%m-%d"), format(Sys.time(), "%H-%M-%S"))
+  # dir.create(OUTPUT, recursive = TRUE)
   
+  # The PBK model ####
   PBK.model <- function(t, state, parameters){
     with(as.list(c(state, parameters)), {
       
       ### Physiological ----
       
-      VSk <- VSkc * BW                # L, Volume of skin
-      
       VIL <- VILc * BW                # L, Volume of intestinal lumen
       VI <- VIc * BW                  # L, Volume of intestine
+      SA_SI <- SA_SIc * BW
       
       VL <- VLc * BW                  # L, Volume of liver
       VL_ic <- VL_icc*VL              # L, Volume liver intracellular                 
@@ -79,37 +57,36 @@
       
       VA <- VAc * BW/0.9 + MAc/0.9    # L, Volume of adipose
       
-      VP <- VPc * (1-Hct) * BW        # L, Volume of arterial plasma
+      VP <- VPc * (1-Hct) * BW                  # L, Volume of plasma
       
       VTotc <- 0.96
       VTot <- VTotc * BW              # L, Total body volume (used for mass balance)
       
-      VR <- VTot - (VSk + VI + VL + VK + VA + VP)             # L, Volume of the lumped rest compartment
+      VR <- VTot - (VI + VL + VK + VA + VP)             # L, Volume of the lumped rest compartment
       
       QTotc <- 0.988
-      QSk <- QSkc/QTotc * QC                # L/d, Skin 
       QI <- QIc/QTotc * QC                  # L/d, Intestinal
       QL <- QLc/QTotc * QC                  # L/d, Liver
       QK <- QKc/QTotc * QC                  # L/d, Kidney
       QA <- QAc/QTotc * QC                  # L/d, Adipose 
-      QR <- QC - (QA + QI + QK + QL + QSk)  # L/d, Rest
+      QR <- QC - (QA + QI + QK + QL)  # L/d, Rest
       
       QUr <- QUrc * BW              # L/d, Urine flow rate to the bladder 22 mL/kg BW/d [ICRP 89 page 161]
-      GFR <- GFRc * QK              # L/d 18% of total renal plasma flow [ICRP 89 page 159] http://www.icrp.org/publication.asp?id=ICRP%20Publication%2089
+      # GFR <- GFRc * QK              # L/d 18% of total renal plasma flow [ICRP 89 page 159] http://www.icrp.org/publication.asp?id=ICRP%20Publication%2089
+      GFR <- GFR
       QT <- QT                      # L/d, Proximal tubule fluid flow
       
-      tco <- tco                    # /d, Bowel residence time in the colon
+      tco <- tco                    # /d, Bowel residence times in the colon
       
       
       ### Physicochemical ----
       MW <- 414.07
       
-      PSk <- PSkc * fup  #PSk  # Skin
-      PI <- PIc * fup    #PI   # Intestinal
-      PL <- PLc * fup    #PL   # Liver
-      PK <- PKc * fup    #PK   # Kidney
-      PA <- PAc * fup    #PF   # Adipose
-      PR <- PRc * fup    #PR   # Rest
+      PI <- PIc * fup     # Intestinal
+      PL <- PLc * fup     # Liver
+      PK <- PKc * fup     # Kidney
+      PA <- PAc * fup     # Adipose
+      PR <- PRc * fup     # Rest
       
       # Fraction unionised
       pH_P <- 7.4     # plasma
@@ -123,14 +100,14 @@
       # Equation was adapted to not account for fraction unionised
       # OAT and OATP transporters transport the ionised compound, given that the ratio of fraction ionised at plasma to cellular pH is 1, this can be ignored (fraction unionised of PFOA is 0.9999923 at pH 7.4 and 0.9999963 at pH 7)
       fu_PTL <- R_PTL*fup/(1 + ((R_PTL-1)*fup)) # Proximal tubule lumen
-      fu_Lic <- R_L_ic*fup/(1 + ((R_L_ic-1)*fup)) # Liver intracellular space
+      fu_Lic <- R_L_ec*fup/(1 + ((R_L_ec-1)*fup)) # Liver intracellular space
       
       
       ### Kinetic ----
       
       # Gastro-intestinal uptake
       Pint_SI <- Papp_SI/f.union_exp                       # cm/s, Intrinsic permeability, corrected for fraction unionised in the experiment
-      CL_GL <- (Pint_SI*SA_SI*f.union_IL*1e-3)*60*60*24    # L/d, Intestinal lumen to intestinal tissue (calculations: cm/s -> L/s /1000 -> L/d *60*60*24) 
+      CL_IL <- (Pint_SI*SA_SI*f.union_IL*1e-3)*60*60*24    # L/d, Intestinal lumen to intestinal tissue (calculations: cm/s -> L/s /1000 -> L/d *60*60*24) 
       
       # Liver uptake
       Vmax_OATP1B1 <- Vmax_OATP1B1c*MW*60*24*SF_OATP1B1*VL_ec             # ug/d
@@ -149,16 +126,13 @@
       
       ## Dose -------------------------
       
-      if(t<EXP_STOP){DoseOn=1} else{DoseOn=0}
+      if(t<expSTOP){DoseOn=1} else{DoseOn=0}
       
       ## Oral exposure ##
-      DOral = COral*BW*DoseOn         # ug, PFOA oral dose
-      OralD = DOral 
+      DOral = expOral*BW*DoseOn         # ug, PFOA oral dose
+      OralD = DOral/Tinput*(t %% tinterval<Tinput)
       
       ## Concentrations -------------------------
-      
-      CSk <- ASk/VSk               # ug/L, Skin
-      CVSk <- CSk/PSk              # ug/L, Skin venous 
       
       CIL <- AIL/VIL               # ug/L, Intestinal lumen
       CI <- AI/VI                  # ug/L, Intestine 
@@ -185,14 +159,12 @@
       
       ## Differential equations -------------------------
       
-      dOD = OralD - OD                  # ug/d, Oral dose input  
+      dOD = OralD - OD             # ug/d, Oral dose input 
       
-      dASk <- QSk*(CP-CVSk)                # ug/d, Skin
-      
-      dAIL <- + OD - tco*AIL - CL_GL*CIL + 
+      dAIL <- + OD - tco*AIL - CL_IL*CIL + 
         + (VmaxBSEP/(KmBSEP + (CL_ic*fu_Lic)))*CL_ic*fu_Lic          # ug/d, Intestine lumen
       
-      dAI <- QI*(CP - CVI) + CL_GL*CIL                      # ug/d, Intestinal
+      dAI <- QI*(CP - CVI) + CL_IL*CIL                      # ug/d, Intestinal
       
       dAFe <-  tco*AIL                                       # ug/d, Feces
       
@@ -224,12 +196,11 @@
       
       dAR <- QR*(CP-CVR)                                      # ug/d, Rest
       
-      dAP <- - (QSk + QI + QL + QA + QR + QK)*CP - fup*GFR*CP +     # ug/d, Arterial Plasma
-        + QSk*CVSk + (QL+QI)*CVL_ec + QK*CVRKT + QA*CVA + QR*CVR    # ug/d, Venous Plasma
+      dAP <- - (QI + QL + QA + QR + QK)*CP - fup*GFR*CP +     # ug/d, Arterial Plasma
+        + (QL+QI)*CVL_ec + QK*CVRKT + QA*CVA + QR*CVR    # ug/d, Venous Plasma
       
       # Mass Balance
       Atot <- OD +
-        ASk +
         AIL + AI + AFe + 
         AL_ec + AL_ic +
         APTT + APTL + ARKT + ARKL + AUr +
@@ -239,11 +210,11 @@
       
       dAin <- OralD # to be used if repeated exposure
       MB <- Ain - Atot + 1    # to be used if repeated exposure
+      # MB <- DOral - Atot + 1
       
       # End
       
       list(c(dOD,
-             dASk, 
              dAIL,
              dAI, 
              dAFe,
@@ -259,8 +230,7 @@
              dAP, 
              dAin
       ), 
-      c(CSk = CSk, 
-        CIL = CIL,
+      c(CIL = CIL,
         CI = CI, CVI = CVI, 
         CL_ec = CL_ec,
         CL_ic = CL_ic,
@@ -279,26 +249,6 @@
     })
   }
   
-  # A_init <- c(OD = 0, #
-  #             ASk = 0,
-  #             AIL = 0, AI = 0, AFe = 0,
-  #             AL_ec = 0, AL_ic = 0,
-  #             APTT = 0, APTL = 0, ARKT = 0, ARKL = 0, AUr = 0,
-  #             AA = 0,
-  #             AR = 0,
-  #             AP = 0,
-  #             Ain = 0)
-  # 
-  # output_PFOA <- lsoda(y = A_init,
-  #                      times = TIME,
-  #                      func = PBK.model,
-  #                      parms = parm.c,
-  #                      atol = 1e-10,
-  #                      rtol = 1e-10)
-  # output.PFOA.df <- as.data.frame(output_PFOA) %>%
-  #   rename(Days = time)
-  # 
-  # write.csv(output.PFOA.df, "output.csv", row.names = FALSE)
   
   # SENSITIVITY FUNCTION ####
   # ---------------------------------------------------------------------------- #
@@ -306,32 +256,42 @@
   ## Morris test ####
   SENSI_model <- function(parm.c){
     
-    
-    A_init <- c(OD = 0, 
-                ASk = 0,
-                AIL = 0, AI = 0, AFe = 0,   
-                AL_ec = 0, AL_ic = 0,
-                APTT = 0, APTL = 0, ARKT = 0, ARKL = 0, AUr = 0,
-                AA = 0, 
-                AR = 0,
-                AP = 0,
-                Ain = 0)
+    A_init = c(OD = 0,
+               AIL = 0,
+               AI = 0, 
+               AFe = 0,
+               AL_ec = 0,
+               AL_ic = 0,
+               APTT = 0,
+               APTL = 0,
+               ARKT = 0,
+               ARKL = 0,
+               AUr = 0,
+               AA = 0,
+               AR = 0, 
+               AP = 0, 
+               Ain = 0)
     
     PBK.out <- lsoda(y = A_init,
-                     times = seq(0, 5*365,by=1/10),
-                     func =  PBK.model,
+                     times = seq(0, 20*365,by=10),
+                     func =  ORAL_PBK.model,
                      parms = parm.c)
     
     CP <- PBK.out[,"CP"]
+    CPTT <- PBK.out[,"CPTT"]
+    CL_ic <- PBK.out[,"CL_ic"]
+    CL_ec <- PBK.out[,"CL_ec"]
     
-    return(CP=CP)
+    return(c(CP=CP, CPTT = CPTT, CL_ic = CL_ic, CL_ec = CL_ec))
     
   }
   
+  # SET MORRIS PARAMETERS ####
+  # ---------------------------------------------------------------------------- #
   
   # Parameter upper and lower bounds
   
-  ParametersMorris <- read_csv("C:/Users/pacho003/OneDrive - Wageningen University & Research/CP_L_R/PARC_PFOA_mechanistic/Input/Parameters.GSA.csv") 
+  ParametersMorris <- read_excel(here("Input/Parameters.GSA.xlsx")) 
 
   P <- ParametersMorris %>% select(Abbreviation, Initial_value, Binf, Bsup) %>% 
     tibble::column_to_rownames("Abbreviation")
@@ -368,53 +328,201 @@
   dev.off()
   save(Morris, file = "ExperienceFull.RData")
   
-  results <- apply(design, 1,  SENSI_model) # Runs r (n of repetitions) * (param+1) simulations * (n) model outputs * (n=4501) model outputs per time
+  
+  # RUN MORRIS DESIGN ####
+  # ---------------------------------------------------------------------------- #
+  
+  # Runs r (n of repetitions) * (param+1) simulations * (n) model outputs * (n) model outputs per time
+  results <- apply(design, 1,  SENSI_model) 
   
   y <- results
-  save.y <- as.data.frame(y) %>% mutate(Tout = "times = seq(0, 5*365,by=1/10)")
+  save.y <- as.data.frame(y) #%>% mutate(Tout = "times = seq(0, 5*365,by=1/10)")
   save(save.y, file = "y.RData")
   
-  y <- t(y) #transpose, depending on the structure of y you might need to transpose or not!
-  tell(Morris, y)
+  load(here("y.RData"))
   
   
-  # Calculate the mean absolute effects (mu.star) and standard deviations (sigma)
-  mu <- apply(Morris$ee, 2, mean)
-  mu.star <- apply(Morris$ee, 2, function(Morris) mean(abs(Morris)))
-  sigma <- apply(Morris$ee, 2, sd)
-  plot(Morris)
+  # CALCULATE MORRIS INDICES ####
+  # ---------------------------------------------------------------------------- #
   
-  mu.star_scale <- mu.star / mean(mu.star, na.rm = TRUE)
-  sigma_scale <- sigma / mean(sigma, na.rm = TRUE)
+  sim.results.morris <- as.matrix(y)
   
-  parm_names <- row.names(P)
-  MorrisResult.df <- data.frame(mu.star_scale, sigma_scale, parm_names) %>% 
-    mutate(parm_type = c(
-      "physio", "physio", "physio", "physio", "physio",          
-      "physio", "physio", "physio", "physio", "physio",       
-      "physio", "physio", "physio", "physio", "physio",        
-      "physio", "physio", "physio", "physio", "physio",          
-      "physio", "physio", "physio", "physio", "physio",         
-      "physio", "physio", "physio", "physio", "kinetic-distribution-elimination",          
-      "physicochemical", "kinetic-distribution", "kinetic-distribution", "kinetic-distribution", "kinetic-distribution",          
-      "kinetic-distribution", "kinetic-distribution", "kinetic-absorption", "kinetic-EHC", "kinetic-EHC",  
-      "kinetic-EHC", "kinetic-EHC", "kinetic-EHC", "kinetic-EHC", "kinetic-EHC",    
-      "kinetic-EHC", "kinetic-EHC", "kinetic-renal", "kinetic-renal", "kinetic-renal",  
-      "dosing", "dosing"))
-  write.csv(MorrisResult.df, "MorrisResults.csv", row.names = FALSE)
+  # CB.sim.results.morris <- sim.results.morris[str_detect(rownames(sim.results.morris), "CB") &
+  #                                               !str_detect(rownames(sim.results.morris), "aZEL"), ]
+  # 
+  # CBaZEL.sim.results.morris <- sim.results.morris[str_detect(rownames(sim.results.morris), "CB") &
+  #                                                   str_detect(rownames(sim.results.morris), "aZEL"), ]
+  # 
+  # CLGLU.sim.results.morris <- sim.results.morris[str_detect(rownames(sim.results.morris), "CL") &
+  #                                                  str_detect(rownames(sim.results.morris), "GLU"), ]
+  # 
+  # CL.sim.results.morris <- sim.results.morris[str_detect(rownames(sim.results.morris), "CL") &
+  #                                               !str_detect(rownames(sim.results.morris), "GLU"), ]
+  # 
   
-  MorrisResult.plot <- MorrisResult.df %>% filter(mu.star_scale >=0.5) %>% 
-    ggplot(aes(x = mu.star_scale, y = sigma_scale, label = parm_names)) + #, colour = parm_type
-    geom_point() +
-    geom_text_repel(size = 8) +
-    theme_CP() +
-    theme(legend.position = "none") +
-    scale_color_brewer(palette = "Dark2") + 
-    # geom_vline(xintercept = 1, linetype = "dashed", color = "black", linewidth = 0.5) +  
-    # geom_hline(yintercept = 1, linetype = "dashed", color = "black", linewidth = 0.5) +  
-    ylab("σ") +
-    xlab("μ*") +
-    title("Morris Plot")
-  MorrisResult.plot
-  ggsave("MorrisResul0.5.plot.png")
+  
+  
+  mu = mu.star = sigma = NULL
+  
+  # Tell morris y for each model output
+  for (i in (1:length(sim.results.morris[,1])))
+  {
+    tell(Experience, sim.results.morris[i,])
+    mu = rbind( mu, apply(Experience$ee, 2, mean, na.rm = TRUE))
+    mu.star = rbind( mu.star, apply(Experience$ee, 2, function(x) mean(abs(x), na.rm = TRUE)))
+    sigma = rbind( sigma, apply(Experience$ee, 2, sd, na.rm = TRUE))
+    
+  }
+  plot(Experience)
+  
+  # Save mu.star, mu, sigma, scaled indices and global indices
+  rownames( mu.star ) = rownames( mu ) = rownames( sigma ) = row.names(sim.results.morris)
+  
+  mu.star_scale = mu.star/apply(mu.star, 1, mean, na.rm=TRUE) 
+  sigma_scale = sigma/apply(sigma, 1, mean, na.rm=TRUE)
+  
+  # Calculate global indices
+  IGlobal_mu.star = apply(mu.star_scale, 2, mean, na.rm=TRUE)
+  IGlobal_sigma = apply(sigma_scale, 2, mean, na.rm = TRUE )
+  
+  Morris_IGlobal.df <- data.frame(
+    IGlobal_mu.star = apply(mu.star_scale, 2, mean, na.rm=TRUE),
+    IGlobal_sigma = apply(sigma_scale, 2, mean, na.rm = TRUE )
+  )
+  
+  IGlobal <- data.frame(IGlobal_sigma, IGlobal_mu.star) 
+  IGlobal <- IGlobal %>% mutate(parm_names = rownames(IGlobal))
+  
+  Morris.indices <- list(
+    mu = mu,
+    mu_star = mu.star,
+    sigma = sigma,
+    mu_star_scale = mu.star_scale,
+    sigma_scale = sigma_scale,
+    IGlobal = IGlobal
+  )
+  
+  save(Morris.indices, file = here("Morris.indices.RData"))
+  
+  
+  # PLOT MORRIS RESULTS ####
+  # ---------------------------------------------------------------------------- #
+  
+  ggplot(IGlobal) +
+    aes(x = IGlobal_mu.star, y = IGlobal_sigma, label = rownames(IGlobal)) +
+    # xlim (min,2.5) + #to zoom in/out, determine max value
+    # ylim (min,2.5) + #to zoom in/out, determine max value
+    geom_point()
+  
+  
+  morris_plot <- IGlobal %>% 
+    # filter(mu.star_scale >= 0.01) %>%
+    ggplot(aes(x = IGlobal_mu.star, y = IGlobal_sigma, label = parm_names)) +
+    geom_point(alpha = 0.5, color = "darkblue") +
+    geom_text_repel(
+      size = 7,
+      angle = 30,
+      max.overlaps = Inf,
+      segment.color = "darkblue",
+      segment.size = 0.1,
+      segment.alpha = 0.5,
+      segment.linetype = "dotted",
+      direction = "x",
+      ylim = c(7, 7),
+      point.padding = 0.5,
+      box.padding = 0.2,
+      set.seed(123)
+    ) +
+    coord_cartesian(clip = "off") +
+    labs(
+      title = "Morris Sensitivity Analysis",
+      x = "μ* (Mean Effect)",
+      y = "σ (Standard Deviation)"
+      # subtitle = "Parameters with relative μ* ≥ 5%"
+    ) +
+    # theme_minimal() +
+    CP_theme+
+    theme(plot.margin = margin(0, 0.15, 0, 0, "cm"))
+  morris_plot
+  ggsave(
+    filename = here("morrisGI_plot.png"),
+    plot = morris_plot,
+    dpi = 1000, 
+    width = 12, height = 9, units = "cm"
+  )
+  
+  #Zoom out
+  morris_plot <- IGlobal %>% 
+    filter(IGlobal_mu.star >= 0.15) %>%
+    ggplot(aes(x = IGlobal_mu.star, y = IGlobal_sigma, label = parm_names)) +
+    geom_point(alpha = 0.5, color = "darkblue") +
+    geom_text_repel(
+      size = 9,
+      angle = 30,
+      max.overlaps = Inf,
+      segment.color = "darkblue",
+      segment.size = 0.1,
+      segment.alpha = 0.5,
+      segment.linetype = "dotted",
+      direction = "x",
+      ylim = c(7, 7),
+      point.padding = 0.4,
+      box.padding = 0.1,
+      set.seed(123)
+    ) +
+    coord_cartesian(clip = "off") +
+    labs(
+      title = "Morris Sensitivity Analysis",
+      x = "μ* (Mean Effect)",
+      y = "σ (Standard Deviation)",
+      subtitle = "Parameters with μ* ≥ 0.15"
+    ) +
+    CP_theme+
+    # theme_minimal() +
+    theme(plot.margin = margin(0, 0.15, 0, 0, "cm"))
+  morris_plot
+  ggsave(
+    filename = here("morrisZoomOut_plot.png"),
+    plot = morris_plot,
+    dpi = 1000, 
+    width = 12, height = 9, units = "cm"
+  )
+  
+  #Zoom in
+  morris_plot <- IGlobal %>% 
+    filter(IGlobal_mu.star <=0.15) %>%
+    ggplot(aes(x = IGlobal_mu.star, y = IGlobal_sigma, label = parm_names)) +
+    geom_point(alpha = 0.5, color = "darkblue") +
+    geom_text_repel(
+      size = 9,
+      angle = 30,
+      max.overlaps = Inf,
+      segment.color = "darkblue",
+      segment.size = 0.1,
+      segment.alpha = 0.5,
+      segment.linetype = "dotted",
+      direction = "x",
+      ylim = c(0.035, 0.035),
+      point.padding = 0.4,
+      box.padding = 0.3,
+      set.seed(123)
+    ) +
+    coord_cartesian(clip = "off") +
+    labs(
+      title = "Morris Sensitivity Analysis",
+      x = "μ* (Mean Effect)",
+      y = "σ (Standard Deviation)",
+      subtitle = "Parameters with μ* <= 0.15"
+    ) +
+    CP_theme+
+    # theme_minimal() +
+    theme(plot.margin = margin(0, 0.15, 0, 0, "cm"))
+  morris_plot
+  ggsave(
+    filename = here("morrisZoomIn_plot.png"),
+    plot = morris_plot,
+    dpi = 1000, 
+    width = 12, height = 9, units = "cm"
+  )
+  # D <- ggplotly(Plot)
   

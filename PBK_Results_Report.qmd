@@ -24,6 +24,7 @@ params:
   Lifestage: "Yes"  
   Population: "Yes"  
   Test_study: "dummy"
+
 ---
 
 ```{r}
@@ -49,7 +50,6 @@ message("Study: ", params$Test_study)
   library(plotly)
   library(tinytex)
   library(knitr)
-  library(kableExtra)
   library(webshot2)
   library(showtext)
   font_add(family = "Garamond", regular = "GARA.TTF")
@@ -72,9 +72,18 @@ message("Study: ", params$Test_study)
 
   if (params$Population == "Yes") {
   Data_summary <- do.call(rbind, lapply(Pers.POST.RUN_RESULTS, function(x) x$ANALYSED_data))
-  } else {
+  Data_summary <- Data_summary %>% 
+    mutate(across(everything(), ~sub("_.*", "", .))) %>% 
+    mutate(across(-c(exposure_type, sex), ~as.numeric(.))) %>% 
+    rename("exposure" = exposure_type) %>% 
+    mutate(across(where(is.numeric), ~round(., 2)))  } else {
   Data_summary <- Pers.POST.RUN_RESULTS$ANALYSED_data
-  }
+  Data_summary <- Data_summary %>% 
+    mutate(across(everything(), ~sub("_.*", "", .))) %>% 
+    mutate(across(-c(exposure_type, sex), ~as.numeric(.))) %>% 
+    rename("exposure" = exposure_type) %>% 
+    mutate(across(where(is.numeric), ~round(., 2)))
+  } 
 
 if (knitr::is_html_output()) {
 
@@ -84,16 +93,21 @@ if (knitr::is_html_output()) {
                            scrollY = "50vh",
                            scrollCollapse = TRUE))
   } else {
-  kable(Data_summary, 
+    
+    kable(Data_summary, 
         format = "latex",     
         booktabs = TRUE,
-        caption = "Summary Table") %>%    # Center-align columns
-    kable_styling(
-      latex_options = c("striped", "hold_position", "scale_down"),  # Critical for fitting
-      font_size = 8,  # Reduce font size if needed
-      full_width = FALSE  # Prevents overflows
-    ) %>%
-    kableExtra::landscape()  
+        caption = "Summary Table",
+        escape = FALSE)
+    
+    # print_table <- paste0(
+    #   "\\begin{landscape}\n",
+    #   table,
+    #   "}\n",
+    #   "\\end{landscape}"
+    # )
+    # 
+    # knitr::asis_output(print_table)
 }
 
 ```

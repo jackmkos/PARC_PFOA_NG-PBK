@@ -18,11 +18,10 @@
   library(tinytex)
   library(webshot2)
   library(knitr)
-  library(kableExtra)
   library(showtext)
   font_add(family = "Garamond", regular = "GARA.TTF")
   showtext_auto()
-  
+
   
   CP_theme <- theme_minimal() +
     theme(axis.text = element_text(size = 10),
@@ -40,7 +39,7 @@
   INPUT_dummy <- read.csv(here("Input", "INPUT_dummy.csv")) 
   
   # Choose if physiology should change with age ("Yes" to include physiological changes due to age and "No" to assume the same physiology over time)
-  Lifestage = "Yes" 
+  Lifestage = "No" 
   
   # Choose to include population or individual exposure ("Yes" to include population based and "No" to only run the model for one person)
   Population = "Yes" 
@@ -105,7 +104,7 @@
     # Simulation relevant information
     Tstart = 0 # days, start of the simulation
     Tstop = 450 # days, stop of the simulation
-    Dt = 1/100 # days, iteration steps (decrease/increase depending on run time)
+    Dt = 1#/100 # days, iteration steps (decrease/increase depending on run time)
     
     
     RawData <- list(
@@ -375,4 +374,5 @@
                                       Test_study = Test_study)
   )
   browseURL(here("PBK_Results_Report.html"))  
+  
   
