@@ -24,7 +24,6 @@ params:
   Lifestage: "Yes"  
   Population: "Yes"  
   Test_study: "dummy"
-
 ---
 
 ```{r}
