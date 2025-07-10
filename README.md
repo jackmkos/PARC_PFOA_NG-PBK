@@ -32,6 +32,10 @@ Git-hub branches structure:
 7. patchwork
 8. quarto
 9. showtext
+10. DT
+11. plotly
+12. tinytex
+13. webshot2
 
 ## Inputs:
 
