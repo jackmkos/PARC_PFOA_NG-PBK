@@ -376,8 +376,8 @@ POST.Run <- function(exposure_type,
                            transmute(
                              time = time,
                              CI = CI,
-                             CK = ((CPTT*VPTT) + (CRKT*VRKT) + (CPTL*VPTL) + (CRKL*VRKL)/(VPTT + VRKT + VPTL + VRKL)), 
-                             CL = ((CL_ic*VL_ic) + (CL_ec*VL_ec)/(VL_ic + VL_ec)),
+                             CK = (((CPTT*VPTT) + (CRKT*VRKT) + (CPTL*VPTL) + (CRKL*VRKL))/(VPTT + VRKT + VPTL + VRKL)), 
+                             CL = (((CL_ic*VL_ic) + (CL_ec*VL_ec))/(VL_ic + VL_ec)),
                              CA, CR, CP  
                            ) %>% 
                            rename("Intestine" = CI, 
@@ -391,8 +391,8 @@ POST.Run <- function(exposure_type,
                            transmute(
                              time = time,
                              CI = CI,
-                             CK = ((CPTT*VPTT) + (CRKT*VRKT) + (CPTL*VPTL) + (CRKL*VRKL)/(VPTT + VRKT + VPTL + VRKL)), 
-                             CL = ((CL_ic*VL_ic) + (CL_ec*VL_ec)/(VL_ic + VL_ec)),
+                             CK = (((CPTT*VPTT) + (CRKT*VRKT) + (CPTL*VPTL) + (CRKL*VRKL))/(VPTT + VRKT + VPTL + VRKL)), 
+                             CL = (((CL_ic*VL_ic) + (CL_ec*VL_ec))/(VL_ic + VL_ec)),
                              CSk, CA, CR, CP  
                            ) %>% 
                            rename("Intestine" = CI, 
@@ -407,8 +407,8 @@ POST.Run <- function(exposure_type,
                            transmute(
                              time = time,
                              CI = CI,
-                             CK = ((CPTT*VPTT) + (CRKT*VRKT) + (CPTL*VPTL) + (CRKL*VRKL)/(VPTT + VRKT + VPTL + VRKL)), 
-                             CL = ((CL_ic*VL_ic) + (CL_ec*VL_ec)/(VL_ic + VL_ec)),
+                             CK = (((CPTT*VPTT) + (CRKT*VRKT) + (CPTL*VPTL) + (CRKL*VRKL))/(VPTT + VRKT + VPTL + VRKL)), 
+                             CL = (((CL_ic*VL_ic) + (CL_ec*VL_ec))/(VL_ic + VL_ec)),
                              CSk, CA, CR, CP  
                            ) %>% 
                            rename("Intestine" = CI, 
@@ -423,8 +423,8 @@ POST.Run <- function(exposure_type,
                            transmute(
                              time = time,
                              CI = CI,
-                             CK = ((CPTT*VPTT) + (CRKT*VRKT) + (CPTL*VPTL) + (CRKL*VRKL)/(VPTT + VRKT + VPTL + VRKL)), 
-                             CL = ((CL_ic*VL_ic) + (CL_ec*VL_ec)/(VL_ic + VL_ec)),
+                             CK = (((CPTT*VPTT) + (CRKT*VRKT) + (CPTL*VPTL) + (CRKL*VRKL))/(VPTT + VRKT + VPTL + VRKL)), 
+                             CL = (((CL_ic*VL_ic) + (CL_ec*VL_ec))/(VL_ic + VL_ec)),
                              CLu, CA, CR, CP  
                            ) %>% 
                            rename("Intestine" = CI, 
