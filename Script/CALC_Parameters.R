@@ -231,14 +231,14 @@ BASE_PARAMS <- function(expAGE = NULL, expBW = NULL, sex = NULL) {
   ### Uptake from the gastro-intestinal duct -------------------------
   
   # Input data, in vitro clearance
-  Papp_SI = 7.31 * 1e-6                       # cm/s, 7.31 ± 0.43, Janssen et al. 2024, epiIntestinal
+  Papp_SI = 7.31 * 1e-6                       # cm/s, 7.31 ± 0.43, Janssen et al. 2024 http://dx.doi.org/10.1007/s00204-024-03851-x, epiIntestinal
   
-  Vmax_OATP2B1c <- 0.001493                    # umol/min/mg protein, 1493 ± 543 pmol/min/mg protein, Lin et al. 2023 (pmol -> umol)
+  Vmax_OATP2B1c <- 0.001493                    # umol/min/mg protein, 1493 ± 543 pmol/min/mg protein; Lin et al. 2023 http://dx.doi.org/10.1021/acs.est.2c05642 (pmol -> umol)
   Km_OATP2B1c <- 148.68                        # umol/L, 148.68 ± 132.89 uM, Lin et al. 2023
   
   # IVIVE scaling factors
-  REF_OATP2B1 = 1.6/0.812                     # relative expression factor OATP2B1, calculated from: OATP2B1_vivo/OATP2B1_vitro (pmol/mg membrane protein / pmol/mg membrane protein) Lin et al. 2023, tables7 and s6, ref23
-  mgOATP.mgI = 0.13                           # mg of protein per gram intestine [ICRP 89, Ruark et al 2020]
+  REF_OATP2B1 = 1.6/0.812                     # relative expression factor OATP2B1, calculated from: OATP2B1_vivo/OATP2B1_vitro (pmol/mg membrane protein / pmol/mg membrane protein); Lin et al. 2023 http://dx.doi.org/10.1021/acs.est.2c05642 tables7 and s6, ref23
+  mgOATP.mgI = 0.13                           # mg of protein per mg intestine; Utsey et al. 2020 http://dx.doi.org/10.1124/dmd.120.090498
   SF_OATP2B1 = mgOATP.mgI * REF_OATP2B1 * 1e6       # (mg liver * 1e6 -> kg liver)
   
   
@@ -249,25 +249,25 @@ BASE_PARAMS <- function(expAGE = NULL, expBW = NULL, sex = NULL) {
   Km_OATP1B1c = 52.65                          # umol/L, 52.65 ± 23.28 uM, Lin et al. 2023
   
   Vmax_OATP1B3c = 0.002694                     # umol/min/mg protein, 2694 ± 470 pmol/min/mg protein, Lin et al. 2023 (pmol -> umol)
-  Km_OATP1B3c = 91.6                           # umol/L, 91.61 ± 47.70 uM, Lin et al. 2023
+  Km_OATP1B3c = 91.61                           # umol/L, 91.61 ± 47.70 uM, Lin et al. 2023
   
   # IVIVE scaling factors
-  REF_OATP1B1 = 2/0.120                             # relative expression factor OATP1B1, calculated from: OATP1B1_vivo / OATP1B1_vitro  (pmol/mg membrane protein/pmol/mg membrane protein) Lin et al. 2023, tables7 and s6, ref23
-  REF_OATP1B3 = 1/0.719                             # relative expression factor OATP1B3, calculated from: OATP1B3_vivo / OATP1B3_vitro  (pmol/mg membrane protein/pmol/mg membrane protein) Lin et al. 2023, tables7 and s6, ref23
-  mgOATP.mgL = 0.18                                 # mg of protein per gram liver [ICRP 89, Ruark et al 2020]
+  REF_OATP1B1 = 2/0.120                             # relative expression factor OATP1B1, calculated from: OATP1B1_vivo / OATP1B1_vitro  (pmol/mg membrane protein/pmol/mg membrane protein); Lin et al. 2023 http://dx.doi.org/10.1021/acs.est.2c05642 tables7 and s6, ref23
+  REF_OATP1B3 = 1/0.719                             # relative expression factor OATP1B3, calculated from: OATP1B3_vivo / OATP1B3_vitro  (pmol/mg membrane protein/pmol/mg membrane protein); Lin et al. 2023 http://dx.doi.org/10.1021/acs.est.2c05642 tables7 and s6, ref23
+  mgOATP.mgL = 0.18                                 # mg of protein per mg liver; Utsey et al. 2020 http://dx.doi.org/10.1124/dmd.120.090498
   SF_OATP1B1 = mgOATP.mgL * REF_OATP1B1 * 1e6       # (mg liver * 1e6 -> kg liver)
   SF_OATP1B3 = mgOATP.mgL * REF_OATP1B3 * 1e6       # (mg liver * 1e6 -> kg liver)
   
   
   ### Biliary clearance -------------------------
   # Input data, in vitro clearance
-  VmaxBSEPc <- 7                            # umol/min/mg BSEP, Average active transport of bile acids, assuming that the maximum velocity of PFOA transport by BSEP corresponds to that of bile acids [de Bruijn et al. 2024 https://doi.org/10.14573/altex.2302011] 
-  Km_BSEPc <- 16.4                           # ug/L, uM, Average affinity constant of bile acids to BSEP, following the above assumption [de Bruijn et al. 2024 https://doi.org/10.14573/altex.2302011]
+  Vmax_BSEPc <- 7                            # umol/min/mg BSEP, Average active transport of bile acids, assuming that the maximum velocity of PFOA transport by BSEP corresponds to that of bile acids ; de Bruijn et al. 2024 https://doi.org/10.14573/altex.2302011 
+  Km_BSEPc <- 16.4                           # umol/L, uM, Average affinity constant of bile acids to BSEP, following the above assumption ; de Bruijn et al. 2024 https://doi.org/10.14573/altex.2302011
   
   # IVIVE 
   mgBSEP.HC <-  0.839 * 140000 * 1e-9         # mg BSEP/1e6 hepatocytes (0.839 pmole BSEP/1e6 hepatocytes (amound of BSEP per hepatocyte) * 140000 g/mole (MW BSEP) -> pg * 1e-9 -> mg) de Bruijn et al. 2024 https://doi.org/10.14573/altex.2302011]
-  HC.GL <- 99                                 # 1e6 hepatocytes in the liver [de Bruijn et al. 2024 https://doi.org/10.14573/altex.2302011]
-  SF_BSEP <- mgBSEP.HC * HC.GL * 1e3          # Scaling factor for BSEP mediated hepatic efflux for GCA and GCDC [de Bruijn et al. 2024 https://doi.org/10.14573/altex.2302011]
+  HC.GL <- 99                                 # 1e6 hepatocytes in the liver ; de Bruijn et al. 2024 https://doi.org/10.14573/altex.2302011
+  SF_BSEP <- mgBSEP.HC * HC.GL * 1e3          # Scaling factor for BSEP mediated hepatic efflux for GCA and GCDC ; de Bruijn et al. 2024 https://doi.org/10.14573/altex.2302011
   
   
   ### Renal Clearance -------------------------
@@ -278,8 +278,8 @@ BASE_PARAMS <- function(expAGE = NULL, expBW = NULL, sex = NULL) {
   Km_OAT4c = 47                    # ug/L, scaled from uM, Louisse et al. 2024 doi.org/10.1016/j.tox.2024.153961
   
   # IVIVE 
-  REF_OAT4 <- 1.9/0.063                 # relative expression factor OAT,  calculated from: OAT4_vivo / OAT4_vitro  (pmol/mg membrane protein/ pmol/mg membrane protein); in vivo: Al-Madjoub et al 2021 (https://doi.org/10.1002/cpt.2396), in vitro: Lin et al. 2023, tables5
-  mgOAT.mgK <- 0.17                     # mg of protein per gram kidney [ICRP 89, Ruark et al 2020]
+  REF_OAT4 <- 1.9/0.063                 # relative expression factor OAT,  calculated from: OAT4_vivo / OAT4_vitro  (pmol/mg membrane protein/ pmol/mg membrane protein); in vivo: Al-Madjoub et al 2021 (https://doi.org/10.1002/cpt.2396), in vitro:; Lin et al. 2023 http://dx.doi.org/10.1021/acs.est.2c05642 tables5
+  mgOAT.mgK <- 0.17                     # mg of protein per mg kidney; Utsey et al. 2020 http://dx.doi.org/10.1124/dmd.120.090498
   SF_OAT <- mgOAT.mgK * REF_OAT4 * 1e6   # (mg kidney * 1e6 -> kg kidney)
   
   
@@ -329,7 +329,7 @@ BASE_PARAMS <- function(expAGE = NULL, expBW = NULL, sex = NULL) {
    Km_OATP1B3c = Km_OATP1B3c,
    SF_OATP1B1 = SF_OATP1B1,
    SF_OATP1B3 = SF_OATP1B3,
-   VmaxBSEPc = VmaxBSEPc,
+   Vmax_BSEPc = Vmax_BSEPc,
    Km_BSEPc = Km_BSEPc,
    SF_BSEP = SF_BSEP,
    Vmax_OAT4c = Vmax_OAT4c,

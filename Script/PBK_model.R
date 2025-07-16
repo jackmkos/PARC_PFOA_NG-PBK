@@ -81,7 +81,7 @@ ORAL_PBK_RUN <- function(y, parms, times){ # Input for ode
       Km_OATP1B3 <- Km_OATP1B3c*MW                                        # ug/L (uM -> ug/L)
       
       # Biliary excretion
-      VmaxBSEP <- VmaxBSEPc*MW*60*24*SF_BSEP*VL_ic         # ug/d
+      Vmax_BSEP <- Vmax_BSEPc*MW*60*24*SF_BSEP*VL_ic         # ug/d
       Km_BSEP <- Km_BSEPc*MW                                 # ug/L (uM -> ug/L)
       
       # Renal clearance
@@ -128,7 +128,7 @@ ORAL_PBK_RUN <- function(y, parms, times){ # Input for ode
       
       dAIL <- + OD - tco*AIL - CL_IL*CIL +
         - (VmaxOATP2B1/(Km_OATP2B1 + CIL))*CIL +
-        + (VmaxBSEP/(Km_BSEP + (CL_ic*fu_Lic)))*CL_ic*fu_Lic          # ug/d, Intestine lumen
+        + (Vmax_BSEP/(Km_BSEP + (CL_ic*fu_Lic)))*CL_ic*fu_Lic          # ug/d, Intestine lumen
       
       dAI <- QI*(CP - CVI) + CL_IL*CIL + 
         + (VmaxOATP2B1/(Km_OATP2B1 + CIL))*CIL                     # ug/d, Intestinal
@@ -142,7 +142,7 @@ ORAL_PBK_RUN <- function(y, parms, times){ # Input for ode
       
       dAL_ic <- (Vmax_OATP1B1/(Km_OATP1B1 + (CL_ec*fup)))*CL_ec*fup +
         + (Vmax_OATP1B3/(Km_OATP1B3 + (CL_ec*fup)))*CL_ec*fup +
-        - (VmaxBSEP/(Km_BSEP + (CL_ic*fu_Lic)))*CL_ic*fu_Lic             # ug/d, Liver intracellular space
+        - (Vmax_BSEP/(Km_BSEP + (CL_ic*fu_Lic)))*CL_ic*fu_Lic             # ug/d, Liver intracellular space
       
       
       dAPTT <- QK*(CP - CPTT) + 
@@ -312,7 +312,7 @@ DERMAL_PBK_RUN <- function(y, parms, times){ # Input for ode
       Km_OATP1B3 <- Km_OATP1B3c*MW                                        # ug/L (uM -> ug/L)
       
       # Biliary excretion
-      VmaxBSEP <- VmaxBSEPc*MW*60*24*SF_BSEP*VL_ic         # ug/d
+      Vmax_BSEP <- Vmax_BSEPc*MW*60*24*SF_BSEP*VL_ic         # ug/d
       Km_BSEP <- Km_BSEPc*MW                                 # ug/L (uM -> ug/L)
       
       # Renal clearance
@@ -366,9 +366,9 @@ DERMAL_PBK_RUN <- function(y, parms, times){ # Input for ode
       dASk <- + CL_SkBtSk*CSkB + QSk*(CP-CVSk)                   # ug/d, Skin
       
       
-      dAIL <- + OD - tco*AIL - CL_IL*CIL +
+      dAIL <- - tco*AIL - CL_IL*CIL +
         - (VmaxOATP2B1/(Km_OATP2B1 + CIL))*CIL +
-        + (VmaxBSEP/(Km_BSEP + (CL_ic*fu_Lic)))*CL_ic*fu_Lic          # ug/d, Intestine lumen
+        + (Vmax_BSEP/(Km_BSEP + (CL_ic*fu_Lic)))*CL_ic*fu_Lic          # ug/d, Intestine lumen
       
       dAI <- QI*(CP - CVI) + CL_IL*CIL + 
         + (VmaxOATP2B1/(Km_OATP2B1 + CIL))*CIL                     # ug/d, Intestinal
@@ -383,7 +383,7 @@ DERMAL_PBK_RUN <- function(y, parms, times){ # Input for ode
       
       dAL_ic <- (Vmax_OATP1B1/(Km_OATP1B1 + (CL_ec*fup)))*CL_ec*fup +
         + (Vmax_OATP1B3/(Km_OATP1B3 + (CL_ec*fup)))*CL_ec*fup +
-        - (VmaxBSEP/(Km_BSEP + (CL_ic*fu_Lic)))*CL_ic*fu_Lic                       # ug/d, Liver intracellular space
+        - (Vmax_BSEP/(Km_BSEP + (CL_ic*fu_Lic)))*CL_ic*fu_Lic                       # ug/d, Liver intracellular space
       
       dAPTT <- QK*(CP - CPTT) + 
         + (Vmax_OAT4/(Km_OAT4+(CPTL*fu_PTL)))*CPTL*fu_PTL        # ug/d, Proximal tubule tissue 
@@ -558,7 +558,7 @@ ORAL_DERMAL_PBK_RUN <- function(y, parms, times){ # Input for ode
       Km_OATP1B3 <- Km_OATP1B3c*MW                                        # ug/L (uM -> ug/L)
       
       # Biliary excretion
-      VmaxBSEP <- VmaxBSEPc*MW*60*24*SF_BSEP*VL_ic         # ug/d
+      Vmax_BSEP <- Vmax_BSEPc*MW*60*24*SF_BSEP*VL_ic         # ug/d
       Km_BSEP <- Km_BSEPc*MW                                 # ug/L (uM -> ug/L)
       
       # Renal clearance
@@ -620,7 +620,7 @@ ORAL_DERMAL_PBK_RUN <- function(y, parms, times){ # Input for ode
       
       dAIL <- + OD - tco*AIL - CL_IL*CIL +
         - (VmaxOATP2B1/(Km_OATP2B1 + CIL))*CIL +
-        + (VmaxBSEP/(Km_BSEP + (CL_ic*fu_Lic)))*CL_ic*fu_Lic          # ug/d, Intestine lumen
+        + (Vmax_BSEP/(Km_BSEP + (CL_ic*fu_Lic)))*CL_ic*fu_Lic          # ug/d, Intestine lumen
       
       dAI <- QI*(CP - CVI) + CL_IL*CIL + 
         + (VmaxOATP2B1/(Km_OATP2B1 + CIL))*CIL                     # ug/d, Intestinal
@@ -634,7 +634,7 @@ ORAL_DERMAL_PBK_RUN <- function(y, parms, times){ # Input for ode
       
       dAL_ic <- (Vmax_OATP1B1/(Km_OATP1B1 + (CL_ec*fup)))*CL_ec*fup +
         + (Vmax_OATP1B3/(Km_OATP1B3 + (CL_ec*fup)))*CL_ec*fup +
-        - (VmaxBSEP/(Km_BSEP + (CL_ic*fu_Lic)))*CL_ic*fu_Lic                       # ug/d, Liver intracellular space
+        - (Vmax_BSEP/(Km_BSEP + (CL_ic*fu_Lic)))*CL_ic*fu_Lic                       # ug/d, Liver intracellular space
       
       
       dAPTT <- QK*(CP - CPTT) + 
@@ -806,7 +806,7 @@ INHALATION_PBK_RUN <- function(y, parms, times){ # Input for ode
       Km_OATP1B3 <- Km_OATP1B3c*MW                                        # ug/L (uM -> ug/L)
       
       # Biliary excretion
-      VmaxBSEP <- VmaxBSEPc*MW*60*24*SF_BSEP*VL_ic         # ug/d
+      Vmax_BSEP <- Vmax_BSEPc*MW*60*24*SF_BSEP*VL_ic         # ug/d
       Km_BSEP <- Km_BSEPc*MW                                 # ug/L (uM -> ug/L)
       
       # Renal clearance
@@ -858,9 +858,9 @@ INHALATION_PBK_RUN <- function(y, parms, times){ # Input for ode
       dALu <- LuD + QC*(CVP - CVLu)                            # ug/d, Lungs
       
       
-      dAIL <- + OD - tco*AIL - CL_IL*CIL +
+      dAIL <- - tco*AIL - CL_IL*CIL +
         - (VmaxOATP2B1/(Km_OATP2B1 + CIL))*CIL +
-        + (VmaxBSEP/(Km_BSEP + (CL_ic*fu_Lic)))*CL_ic*fu_Lic          # ug/d, Intestine lumen
+        + (Vmax_BSEP/(Km_BSEP + (CL_ic*fu_Lic)))*CL_ic*fu_Lic          # ug/d, Intestine lumen
       
       dAI <- QI*(CP - CVI) + CL_IL*CIL + 
         + (VmaxOATP2B1/(Km_OATP2B1 + CIL))*CIL                     # ug/d, Intestinal
@@ -875,7 +875,7 @@ INHALATION_PBK_RUN <- function(y, parms, times){ # Input for ode
       
       dAL_ic <- (Vmax_OATP1B1/(Km_OATP1B1 + (CL_ec*fup)))*CL_ec*fup +
         + (Vmax_OATP1B3/(Km_OATP1B3 + (CL_ec*fup)))*CL_ec*fup +
-        - (VmaxBSEP/(Km_BSEP + (CL_ic*fu_Lic)))*CL_ic*fu_Lic             # ug/d, Liver intracellular space
+        - (Vmax_BSEP/(Km_BSEP + (CL_ic*fu_Lic)))*CL_ic*fu_Lic             # ug/d, Liver intracellular space
       
       
       dAPTT <- QK*(CAP - CPTT) + 

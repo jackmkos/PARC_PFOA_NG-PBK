@@ -77,9 +77,8 @@
       QR <- QC - (QA + QI + QK + QL)  # L/d, Rest
       
       QUr <- QUrc * BW              # L/d, Urine flow rate to the bladder 22 mL/kg BW/d [ICRP 89 page 161]
-      GFR <- GFRc * QK              # L/d 18% of total renal plasma flow [ICRP 89 page 159] http://www.icrp.org/publication.asp?id=ICRP%20Publication%2089
-      # GFR <- GFR
-      QT <- QT                      # L/d, Proximal tubule fluid flow
+      GFR <- GFR
+      QT <- QTc*GFR                      # L/d, Proximal tubule fluid flow
       
       tco <- tco                    # /d, Bowel residence times in the colon
       
@@ -93,13 +92,6 @@
       PA <- PAc * fup     # Adipose
       PR <- PRc * fup     # Rest
       
-      # Fraction unionised
-      pH_P <- 7.4     # plasma
-      pH_IL <- 7      # intestinal Intestinal lumen, average
-      
-      f.union_p <- 1/(1 + 10^(pH_P - pKa))       # Plasma
-      f.union_exp <- 1/(1 + 10^(pH_P - pKa))     # Is the same as plasma as pH in the experiment is 7.4
-      f.union_IL <- 1/(1 + 10^(pH_IL - pKa))     # Intestinal lumen
       
       # Fraction unbound, calculated based on Poulin and Haddad, 2018 https://doi.org/10.1016/j.xphs.2018.03.012
       # Equation was adapted to not account for fraction unionised
@@ -107,12 +99,13 @@
       fu_PTL <- R_PTL*fup/(1 + ((R_PTL-1)*fup)) # Proximal tubule lumen
       fu_Lic <- R_L_ec*fup/(1 + ((R_L_ec-1)*fup)) # Liver intracellular space
       
-      
       ### Kinetic ----
       
       # Gastro-intestinal uptake
-      Pint_SI <- Papp_SI/f.union_exp                       # cm/s, Intrinsic permeability, corrected for fraction unionised in the experiment
-      CL_IL <- (Pint_SI*SA_SI*f.union_IL*1e-3)*60*60*24    # L/d, Intestinal lumen to intestinal tissue (calculations: cm/s -> L/s /1000 -> L/d *60*60*24) 
+      CL_IL <- (Papp_SI*SA_SI*1e-3)*60*60*24    # L/d, Intestinal lumen to intestinal tissue (calculations: cm/s -> L/s /1000 -> L/d *60*60*24)
+      
+      VmaxOATP2B1 <- Vmax_OATP2B1c*MW*60*24*SF_OATP2B1*VIL # ug/d
+      Km_OATP2B1 <- Km_OATP2B1c*MW                         # ug/L (uM -> ug/L)
       
       # Liver uptake
       Vmax_OATP1B1 <- Vmax_OATP1B1c*MW*60*24*SF_OATP1B1*VL_ec             # ug/d
@@ -122,10 +115,10 @@
       
       # Biliary excretion
       VmaxBSEP <- VmaxBSEPc*MW*60*24*SF_BSEP*VL_ic         # ug/d
-      KmBSEP <- KmBSEPc*MW                                 # ug/L (uM -> ug/L)
+      Km_BSEP <- Km_BSEPc*MW                                 # ug/L (uM -> ug/L)
       
       # Renal clearance
-      Vmax_OAT4 = Vmax_OAT4c*MW*60*24*SF_OAT*VPT           # ug/d (umol -> ug, min -> d)
+      Vmax_OAT4 = Vmax_OAT4c*MW*60*24*SF_OAT4*VPT           # ug/d (umol -> ug, min -> d)
       Km_OAT4 = Km_OAT4c*MW                                # ug/L (uM -> ug/L)
       
       
@@ -135,7 +128,7 @@
       
       ## Oral exposure ##
       DOral = expOral*BW*DoseOn         # ug, PFOA oral dose
-      OralD = DOral #/Tinput*(t %% tinterval<Tinput)
+      OralD = DOral/Tinput*(t %% tinterval<Tinput)
       
       ## Concentrations -------------------------
       
@@ -166,10 +159,12 @@
       
       dOD = OralD - OD             # ug/d, Oral dose input 
       
-      dAIL <- + OD - tco*AIL - CL_IL*CIL + 
-        + (VmaxBSEP/(KmBSEP + (CL_ic*fu_Lic)))*CL_ic*fu_Lic          # ug/d, Intestine lumen
+      dAIL <- + OD - tco*AIL - CL_IL*CIL +
+        - (VmaxOATP2B1/(Km_OATP2B1 + CIL))*CIL +
+        + (VmaxBSEP/(Km_BSEP + (CL_ic*fu_Lic)))*CL_ic*fu_Lic          # ug/d, Intestine lumen
       
-      dAI <- QI*(CP - CVI) + CL_IL*CIL                      # ug/d, Intestinal
+      dAI <- QI*(CP - CVI) + CL_IL*CIL + 
+        + (VmaxOATP2B1/(Km_OATP2B1 + CIL))*CIL                     # ug/d, Intestinal
       
       dAFe <-  tco*AIL                                       # ug/d, Feces
       
@@ -180,7 +175,7 @@
       
       dAL_ic <- (Vmax_OATP1B1/(Km_OATP1B1 + (CL_ec*fup)))*CL_ec*fup +
         + (Vmax_OATP1B3/(Km_OATP1B3 + (CL_ec*fup)))*CL_ec*fup +
-        - (VmaxBSEP/(KmBSEP + (CL_ic*fu_Lic)))*CL_ic*fu_Lic             # ug/d, Liver intracellular space
+        - (VmaxBSEP/(Km_BSEP + (CL_ic*fu_Lic)))*CL_ic*fu_Lic             # ug/d, Liver intracellular space
       
       
       dAPTT <- QK*(CP - CPTT) + 
@@ -346,11 +341,11 @@
   P$sdlog <- as.numeric(P$sdlog)
 
   # Define q: q needs to be a list of character strings, giving the names of the quantile functions
-  q <- ifelse(P$Distribution == "LogNormal", "qlnorm", "qunif") # if distribution is lognormal then q should be qlnorm, if not then qunif
-
+  q <- ifelse(P$Distribution == "LogNormal", "qlnorm", "qunif") 
+  
   # Define q.arg: q.arg needs to be a list of lists
   q.arg <- lapply(1:nrow(P), function(i) { # apply the function to eachone of the rows of P
-    if (P$Distribution[i] == "Uniform") { #if the distribution in uniform
+    if (P$Distribution[i] == "qunif") { #if the distribution in uniform
       list(min = P$Binf[i], max = P$Bsup[i]) #create a list containing min (Bing of row i) and max (Bsup of row i) per row
     } else {
       list(meanlog = log(P$Mean[i]), sdlog = P$sdlog[i]) #if not then create a list containing mean and sdlog
@@ -373,28 +368,6 @@
   )
 
   dim(Experience$X) # dataframe of: n factors(number of parameters) * n n(1000) number of observations, of n factors(number of parameters) number of variables
-  INITIALdesign <- Experience$X
-  write.csv(INITIALdesign, "INITIALeFAST.ExpDesign.csv", row.names = FALSE)
-
-  pdf("INITIALDistr_ParFull.pdf")
-  par(mfrow=c(4,3))
-  for( i in 1:ncol(INITIALdesign)){ hist(INITIALdesign[,i], breaks=100, col="purple", main=colnames(INITIALdesign)[i] ) }
-  dev.off()
-  save(Experience, file = "INITIALExperienceFull.RData")
-
-  P$zscore <- as.numeric(P$zscore)
-  
-  for (i in 1:nrow(P)) {
-    if (P$Distribution[i] != "Uniform") {
-      par_name <- GSA.parms[i]
-      min_val <- exp(log(P$Mean[i]) - P$zscore[i] * P$sdlog[i])
-      max_val <- exp(log(P$Mean[i]) + P$zscore[i] * P$sdlog[i])
-
-      Experience$X[, par_name] <- pmax(Experience$X[, par_name], min_val)
-      Experience$X[, par_name] <- pmin(Experience$X[, par_name], max_val)
-    }
-  }
-
   design <- Experience$X
   write.csv(design, "eFAST.ExpDesign.csv", row.names = FALSE)
 

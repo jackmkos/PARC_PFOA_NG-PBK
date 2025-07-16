@@ -452,15 +452,15 @@ ggsave(filename = here("OrganFlows.png"),
 
 
 ggplot() + 
-  geom_path(data = Variables_df, aes(age, GFR_M, linetype = "Male", color = "Creatinine")) +
-  geom_path(data = Variables_df, aes(age, GFR_F, linetype = "Female", color = "Creatinine")) +
-  geom_path(data = Flows, aes(age, FGFR_M, linetype = "Male", color = "Filtration fraction")) +
-  geom_path(data = Flows, aes(age, FGFR_F, linetype = "Female", color = "Filtration fraction")) +
-  scale_linetype_manual(values = c("Male" = "dashed",
+  geom_path(data = Variables_df, aes(age, GFR_M, linetype = "Creatinine", color = "Male")) +
+  geom_path(data = Variables_df, aes(age, GFR_F, linetype = "Creatinine", color = "Female")) +
+  geom_path(data = Flows, aes(age, FGFR_M, linetype = "Filtration fraction", color = "Male")) +
+  geom_path(data = Flows, aes(age, FGFR_F, linetype = "Filtration fraction", color = "Female")) +
+  scale_linetype_manual(values = c("Creatinine" = "dashed",
                                  "Female" = "solid"),
                       name = "") +
-  scale_color_manual(values = c("Creatinine" = "orange",
-                                "Filtration fraction" = "purple"),
+  scale_color_manual(values = c("Male" = "orange",
+                                "Female" = "Filtration fraction"),
                                 name = "")+
   theme_minimal()+
   ylab("GFR (ml/min)") +
