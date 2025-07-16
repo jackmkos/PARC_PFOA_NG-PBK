@@ -457,10 +457,10 @@ ggplot() +
   geom_path(data = Flows, aes(age, FGFR_M, linetype = "Filtration fraction", color = "Male")) +
   geom_path(data = Flows, aes(age, FGFR_F, linetype = "Filtration fraction", color = "Female")) +
   scale_linetype_manual(values = c("Creatinine" = "dashed",
-                                 "Female" = "solid"),
+                                 "Filtration fraction" = "solid"),
                       name = "") +
   scale_color_manual(values = c("Male" = "orange",
-                                "Female" = "Filtration fraction"),
+                                "Female" = "purple"),
                                 name = "")+
   theme_minimal()+
   ylab("GFR (ml/min)") +

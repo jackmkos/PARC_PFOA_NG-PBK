@@ -952,8 +952,8 @@ Pop.POST.Run <- function(Input,
       geom_abline(intercept = 0, slope = 1, linetype = "solid", linewidth = 0.3, color = "grey50") +  
       geom_abline(intercept = log10(2), slope = 1, linetype = "dashed", linewidth = 0.2, color = "grey50") +  #2 fold
       geom_abline(intercept = log10(0.5), slope = 1, linetype = "dashed", linewidth = 0.2, color = "grey50") + #2 fold
-      geom_abline(intercept = log10(3), slope = 1, linetype = "dotted", linewidth = 0.1, color = "grey50") +  #3 fold
-      geom_abline(intercept = log10(1/3), slope = 1, linetype = "dotted", linewidth = 0.1, color = "grey50") + #3 fold
+      geom_abline(intercept = log10(5), slope = 1, linetype = "dotted", linewidth = 0.1, color = "grey50") +  #5 fold
+      geom_abline(intercept = log10(1/5), slope = 1, linetype = "dotted", linewidth = 0.1, color = "grey50") + #5 fold
       geom_point(color = "black", size = 1) +
       CP_theme +
       labs(title="Observed vs predicted half lives",
