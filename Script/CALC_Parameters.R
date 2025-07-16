@@ -71,12 +71,12 @@ BASE_PARAMS <- function(expAGE = NULL, expBW = NULL, sex = NULL) {
   
   # Intestinal lumen is taken as a compartment outside the intestine (weight of Intestinal lumen is outside of the bodyweight)
   L = 280                           # cm, (adult of 70kg) Willmann2004 doi: 10.1021/jm030999b
-  R = (1.75+1)/2                    # cm, (adult of 70kg mean value) Willmann2004 doi: 10.1021/jm030999b
+  R = 1.75                          # cm, (adult of 70kg mean value) Willmann2004 doi: 10.1021/jm030999b
   VIL = pi*L*(R^2)/1000             # L, cm3/1000 #Value is the same as Punt et al. 2021 https://dx.doi.org/10.1021/acs.chemrestox.0c00307
   VILc = VIL/70                     # deriving the constant by dividing by BW, (adult of 70kg) Willmann2004 doi: 10.1021/jm030999b
   
-  # SA_SIc = 2*pi*R*L*25/70             # cm2, amplification factor of 25 for the microvilli in the intestinal lumen, Willmann2004 doi: 10.1021/jm030999b
-  SA_SIc = 70.1 * 1e3/70            # cm2 converted to a constant by dividing by BW, (adult of 70kg) Willmann2004 doi: 10.1021/jm030999b
+  SA_SIc = 2*pi*R*L*25/70           # cm2, amplification factor of 25 for the microvilli in the intestinal lumen, Willmann2004 doi: 10.1021/jm030999b
+  # SA_SIc = 70.1 * 1e3/70            # cm2 converted to a constant by dividing by BW, (adult of 70kg) Willmann2004 doi: 10.1021/jm030999b
   
   # Liver
   VLc <- Physio_params[[paste0("V_liverFraction", suffix)]]  # cm2, (adult of 70kg) Willmann2004 doi: 10.1021/jm030999b        
@@ -130,8 +130,7 @@ BASE_PARAMS <- function(expAGE = NULL, expBW = NULL, sex = NULL) {
   
   QUrc = 0.022                # L/d, Urine flow rate to the bladder 22 mL/kg BW/d [ICRP 89 page 161]
   GFRc = 0.18                 # L/d 18% of total renal plasma flow [ICRP 89 page 159] http://www.icrp.org/publication.asp?id=ICRP%20Publication%2089
-  QT = 43.2*60*24/1000        # L/d, Tubular flow rate at the end of the proximal tubule, 43.2 ml/min TFR from Scotcher et al. 2016 https://doi.org/10.1016/j.ejps.2016.03.018 and Pletz
-  
+  QTc = 0.36 # QT normalised to GFR, based on reference values of GFR 120 and QT of 43.2 from Scotcher et al. 2016 https://doi.org/10.1016/j.ejps.2016.03.018 and Pletz
   
   ### Physiological pHs in different matrices -------------------------
   
@@ -144,19 +143,19 @@ BASE_PARAMS <- function(expAGE = NULL, expBW = NULL, sex = NULL) {
   # In the same paper: the proximal tubule reabsorbes 71% of albumin, while LoH and DT 23% and the collecting duct 3%
   Calb_P <- 37.0      # mg/ml plasma
   Calb_PTL <- 14.4e-3 # mg/ml proximal tubule 
+  Calb_IL <- 0.007    # mg/ml intestinal lumen
   
   # Based on the Poulin and Theil 2009, below Table 6
   # Albumin ratio
   R_PTL <- Calb_P/Calb_PTL # plasma to proximal tubule lumen albumin ratio
   R_L_ec <- 1/0.086 # plasma to liver albumin ratio, Utsey et al. 2020 https://doi.org/10.1124/dmd.120.090498, https://github.com/metrumresearchgroup/PBPK_PC/blob/master/data/unified_tissue_comp.csv
-  
+  R_IL <- Calb_P/Calb_IL # plasma to intestinal lumen albumin ratio
   
   ## Chemical Specific ####
   
   MW <- 414.07                  # PFOA molecular weight g/mol 
   fup <- 0.061/100              # fraction unbound in plasma, unitless Fischer et al. 2024 https://doi.org/10.1021/acs.est.3c07415
-  pKa <- 1.886                  # pKa of PFOA, average of experimental values from https://pfas-1.itrcweb.org, Table 4-1 excel file, pKa sheet
-  
+
   
   ### Partition coefficients -------------------------
   
@@ -232,21 +231,29 @@ BASE_PARAMS <- function(expAGE = NULL, expBW = NULL, sex = NULL) {
   ### Uptake from the gastro-intestinal duct -------------------------
   
   # Input data, in vitro clearance
-  Papp_SI = 7.31 * 1e-6                       # cm/s, 7.31 ± 0.43, Janssen et al. 2024
+  Papp_SI = 7.31 * 1e-6                       # cm/s, 7.31 ± 0.43, Janssen et al. 2024, epiIntestinal
+  
+  Vmax_OATP2B1c <- 0.001493                    # umol/min/mg protein, 1493 ± 543 pmol/min/mg protein, Lin et al. 2023 (pmol -> umol)
+  Km_OATP2B1c <- 148.68                        # umol/L, 148.68 ± 132.89 uM, Lin et al. 2023
+  
+  # IVIVE scaling factors
+  REF_OATP2B1 = 1.6/0.812                     # relative expression factor OATP2B1, calculated from: OATP2B1_vivo/OATP2B1_vitro (pmol/mg membrane protein / pmol/mg membrane protein) Lin et al. 2023, tables7 and s6, ref23
+  mgOATP.mgI = 0.13                           # mg of protein per gram intestine [ICRP 89, Ruark et al 2020]
+  SF_OATP2B1 = mgOATP.mgI * REF_OATP2B1 * 1e6       # (mg liver * 1e6 -> kg liver)
   
   
   ### Uptake to the liver -------------------------
   
   # Input data, in vitro clearance
-  Vmax_OATP1B1c = 2.305 * 1e-6                # umol/min/mg protein, 2.305± 0.295 pmol/min/mg protein [@lin2023] (pmol -> umol)
-  Km_OATP1B1c = 52.65                         # umol/L, 52.65 ± 23.28 uM [@lin2023]
+  Vmax_OATP1B1c = 0.002305                     # umol/min/mg protein, 2305 ± 295 pmol/min/mg protein, Lin et al. 2023 (pmol -> umol)
+  Km_OATP1B1c = 52.65                          # umol/L, 52.65 ± 23.28 uM, Lin et al. 2023
   
-  Vmax_OATP1B3c = 2.694 * 1e-6                # umol/min/mg protein, 2.694± 0.470 pmol/min/mg protein [@lin2023] (pmol -> umol)
-  Km_OATP1B3c = 91.6                          # umol/L, 91.61 ± 47.70 uM [@lin2023]
+  Vmax_OATP1B3c = 0.002694                     # umol/min/mg protein, 2694 ± 470 pmol/min/mg protein, Lin et al. 2023 (pmol -> umol)
+  Km_OATP1B3c = 91.6                           # umol/L, 91.61 ± 47.70 uM, Lin et al. 2023
   
   # IVIVE scaling factors
-  REF_OATP1B1 = 16.67                               # relative expression factor OATP1B1, calculated from: OATP1B1_vivo/OATP1B1_vitro = 2/0.120  (pmol/mg membrane protein/pmol/mg membrane protein) [@lin2023, tables7, ref23]
-  REF_OATP1B3 = 1.39                                # relative expression factor OATP1B3, calculated from: OATP1B3_vivo/OATP1B3_vitro = 1/0.719  (pmol/mg membrane protein/pmol/mg membrane protein) [@lin2023, tables7, ref23]
+  REF_OATP1B1 = 2/0.120                             # relative expression factor OATP1B1, calculated from: OATP1B1_vivo / OATP1B1_vitro  (pmol/mg membrane protein/pmol/mg membrane protein) Lin et al. 2023, tables7 and s6, ref23
+  REF_OATP1B3 = 1/0.719                             # relative expression factor OATP1B3, calculated from: OATP1B3_vivo / OATP1B3_vitro  (pmol/mg membrane protein/pmol/mg membrane protein) Lin et al. 2023, tables7 and s6, ref23
   mgOATP.mgL = 0.18                                 # mg of protein per gram liver [ICRP 89, Ruark et al 2020]
   SF_OATP1B1 = mgOATP.mgL * REF_OATP1B1 * 1e6       # (mg liver * 1e6 -> kg liver)
   SF_OATP1B3 = mgOATP.mgL * REF_OATP1B3 * 1e6       # (mg liver * 1e6 -> kg liver)
@@ -254,11 +261,11 @@ BASE_PARAMS <- function(expAGE = NULL, expBW = NULL, sex = NULL) {
   
   ### Biliary clearance -------------------------
   # Input data, in vitro clearance
-  VmaxBSEPc <- 7.1 * 1000                           # umol/min/mg BSEP, Average active transport of bile acids, assuming that the maximum velocity of PFOA transport by BSEP corresponds to that of bile acids [de Bruijn et al. 2024 https://doi.org/10.14573/altex.2302011] 
-  KmBSEPc <- 16.4                           # ug/L, uM, Average affinity constant of bile acids to BSEP, following the above assumption [de Bruijn et al. 2024 https://doi.org/10.14573/altex.2302011]
+  VmaxBSEPc <- 7                            # umol/min/mg BSEP, Average active transport of bile acids, assuming that the maximum velocity of PFOA transport by BSEP corresponds to that of bile acids [de Bruijn et al. 2024 https://doi.org/10.14573/altex.2302011] 
+  Km_BSEPc <- 16.4                           # ug/L, uM, Average affinity constant of bile acids to BSEP, following the above assumption [de Bruijn et al. 2024 https://doi.org/10.14573/altex.2302011]
   
   # IVIVE 
-  mgBSEP.HC <-  0.839 * 140000 * 1e-9         # mg BSEP/1e6 hepatocytes (0.839 pmole BSEP/1e6 hepatocytes (amound of BSEP per hepatocyte) * 140000 g/mole (MW BSEP) -> pg * 1e-9 -> mg) [de Bruijn et al. 2024 https://doi.org/10.14573/altex.2302011]
+  mgBSEP.HC <-  0.839 * 140000 * 1e-9         # mg BSEP/1e6 hepatocytes (0.839 pmole BSEP/1e6 hepatocytes (amound of BSEP per hepatocyte) * 140000 g/mole (MW BSEP) -> pg * 1e-9 -> mg) de Bruijn et al. 2024 https://doi.org/10.14573/altex.2302011]
   HC.GL <- 99                                 # 1e6 hepatocytes in the liver [de Bruijn et al. 2024 https://doi.org/10.14573/altex.2302011]
   SF_BSEP <- mgBSEP.HC * HC.GL * 1e3          # Scaling factor for BSEP mediated hepatic efflux for GCA and GCDC [de Bruijn et al. 2024 https://doi.org/10.14573/altex.2302011]
   
@@ -271,9 +278,9 @@ BASE_PARAMS <- function(expAGE = NULL, expBW = NULL, sex = NULL) {
   Km_OAT4c = 47                    # ug/L, scaled from uM, Louisse et al. 2024 doi.org/10.1016/j.tox.2024.153961
   
   # IVIVE 
-  REF_OAT <- 0.56                       # relative expression factor OAT, average of REF_OAT values of OAT1 and OAT3, check excel file for detailed information
+  REF_OAT4 <- 1.9/0.063                 # relative expression factor OAT,  calculated from: OAT4_vivo / OAT4_vitro  (pmol/mg membrane protein/ pmol/mg membrane protein); in vivo: Al-Madjoub et al 2021 (https://doi.org/10.1002/cpt.2396), in vitro: Lin et al. 2023, tables5
   mgOAT.mgK <- 0.17                     # mg of protein per gram kidney [ICRP 89, Ruark et al 2020]
-  SF_OAT <- mgOAT.mgK * REF_OAT * 1e6   # (mg kidney * 1e6 -> kg kidney)
+  SF_OAT <- mgOAT.mgK * REF_OAT4 * 1e6   # (mg kidney * 1e6 -> kg kidney)
   
   
   ### Final parameter constants -------------------------
@@ -302,19 +309,20 @@ BASE_PARAMS <- function(expAGE = NULL, expBW = NULL, sex = NULL) {
    QAc = QAc,
    QUrc = QUrc,
    GFR = GFR,
-   GFRc = GFRc,
-   QT = QT,
+   QTc = QTc,
    tco = tco,
    R_PTL = R_PTL,
    R_L_ec = R_L_ec,
    fup = fup,
-   pKa = pKa,
    PIc = PIc,
    PLc = PLc,
    PKc = PKc,
    PAc = PAc,
    PRc = PRc,
    Papp_SI = Papp_SI,
+   Vmax_OATP2B1c = Vmax_OATP2B1c,
+   Km_OATP2B1c = Km_OATP2B1c,
+   SF_OATP2B1 = SF_OATP2B1,
    Vmax_OATP1B1c = Vmax_OATP1B1c,
    Km_OATP1B1c = Km_OATP1B1c,
    Vmax_OATP1B3c = Vmax_OATP1B3c,
@@ -322,7 +330,7 @@ BASE_PARAMS <- function(expAGE = NULL, expBW = NULL, sex = NULL) {
    SF_OATP1B1 = SF_OATP1B1,
    SF_OATP1B3 = SF_OATP1B3,
    VmaxBSEPc = VmaxBSEPc,
-   KmBSEPc = KmBSEPc,
+   Km_BSEPc = Km_BSEPc,
    SF_BSEP = SF_BSEP,
    Vmax_OAT4c = Vmax_OAT4c,
    Km_OAT4c = Km_OAT4c,

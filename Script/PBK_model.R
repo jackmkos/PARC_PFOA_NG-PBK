@@ -44,9 +44,8 @@ ORAL_PBK_RUN <- function(y, parms, times){ # Input for ode
       QR <- QC - (QA + QI + QK + QL)  # L/d, Rest
       
       QUr <- QUrc * BW              # L/d, Urine flow rate to the bladder 22 mL/kg BW/d [ICRP 89 page 161]
-      # GFR <- GFRc * QK              # L/d 18% of total renal plasma flow [ICRP 89 page 159] http://www.icrp.org/publication.asp?id=ICRP%20Publication%2089
       GFR <- GFR
-      QT <- QT                      # L/d, Proximal tubule fluid flow
+      QT <- QTc*GFR                      # L/d, Proximal tubule fluid flow
       
       tco <- tco                    # /d, Bowel residence times in the colon
       
@@ -60,13 +59,6 @@ ORAL_PBK_RUN <- function(y, parms, times){ # Input for ode
       PA <- PAc * fup     # Adipose
       PR <- PRc * fup     # Rest
       
-      # Fraction unionised
-      pH_P <- 7.4     # plasma
-      pH_IL <- 7      # intestinal Intestinal lumen, average
-      
-      f.union_p <- 1/(1 + 10^(pH_P - pKa))       # Plasma
-      f.union_exp <- 1/(1 + 10^(pH_P - pKa))     # Is the same as plasma as pH in the experiment is 7.4
-      f.union_IL <- 1/(1 + 10^(pH_IL - pKa))     # Intestinal lumen
       
       # Fraction unbound, calculated based on Poulin and Haddad, 2018 https://doi.org/10.1016/j.xphs.2018.03.012
       # Equation was adapted to not account for fraction unionised
@@ -74,12 +66,13 @@ ORAL_PBK_RUN <- function(y, parms, times){ # Input for ode
       fu_PTL <- R_PTL*fup/(1 + ((R_PTL-1)*fup)) # Proximal tubule lumen
       fu_Lic <- R_L_ec*fup/(1 + ((R_L_ec-1)*fup)) # Liver intracellular space
       
-      
       ### Kinetic ----
       
       # Gastro-intestinal uptake
-      Pint_SI <- Papp_SI/f.union_exp                       # cm/s, Intrinsic permeability, corrected for fraction unionised in the experiment
-      CL_IL <- (Pint_SI*SA_SI*f.union_IL*1e-3)*60*60*24    # L/d, Intestinal lumen to intestinal tissue (calculations: cm/s -> L/s /1000 -> L/d *60*60*24) 
+      CL_IL <- (Papp_SI*SA_SI*1e-3)*60*60*24    # L/d, Intestinal lumen to intestinal tissue (calculations: cm/s -> L/s /1000 -> L/d *60*60*24)
+      
+      VmaxOATP2B1 <- Vmax_OATP2B1c*MW*60*24*SF_OATP2B1*VIL # ug/d
+      Km_OATP2B1 <- Km_OATP2B1c*MW                         # ug/L (uM -> ug/L)
       
       # Liver uptake
       Vmax_OATP1B1 <- Vmax_OATP1B1c*MW*60*24*SF_OATP1B1*VL_ec             # ug/d
@@ -89,7 +82,7 @@ ORAL_PBK_RUN <- function(y, parms, times){ # Input for ode
       
       # Biliary excretion
       VmaxBSEP <- VmaxBSEPc*MW*60*24*SF_BSEP*VL_ic         # ug/d
-      KmBSEP <- KmBSEPc*MW                                 # ug/L (uM -> ug/L)
+      Km_BSEP <- Km_BSEPc*MW                                 # ug/L (uM -> ug/L)
       
       # Renal clearance
       Vmax_OAT4 = Vmax_OAT4c*MW*60*24*SF_OAT*VPT           # ug/d (umol -> ug, min -> d)
@@ -133,10 +126,12 @@ ORAL_PBK_RUN <- function(y, parms, times){ # Input for ode
       
       dOD = OralD - OD             # ug/d, Oral dose input 
       
-      dAIL <- + OD - tco*AIL - CL_IL*CIL + 
-        + (VmaxBSEP/(KmBSEP + (CL_ic*fu_Lic)))*CL_ic*fu_Lic          # ug/d, Intestine lumen
+      dAIL <- + OD - tco*AIL - CL_IL*CIL +
+        - (VmaxOATP2B1/(Km_OATP2B1 + CIL))*CIL +
+        + (VmaxBSEP/(Km_BSEP + (CL_ic*fu_Lic)))*CL_ic*fu_Lic          # ug/d, Intestine lumen
       
-      dAI <- QI*(CP - CVI) + CL_IL*CIL                      # ug/d, Intestinal
+      dAI <- QI*(CP - CVI) + CL_IL*CIL + 
+        + (VmaxOATP2B1/(Km_OATP2B1 + CIL))*CIL                     # ug/d, Intestinal
       
       dAFe <-  tco*AIL                                       # ug/d, Feces
       
@@ -147,7 +142,7 @@ ORAL_PBK_RUN <- function(y, parms, times){ # Input for ode
       
       dAL_ic <- (Vmax_OATP1B1/(Km_OATP1B1 + (CL_ec*fup)))*CL_ec*fup +
         + (Vmax_OATP1B3/(Km_OATP1B3 + (CL_ec*fup)))*CL_ec*fup +
-        - (VmaxBSEP/(KmBSEP + (CL_ic*fu_Lic)))*CL_ic*fu_Lic             # ug/d, Liver intracellular space
+        - (VmaxBSEP/(Km_BSEP + (CL_ic*fu_Lic)))*CL_ic*fu_Lic             # ug/d, Liver intracellular space
       
       
       dAPTT <- QK*(CP - CPTT) + 
@@ -275,9 +270,8 @@ DERMAL_PBK_RUN <- function(y, parms, times){ # Input for ode
       QR <- QC - (QA + QI + QK + QL + QSk)  # L/d, Rest
       
       QUr <- QUrc * BW              # L/d, Urine flow rate to the bladder 22 mL/kg BW/d [ICRP 89 page 161]
-      # GFR <- GFRc * QK              # L/d 18% of total renal plasma flow [ICRP 89 page 159] http://www.icrp.org/publication.asp?id=ICRP%20Publication%2089
       GFR <- GFR                    # L/d calculated based on age and creatinine levels
-      QT <- QT                      # L/d, Proximal tubule fluid flow
+      QT <- QTc*GFR                 # L/d, Proximal tubule fluid flow
       
       tco <- tco                    # /d, Bowel residence times in the colon
       
@@ -291,14 +285,6 @@ DERMAL_PBK_RUN <- function(y, parms, times){ # Input for ode
       PK <- PKc * fup    # Kidney
       PA <- PAc * fup    # Adipose
       PR <- PRc * fup    # Rest
-      
-      # Fraction unionised
-      pH_P <- 7.4     # plasma
-      pH_IL <- 7      # intestinal Intestinal lumen, average
-      
-      f.union_p <- 1/(1 + 10^(pH_P - pKa))       # Plasma
-      f.union_exp <- 1/(1 + 10^(pH_P - pKa))     # Is the same as plasma as pH in the experiment is 7.4
-      f.union_IL <- 1/(1 + 10^(pH_IL - pKa))      # Intestinal lumen
       
       # Fraction unbound, calculated based on Poulin and Haddad, 2018 https://doi.org/10.1016/j.xphs.2018.03.012
       # Equation was adapted to not account for fraction unionised
@@ -314,8 +300,10 @@ DERMAL_PBK_RUN <- function(y, parms, times){ # Input for ode
       CL_SkBtSk <- Papp_SkB*SA_SkB*1e-3*60*60*24           # L/d, Skin barrier to skin (calculations: cm/s -> L/s * 1e-3 -> L/d *60*60*24)
       
       # Gastro-intestinal uptake
-      Pint_SI <- Papp_SI/f.union_exp                       # cm/s, Intrinsic permeability, corrected for fraction unionised in the experiment
-      CL_IL <- (Pint_SI*SA_SI*f.union_IL*1e-3)*60*60*24    # L/d, Intestinal lumen to intestinal tissue (calculations: cm/s -> L/s /1000 -> L/d *60*60*24) 
+      CL_IL <- (Papp_SI*SA_SI*1e-3)*60*60*24    # L/d, Intestinal lumen to intestinal tissue (calculations: cm/s -> L/s /1000 -> L/d *60*60*24) 
+      
+      VmaxOATP2B1 <- Vmax_OATP2B1c*MW*60*24*SF_OATP2B1*VIL # ug/d
+      Km_OATP2B1 <- Km_OATP2B1c*MW                         # ug/L (uM -> ug/L)
       
       # Liver uptake
       Vmax_OATP1B1 <- Vmax_OATP1B1c*MW*60*24*SF_OATP1B1*VL_ec             # ug/d
@@ -325,7 +313,7 @@ DERMAL_PBK_RUN <- function(y, parms, times){ # Input for ode
       
       # Biliary excretion
       VmaxBSEP <- VmaxBSEPc*MW*60*24*SF_BSEP*VL_ic         # ug/d
-      KmBSEP <- KmBSEPc*MW                                 # ug/L (uM -> ug/L)
+      Km_BSEP <- Km_BSEPc*MW                                 # ug/L (uM -> ug/L)
       
       # Renal clearance
       Vmax_OAT4 = Vmax_OAT4c*MW*60*24*SF_OAT*VPT           # ug/d (umol -> ug, min -> d)
@@ -378,10 +366,13 @@ DERMAL_PBK_RUN <- function(y, parms, times){ # Input for ode
       dASk <- + CL_SkBtSk*CSkB + QSk*(CP-CVSk)                   # ug/d, Skin
       
       
-      dAIL <- - tco*AIL - CL_IL*CIL + 
-        + (VmaxBSEP/(KmBSEP + (CL_ic*fu_Lic)))*CL_ic*fu_Lic        # ug/d, Intestinal lumen
+      dAIL <- + OD - tco*AIL - CL_IL*CIL +
+        - (VmaxOATP2B1/(Km_OATP2B1 + CIL))*CIL +
+        + (VmaxBSEP/(Km_BSEP + (CL_ic*fu_Lic)))*CL_ic*fu_Lic          # ug/d, Intestine lumen
       
-      dAI <- QI*(CP - CVI) + CL_IL*CIL                      # ug/d, Intestine
+      dAI <- QI*(CP - CVI) + CL_IL*CIL + 
+        + (VmaxOATP2B1/(Km_OATP2B1 + CIL))*CIL                     # ug/d, Intestinal
+      
       
       dAFe <-  tco*AIL                                       # ug/d, Feces
       
@@ -392,7 +383,7 @@ DERMAL_PBK_RUN <- function(y, parms, times){ # Input for ode
       
       dAL_ic <- (Vmax_OATP1B1/(Km_OATP1B1 + (CL_ec*fup)))*CL_ec*fup +
         + (Vmax_OATP1B3/(Km_OATP1B3 + (CL_ec*fup)))*CL_ec*fup +
-        - (VmaxBSEP/(KmBSEP + (CL_ic*fu_Lic)))*CL_ic*fu_Lic                       # ug/d, Liver intracellular space
+        - (VmaxBSEP/(Km_BSEP + (CL_ic*fu_Lic)))*CL_ic*fu_Lic                       # ug/d, Liver intracellular space
       
       dAPTT <- QK*(CP - CPTT) + 
         + (Vmax_OAT4/(Km_OAT4+(CPTL*fu_PTL)))*CPTL*fu_PTL        # ug/d, Proximal tubule tissue 
@@ -525,9 +516,8 @@ ORAL_DERMAL_PBK_RUN <- function(y, parms, times){ # Input for ode
       QR <- QC - (QA + QI + QK + QL + QSk)  # L/d, Rest
       
       QUr <- QUrc * BW              # L/d, Urine flow rate to the bladder 22 mL/kg BW/d [ICRP 89 page 161]
-      # GFR <- GFRc * QK              # L/d 18% of total renal plasma flow [ICRP 89 page 159] http://www.icrp.org/publication.asp?id=ICRP%20Publication%2089
       GFR <- GFR
-      QT <- QT                      # L/d, Proximal tubule fluid flow
+      QT <- QTc*GFR                 # L/d, Proximal tubule fluid flow
       
       tco <- tco                    # /d, Bowel residence times in the colon
       
@@ -541,14 +531,6 @@ ORAL_DERMAL_PBK_RUN <- function(y, parms, times){ # Input for ode
       PK <- PKc * fup    # Kidney
       PA <- PAc * fup    # Adipose
       PR <- PRc * fup    # Rest
-      
-      # Fraction unionised
-      pH_P <- 7.4     # plasma
-      pH_IL <- 7      # intestinal Intestinal lumen, average
-      
-      f.union_p <- 1/(1 + 10^(pH_P - pKa))       # Plasma
-      f.union_exp <- 1/(1 + 10^(pH_P - pKa))     # Is the same as plasma as pH in the experiment is 7.4
-      f.union_IL <- 1/(1 + 10^(pH_IL - pKa))      # Intestinal lumen
       
       # Fraction unbound, calculated based on Poulin and Haddad, 2018 https://doi.org/10.1016/j.xphs.2018.03.012
       # Equation was adapted to not account for fraction unionised
@@ -564,8 +546,10 @@ ORAL_DERMAL_PBK_RUN <- function(y, parms, times){ # Input for ode
       CL_SkBtSk <- Papp_SkB*SA_SkB*1e-3*60*60*24           # L/d, Skin barrier to skin (calculations: cm/s -> L/s * 1e-3 -> L/d *60*60*24)
       
       # Gastro-intestinal uptake
-      Pint_SI <- Papp_SI/f.union_exp                       # cm/s, Intrinsic permeability, corrected for fraction unionised in the experiment
-      CL_IL <- (Pint_SI*SA_SI*f.union_IL*1e-3)*60*60*24    # L/d, Intestinal lumen to intestinal tissue (calculations: cm/s -> L/s /1000 -> L/d *60*60*24) 
+      CL_IL <- (Papp_SI*SA_SI*1e-3)*60*60*24    # L/d, Intestinal lumen to intestinal tissue (calculations: cm/s -> L/s /1000 -> L/d *60*60*24) 
+      
+      VmaxOATP2B1 <- Vmax_OATP2B1c*MW*60*24*SF_OATP2B1*VIL # ug/d
+      Km_OATP2B1 <- Km_OATP2B1c*MW                         # ug/L (uM -> ug/L)
       
       # Liver uptake
       Vmax_OATP1B1 <- Vmax_OATP1B1c*MW*60*24*SF_OATP1B1*VL_ec             # ug/d
@@ -575,7 +559,7 @@ ORAL_DERMAL_PBK_RUN <- function(y, parms, times){ # Input for ode
       
       # Biliary excretion
       VmaxBSEP <- VmaxBSEPc*MW*60*24*SF_BSEP*VL_ic         # ug/d
-      KmBSEP <- KmBSEPc*MW                                 # ug/L (uM -> ug/L)
+      Km_BSEP <- Km_BSEPc*MW                                 # ug/L (uM -> ug/L)
       
       # Renal clearance
       Vmax_OAT4 = Vmax_OAT4c*MW*60*24*SF_OAT*VPT           # ug/d (umol -> ug, min -> d)
@@ -634,10 +618,12 @@ ORAL_DERMAL_PBK_RUN <- function(y, parms, times){ # Input for ode
       dASk <- + CL_SkBtSk*CSkB + QSk*(CP-CVSk)                   # ug/d, Skin
       
       
-      dAIL <- + OD - tco*AIL - CL_IL*CIL + 
-        + (VmaxBSEP/(KmBSEP + (CL_ic*fu_Lic)))*CL_ic*fu_Lic          # ug/d, Intestine lumen
+      dAIL <- + OD - tco*AIL - CL_IL*CIL +
+        - (VmaxOATP2B1/(Km_OATP2B1 + CIL))*CIL +
+        + (VmaxBSEP/(Km_BSEP + (CL_ic*fu_Lic)))*CL_ic*fu_Lic          # ug/d, Intestine lumen
       
-      dAI <- QI*(CP - CVI) + CL_IL*CIL                      # ug/d, Intestine
+      dAI <- QI*(CP - CVI) + CL_IL*CIL + 
+        + (VmaxOATP2B1/(Km_OATP2B1 + CIL))*CIL                     # ug/d, Intestinal
       
       dAFe <-  tco*AIL                                       # ug/d, Feces
       
@@ -648,7 +634,7 @@ ORAL_DERMAL_PBK_RUN <- function(y, parms, times){ # Input for ode
       
       dAL_ic <- (Vmax_OATP1B1/(Km_OATP1B1 + (CL_ec*fup)))*CL_ec*fup +
         + (Vmax_OATP1B3/(Km_OATP1B3 + (CL_ec*fup)))*CL_ec*fup +
-        - (VmaxBSEP/(KmBSEP + (CL_ic*fu_Lic)))*CL_ic*fu_Lic                       # ug/d, Liver intracellular space
+        - (VmaxBSEP/(Km_BSEP + (CL_ic*fu_Lic)))*CL_ic*fu_Lic                       # ug/d, Liver intracellular space
       
       
       dAPTT <- QK*(CP - CPTT) + 
@@ -782,9 +768,8 @@ INHALATION_PBK_RUN <- function(y, parms, times){ # Input for ode
       QR <- QC - (QA + QI + QK + QL)        # L/d, Rest
       
       QUr <- QUrc * BW              # L/d, Urine flow rate to the bladder 22 mL/kg BW/d [ICRP 89 page 161]
-      # GFR <- GFRc * QK              # L/d 18% of total renal plasma flow [ICRP 89 page 159] http://www.icrp.org/publication.asp?id=ICRP%20Publication%2089
       GFR <- GFR
-      QT <- QT                      # L/d, Proximal tubule fluid flow
+      QT <- QTc*GFR                      # L/d, Proximal tubule fluid flow
       
       tco <- tco                    # /d, Bowel residence times in the colon
       
@@ -799,14 +784,6 @@ INHALATION_PBK_RUN <- function(y, parms, times){ # Input for ode
       PLu <- PLuc * fup   # Lungs
       PR <- PRc * fup     # Rest
       
-      # Fraction unionised
-      pH_P <- 7.4     # plasma
-      pH_IL <- 7      # intestinal Intestinal lumen, average
-      
-      f.union_p <- 1/(1 + 10^(pH_P - pKa))       # Plasma
-      f.union_exp <- 1/(1 + 10^(pH_P - pKa))     # Is the same as plasma as pH in the experiment is 7.4
-      f.union_IL <- 1/(1 + 10^(pH_IL - pKa))     # Intestinal lumen
-      
       # Fraction unbound, calculated based on Poulin and Haddad, 2018 https://doi.org/10.1016/j.xphs.2018.03.012
       # Equation was adapted to not account for fraction unionised
       # OAT and OATP transporters transport the ionised compound, given that the ratio of fraction ionised at plasma to cellular pH is 1, this can be ignored (fraction unionised of PFOA is 0.9999923 at pH 7.4 and 0.9999963 at pH 7)
@@ -817,8 +794,10 @@ INHALATION_PBK_RUN <- function(y, parms, times){ # Input for ode
       ### Kinetic ----
       
       # Gastro-intestinal uptake
-      Pint_SI <- Papp_SI/f.union_exp                       # cm/s, Intrinsic permeability, corrected for fraction unionised in the experiment
-      CL_IL <- (Pint_SI*SA_SI*f.union_IL*1e-3)*60*60*24    # L/d, Intestinal lumen to intestinal tissue (calculations: cm/s -> L/s /1000 -> L/d *60*60*24) 
+      CL_IL <- (Papp_SI*SA_SI*1e-3)*60*60*24    # L/d, Intestinal lumen to intestinal tissue (calculations: cm/s -> L/s /1000 -> L/d *60*60*24) 
+      
+      VmaxOATP2B1 <- Vmax_OATP2B1c*MW*60*24*SF_OATP2B1*VIL # ug/d
+      Km_OATP2B1 <- Km_OATP2B1c*MW                         # ug/L (uM -> ug/L)
       
       # Liver uptake
       Vmax_OATP1B1 <- Vmax_OATP1B1c*MW*60*24*SF_OATP1B1*VL_ec             # ug/d
@@ -828,7 +807,7 @@ INHALATION_PBK_RUN <- function(y, parms, times){ # Input for ode
       
       # Biliary excretion
       VmaxBSEP <- VmaxBSEPc*MW*60*24*SF_BSEP*VL_ic         # ug/d
-      KmBSEP <- KmBSEPc*MW                                 # ug/L (uM -> ug/L)
+      Km_BSEP <- Km_BSEPc*MW                                 # ug/L (uM -> ug/L)
       
       # Renal clearance
       Vmax_OAT4 = Vmax_OAT4c*MW*60*24*SF_OAT*VPT           # ug/d (umol -> ug, min -> d)
@@ -879,10 +858,13 @@ INHALATION_PBK_RUN <- function(y, parms, times){ # Input for ode
       dALu <- LuD + QC*(CVP - CVLu)                            # ug/d, Lungs
       
       
-      dAIL <- - tco*AIL - CL_IL*CIL + 
-        + (VmaxBSEP/(KmBSEP + (CL_ic*fu_Lic)))*CL_ic*fu_Lic          # ug/d, Intestine lumen
+      dAIL <- + OD - tco*AIL - CL_IL*CIL +
+        - (VmaxOATP2B1/(Km_OATP2B1 + CIL))*CIL +
+        + (VmaxBSEP/(Km_BSEP + (CL_ic*fu_Lic)))*CL_ic*fu_Lic          # ug/d, Intestine lumen
       
-      dAI <- QI*(CAP - CVI) + CL_IL*CIL                      # ug/d, Intestinal
+      dAI <- QI*(CP - CVI) + CL_IL*CIL + 
+        + (VmaxOATP2B1/(Km_OATP2B1 + CIL))*CIL                     # ug/d, Intestinal
+      
       
       dAFe <-  tco*AIL                                       # ug/d, Feces
       
@@ -893,7 +875,7 @@ INHALATION_PBK_RUN <- function(y, parms, times){ # Input for ode
       
       dAL_ic <- (Vmax_OATP1B1/(Km_OATP1B1 + (CL_ec*fup)))*CL_ec*fup +
         + (Vmax_OATP1B3/(Km_OATP1B3 + (CL_ec*fup)))*CL_ec*fup +
-        - (VmaxBSEP/(KmBSEP + (CL_ic*fu_Lic)))*CL_ic*fu_Lic             # ug/d, Liver intracellular space
+        - (VmaxBSEP/(Km_BSEP + (CL_ic*fu_Lic)))*CL_ic*fu_Lic             # ug/d, Liver intracellular space
       
       
       dAPTT <- QK*(CAP - CPTT) + 
