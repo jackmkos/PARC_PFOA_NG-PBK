@@ -53,12 +53,14 @@ ORAL_PBK_RUN <- function(y, parms, times){ # Input for ode
       ### Physicochemical ----
       MW <- 414.07
       
+      # Fraction unbound in plasma
+      fup <- fup #0.061/100 #
+      
       PI <- PIc * fup     # Intestinal
       PL <- PLc * fup     # Liver
       PK <- PKc * fup     # Kidney
       PA <- PAc * fup     # Adipose
       PR <- PRc * fup     # Rest
-      
       
       # Fraction unbound, calculated based on Poulin and Haddad, 2018 https://doi.org/10.1016/j.xphs.2018.03.012
       # Equation was adapted to not account for fraction unionised
@@ -88,6 +90,8 @@ ORAL_PBK_RUN <- function(y, parms, times){ # Input for ode
       Vmax_OAT4 = Vmax_OAT4c*MW*60*24*SF_OAT*VPT           # ug/d (umol -> ug, min -> d)
       Km_OAT4 = Km_OAT4c*MW                                # ug/L (uM -> ug/L)
       
+      # Clearance via menstruation
+      CL_menses = CL_menses     # L/d, plasma menstrual loss
       
       ## Dose -------------------------
       
@@ -164,7 +168,10 @@ ORAL_PBK_RUN <- function(y, parms, times){ # Input for ode
       dAR <- QR*(CP-CVR)                                      # ug/d, Rest
       
       dAP <- - (QI + QL + QA + QR + QK)*CP - fup*GFR*CP +     # ug/d, Arterial Plasma
-        + (QL+QI)*CVL_ec + QK*CVRKT + QA*CVA + QR*CVR    # ug/d, Venous Plasma
+        + (QL+QI)*CVL_ec + QK*CVRKT + QA*CVA + QR*CVR +
+        - CL_menses*CP # ug/d, Venous Plasma
+      
+      dAMp <- + CL_menses*CP
       
       # Mass Balance
       Atot <- OD +
@@ -173,7 +180,8 @@ ORAL_PBK_RUN <- function(y, parms, times){ # Input for ode
         APTT + APTL + ARKT + ARKL + AUr +
         AA + 
         AR +
-        AP
+        AP +
+        AMp
       
       dAin <- OralD # to be used if repeated exposure
       MB <- Ain - Atot + 1    # to be used if repeated exposure
@@ -194,7 +202,8 @@ ORAL_PBK_RUN <- function(y, parms, times){ # Input for ode
              dAUr,
              dAA,
              dAR, 
-             dAP, 
+             dAP,
+             dAMp,
              dAin
       ), 
       c(CIL = CIL,
@@ -279,6 +288,9 @@ DERMAL_PBK_RUN <- function(y, parms, times){ # Input for ode
       ### Physicochemical ----
       MW <- 414.07
       
+      # Fraction unbound in plasma
+      fup <- fup # 0.061/100 #
+      
       PSk <- PSkc * fup  # Skin
       PI <- PIc * fup    # Intestinal
       PL <- PLc * fup    # Liver
@@ -318,6 +330,9 @@ DERMAL_PBK_RUN <- function(y, parms, times){ # Input for ode
       # Renal clearance
       Vmax_OAT4 = Vmax_OAT4c*MW*60*24*SF_OAT*VPT           # ug/d (umol -> ug, min -> d)
       Km_OAT4 = Km_OAT4c*MW                                # ug/L, scaled from uM, Louisse et al. 2024 doi.org/10.1016/j.tox.2024.153961
+      
+      # Clearance via menstruation
+      CL_menses = CL_menses     # L/d, plasma menstrual loss
       
       
       ## Dose -------------------------
@@ -404,7 +419,11 @@ DERMAL_PBK_RUN <- function(y, parms, times){ # Input for ode
       dAR <- QR*(CP-CVR)                                      # ug/d, Rest
       
       dAP <- - (QSk + QI + QL + QA + QR + QK)*CP - fup*GFR*CP +     # ug/d, Arterial Plasma
-        + (QL+QI)*CVL_ec + QSk*CVSk + QK*CVRKT + QA*CVA + QR*CVR    # ug/d, Venous Plasma
+        + (QL+QI)*CVL_ec + QSk*CVSk + QK*CVRKT + QA*CVA + QR*CVR +   # ug/d, Venous Plasma
+      - CL_menses*CP # ug/d, Venous Plasma
+      
+      dAMp <- + CL_menses*CP
+      
       
       # Mass Balance
       Atot <- DD + 
@@ -414,7 +433,8 @@ DERMAL_PBK_RUN <- function(y, parms, times){ # Input for ode
         APTT + APTL + ARKT + ARKL + AUr +
         AA + 
         AR +
-        AP  
+        AP +
+        AMp
       
       dAin <- DermalD # to be used if repeated exposure
       MB <- Ain - Atot + 1    # to be used if repeated exposure
@@ -438,6 +458,7 @@ DERMAL_PBK_RUN <- function(y, parms, times){ # Input for ode
              dAA,
              dAR, 
              dAP, 
+             dAMp,
              dAin
       ), 
       c(CSkB = CSkB, 
@@ -468,6 +489,8 @@ DERMAL_PBK_RUN <- function(y, parms, times){ # Input for ode
   
   return(as.data.frame(output_PBK))
 }
+
+
 
 
 # ORAL & DERMAL ####
@@ -525,6 +548,9 @@ ORAL_DERMAL_PBK_RUN <- function(y, parms, times){ # Input for ode
       ### Physicochemical ----
       MW <- 414.07
       
+      # Fraction unbound in plasma
+      fup <- fup #0.061/100 #
+      
       PSk <- PSkc * fup  # Skin
       PI <- PIc * fup    # Intestinal
       PL <- PLc * fup    # Liver
@@ -565,6 +591,8 @@ ORAL_DERMAL_PBK_RUN <- function(y, parms, times){ # Input for ode
       Vmax_OAT4 = Vmax_OAT4c*MW*60*24*SF_OAT*VPT           # ug/d (umol -> ug, min -> d)
       Km_OAT4 = Km_OAT4c*MW                                # ug/L, scaled from uM, Louisse et al. 2024 doi.org/10.1016/j.tox.2024.153961
       
+      # Clearance via menstruation
+      CL_menses = CL_menses     # L/d, plasma menstrual loss
       
       ## Dose -------------------------
       
@@ -656,7 +684,10 @@ ORAL_DERMAL_PBK_RUN <- function(y, parms, times){ # Input for ode
       dAR <- QR*(CP-CVR)                                      # ug/d, Rest
       
       dAP <- - (QSk + QI + QL + QA + QR + QK)*CP - fup*GFR*CP +     # ug/d, Arterial Plasma
-        + (QL+QI)*CVL_ec + QSk*CVSk + QK*CVRKT + QA*CVA + QR*CVR    # ug/d, Venous Plasma
+        + (QL+QI)*CVL_ec + QSk*CVSk + QK*CVRKT + QA*CVA + QR*CVR +    # ug/d, Venous Plasma
+      - CL_menses*CP # ug/d, Venous Plasma
+      
+      dAMp <- + CL_menses*CP
       
       # Mass Balance
       Atot <- OD + DD + 
@@ -666,6 +697,7 @@ ORAL_DERMAL_PBK_RUN <- function(y, parms, times){ # Input for ode
         APTT + APTL + ARKT + ARKL + AUr +
         AA + 
         AR +
+        AMp +
         AP  
       
       dAin <- OralD + DermalD # to be used if repeated exposure
@@ -689,6 +721,7 @@ ORAL_DERMAL_PBK_RUN <- function(y, parms, times){ # Input for ode
              dAA,
              dAR, 
              dAP, 
+             dAMp,
              dAin
       ), 
       c(CSkB = CSkB, 
@@ -777,6 +810,9 @@ INHALATION_PBK_RUN <- function(y, parms, times){ # Input for ode
       ### Physicochemical ----
       MW <- 414.07
       
+      # Fraction unbound in plasma
+      fup <- fup # 0.061/100 #
+      
       PI <- PIc * fup     # Intestinal
       PL <- PLc * fup     # Liver
       PK <- PKc * fup     # Kidney
@@ -812,6 +848,9 @@ INHALATION_PBK_RUN <- function(y, parms, times){ # Input for ode
       # Renal clearance
       Vmax_OAT4 = Vmax_OAT4c*MW*60*24*SF_OAT*VPT           # ug/d (umol -> ug, min -> d)
       Km_OAT4 = Km_OAT4c*MW                                # ug/L (uM -> ug/L)
+      
+      # Clearance via menstruation
+      CL_menses = CL_menses     # L/d, plasma menstrual loss
       
       
       ## Dose -------------------------
@@ -898,8 +937,10 @@ INHALATION_PBK_RUN <- function(y, parms, times){ # Input for ode
       
       
       dAAP <- - (QI + QL + QA + QR + QK)*CAP + QC*CVLu - fup*GFR*CAP    #+ QSt       # ug/d, Arterial Plasma
-      dAVP <- (QL+QI)*CVL_ec + QK*CVRKT + QA*CVA + QR*CVR - QC*CVP      # ug/d, Venous Plasma
+      dAVP <- (QL+QI)*CVL_ec + QK*CVRKT + QA*CVA + QR*CVR - QC*CVP +      # ug/d, Venous Plasma
+        - CL_menses*CP # ug/d, Venous Plasma
       
+      dAMp <- + CL_menses*CP
       
       # Mass Balance
       Atot <- LuD +
@@ -909,7 +950,8 @@ INHALATION_PBK_RUN <- function(y, parms, times){ # Input for ode
         APTT + APTL + ARKT + ARKL + AUr +
         AA + 
         AR +
-        AAP + AVP
+        AAP + AVP +
+        AMp
       
       dAin <- LungD 
       MB <- Ain - Atot + 1    
@@ -933,6 +975,7 @@ INHALATION_PBK_RUN <- function(y, parms, times){ # Input for ode
              dAR, 
              dAAP,
              dAVP,
+             dAMp,
              dAin
       ), 
       c(CLu = CLu,

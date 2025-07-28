@@ -22,6 +22,53 @@ BASE_PARAMS <- function(expAGE = NULL, expBW = NULL, sex = NULL) {
   if (is.na(sex)) {
     sex <- "M"  # Default sex is male...
   }
+  # 25ml plasma per cycle (29.2 days per cycle until; 12.5 cycles per year ); Ruark
+  
+  # Menstruation, reference Ruark et al 2016 http://dx.doi.org/10.1016/j.envint.2016.11.030
+  if (sex == "F" && expAGE >= 12 && expAGE < 45){  
+    CL_menses <-  25e-3/29.2 # L/day
+  } else if (sex == "F" && expAGE >= 45 && expAGE <= 51){
+    CL_menses <- 27.1e-3/35.1 # L/day
+  } else {
+    CL_menses <- 0 # L/day
+  }
+  
+  # Serum albumin (g_HSA /L_serum, or mg/ml); Weaving et al 2016; DOI: 10.1177/0004563215593561
+  if (expAGE <= 5) {
+    SAlb <- 43  
+  } else if (expAGE <= 15 && sex == "M") {
+    SAlb <- 44
+  } else if (expAGE <= 25 && sex == "M") {
+    SAlb <- 46
+  } else if (expAGE <= 35 && sex == "M") {  
+    SAlb <- 45
+  } else if (expAGE <= 50 && sex == "M") {
+    SAlb <- 44
+  } else if (expAGE <= 60 && sex == "M") {
+    SAlb <- 43
+  } else if (expAGE <= 75 && sex == "M") {
+    SAlb <- 42
+  } else if (expAGE <= 80 && sex == "M") {
+    SAlb <- 41
+  } else if (expAGE <= 90 && sex == "M") {
+    SAlb <- 40
+  } else if (expAGE <= 10 && sex == "F") {
+    SAlb <- 45
+  } else if (expAGE <= 20 && sex == "F") {
+    SAlb <- 44
+  } else if (expAGE <= 40 && sex == "F") {
+    SAlb <- 43
+  } else if (expAGE <= 75 && sex == "F") {
+    SAlb <- 42
+  } else if (expAGE <= 85 && sex == "F") {
+    SAlb <- 41
+  } else if (expAGE <= 90 && sex == "F") {
+    SAlb <- 40
+  } else if (expAGE <= 94) { 
+    SAlb <- 39
+  } else { 
+    SAlb <- 38
+  } 
   
   ## Input
   Physio_params <- Physio.c
@@ -138,32 +185,26 @@ BASE_PARAMS <- function(expAGE = NULL, expBW = NULL, sex = NULL) {
   pH_IL <- 7      # intestinal lumen, average
   
   ### Albumin concentrations in different matrices -------------------------
-  
+
   # From Akihiro Tojo and Satoshi Kinugasa 2012 doi:10.1155/2012/481520
   # In the same paper: the proximal tubule reabsorbes 71% of albumin, while LoH and DT 23% and the collecting duct 3%
-  Calb_P <- 37.0      # mg/ml plasma
-  Calb_PTL <- 14.4e-3 # mg/ml proximal tubule 
-  Calb_IL <- 0.007    # mg/ml intestinal lumen
-  
+  Calb_P <- SAlb      # g/L plasma (see above for values)
+  Calb_PTL <- 14.4e-3 # g/L proximal tubule 
+  Calb_IL <- 0.007e-3    # g/L intestinal lumen
+  Calb_L_ec <- 0.0012e-3 # g/L Liver extracellular 
+
   # Based on the Poulin and Theil 2009, below Table 6
   # Albumin ratio
   R_PTL <- Calb_P/Calb_PTL # plasma to proximal tubule lumen albumin ratio
-  R_L_ec <- 1/0.086 # plasma to liver albumin ratio, Utsey et al. 2020 https://doi.org/10.1124/dmd.120.090498, https://github.com/metrumresearchgroup/PBPK_PC/blob/master/data/unified_tissue_comp.csv
+  R_L_ec <- Calb_P/Calb_L_ec # plasma to liver albumin ratio
   R_IL <- Calb_P/Calb_IL # plasma to intestinal lumen albumin ratio
   
   ## Chemical Specific ####
   
-  MW <- 414.07                  # PFOA molecular weight g/mol 
-  fup <- 0.061/100              # fraction unbound in plasma, unitless Fischer et al. 2024 https://doi.org/10.1021/acs.est.3c07415
-
-  
-  ### Partition coefficients -------------------------
-  
-  # Code for calculating the partition coefficients is a slidely modified version from Utsey et al. 2020 https://github.com/metrumresearchgroup/PBPK_PC/blob/master/script/CalcKp_Schmitt.R
-  
+  # Distribution coefficients to different matrices 
   logML <- 3.52  # 3.52 ± 0.08 from Ebert A., Allendorf F. et al (2020), https://dx.doi.org/10.1021/acs.est.0c00175  (Liposomes composed of POPC (1-palmitoyl-2-oleoyl-glycero-3-phosphocholine))
   logSP <- 1.61  # 1.61 ± 0.15 from Allendorf, F., Goss, K.-U. and Ulrich, N. (2021), https://doi.org/10.1002/etc.4954  (Structural proteins from chicken breast fillet (actin & myosin 60-95%), Recovery 95%)
-  logALB <- 4.33 # 4.33 ± 0.05 from Allendorf, F., Goss, K.-U. and Ulrich, N. (2021), https://doi.org/10.1002/etc.4954 (BSA (fatty acid free) Molar ratio compound to BSA < 0.1 72-96h, Recovery 94%))
+  logALB <- 4.48 # Fischer et al 2024 logALB <- 4.48±0.04 https://pubs.acs.org/doi/pdf/10.1021/acs.est.3c07415?ref=article_openPDF; 4.33 # 4.33 ± 0.05 from Allendorf, F., Goss, K.-U. and Ulrich, N. (2021), https://doi.org/10.1002/etc.4954 (BSA (fatty acid free) Molar ratio compound to BSA < 0.1 72-96h, Recovery 94%))
   logSL <- -1.37 # -1.37 ± 0.01 from Allendorf, F., Goss, K.-U. and Ulrich, N. (2021), https://doi.org/10.1002/etc.4954 (Olive oil with a high fraction of unsaturated fatty acids, Recovery 95%)
   logFABP <- 4.3 # calculated by Allendorf, F., Goss, K.-U. and Ulrich, N. (2021), https://doi.org/10.1002/etc.4954
   
@@ -173,6 +214,26 @@ BASE_PARAMS <- function(expAGE = NULL, expBW = NULL, sex = NULL) {
   k_SL <- 10^logSL       # structural lipids:water partition coefficient
   k_FABP <- 10^logFABP   # fatty acid-binding protein:water partition coefficient
   
+  
+  ### Fraction unbound in plasma -------------------------
+  # Equation for calculating fraction unbound in plasma was taken from https://doi.org/10.1021/acs.est.3c07415
+  
+  DAlb <- 1.36 #kg/L density of albumin
+  D_ALB <- k_ALB*DAlb # L_w/L_hsa; distribution coefficient
+  FV_Alb <- SAlb*10^-3 # kg/kg of albumin in serum
+
+  DGlob <- 1.20 #kg/L density of globulin
+  k_GLOB <- 10^2.16 # Lw/Kg_globulin; globulin/water partition coefficient 
+  D_Glob <- 10^2.16*DGlob # L_w/L_hsa; distribution coefficient
+  FV_Glob <- 0.031 # kg/kg of globulin in serum
+  
+  FV_W <- 1 - FV_Alb - FV_Glob # serum mass balance
+  
+  fup <- 1/(1 + (D_ALB*(FV_Alb/FV_W)) + (D_Glob*(FV_Glob/FV_W)))
+  
+  ### Partition coefficients -------------------------
+  # Code for calculating the partition coefficients is a slightly modified version from Utsey et al. 2020 https://github.com/metrumresearchgroup/PBPK_PC/blob/master/script/CalcKp_Schmitt.R
+
   Physio.data <- Tissue.c %>% 
     filter(Species == "Human") %>%
     filter(!Tissue %in% c("Comment", "NamingInUtsey")) %>%
@@ -218,15 +279,11 @@ BASE_PARAMS <- function(expAGE = NULL, expBW = NULL, sex = NULL) {
                  Physio_params[[paste0("V_boneFraction", suffix)]])  
   Kp.df$KpRe <- KpRe
   
-  
-  # Correcting for fraction unbound (as it was not incorporated in the input calculating file)
   PIc <- Kp.df$KpIn   # Intestine
   PLc <- Kp.df$KpLi   # Liver
   PKc <- Kp.df$KpKi   # Kidney
   PAc <- Kp.df$KpAd   # Adipose
   PRc <- Kp.df$KpRe   # Rest
-  
-  
   
   ### Uptake from the gastro-intestinal duct -------------------------
   
@@ -334,7 +391,8 @@ BASE_PARAMS <- function(expAGE = NULL, expBW = NULL, sex = NULL) {
    SF_BSEP = SF_BSEP,
    Vmax_OAT4c = Vmax_OAT4c,
    Km_OAT4c = Km_OAT4c,
-   SF_OAT = SF_OAT
+   SF_OAT = SF_OAT,
+   CL_menses = CL_menses
   )
   
   return(parm.c)

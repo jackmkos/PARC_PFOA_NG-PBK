@@ -45,9 +45,7 @@
   Population = "Yes" 
   
   # Choose study from input file, or ID_range
-  Test_study = "Arvidsjaur" #Arvidsjaur, EFSA, EffectOfLifestageEq
-  # ID_range = c(201:300)
-  
+  Test_study = "Test" #Arvidsjaur, EFSA, EffectOfLifestageEq, Olsen, dummy
   
   # Load files
   Physio.c <- read_csv(here("Input", "PhysioVariables.csv"))
@@ -89,22 +87,22 @@
     # Exposure-relevant information
     # Current input is that of the Abraham study; Abraham et al. 2024 https://doi.org/10.1016/j.envint.2024.109047 
     exposure_type = exposure_type # type of exposure
-    exp_Oral = 0.0129 #0.0418 # ug/kg/day, (for Abraham: 3.96/BW of 82Kg),to be used only when both oral and dermal are used
+    exp_Oral = 0.00019#0.0418 # ug/kg/day, (for Abraham: 3.96/BW of 82Kg),to be used only when both oral and dermal are used
     exp_Dermal = 0 # ug/kg/day, to be used only when both oral and dermal are used
     exp = exp_Oral + exp_Dermal # ug/kg/day 
     Tinput = 1 # for repeated exposure or so default = 1
     tinterval = 1 # for repeated exposure or so default = 1
-    expSTOP = 1 # time in days after which the exposure stopped
+    expSTOP = 50*365 #7300 #50*365 # time in days after which the exposure stopped
     
     # Subject-relevant information
-    expAGE = 30 #67 # years, old age at exposure if not provided then age argument is not used physiology is based on BW
-    expBW = NA #82 # kg, if not provided then the BW of the corresponding age and sex is taken; if both BW and Age are not given then a default BW = 70 is taken; if BW is higher than the BW from the lifestage equations then the actual BW overwrites the calculated one
-    sex = "M" # sex either "F" or "M" if none then default is "M"
+    expAGE = 0 #65  # years, old age at exposure if not provided then age argument is not used physiology is based on BW
+    expBW = NA # 82 # kg, if not provided then the BW of the corresponding age and sex is taken; if both BW and Age are not given then a default BW = 70 is taken; if BW is higher than the BW from the lifestage equations then the actual BW overwrites the calculated one
+    sex = "F" # sex either "F" or "M" if none then default is "M"
     
     # Simulation relevant information
     Tstart = 0 # days, start of the simulation
-    Tstop = 8*365 #450 # days, stop of the simulation
-    Dt = 1 #/100 # days, iteration steps (decrease/increase depending on run time)
+    Tstop = 80*357 #5*357 # days, stop of the simulation
+    Dt = 10 #1/10000 # days, iteration steps (decrease/increase depending on run time)
     
     
     RawData <- list(
@@ -358,14 +356,14 @@
 
   
   # Create Report ----
-  quarto_render(input = (here("PBK_Results_Report.qmd")),
-                output_format = "pdf",
-                # output_file = (here(OUTPUT, "PBK_Results_Report.html")),
-                execute_params = list(Lifestage = Lifestage,
-                                      Population = Population,
-                                      Test_study = Test_study)
-  )
-  
+  # quarto_render(input = (here("PBK_Results_Report.qmd")),
+  #               output_format = "pdf",
+  #               # output_file = (here(OUTPUT, "PBK_Results_Report.html")),
+  #               execute_params = list(Lifestage = Lifestage,
+  #                                     Population = Population,
+  #                                     Test_study = Test_study)
+  # )
+  # 
   quarto_render(input = (here("PBK_Results_Report.qmd")),
                 output_format = "html",
                 # output_file = (here(OUTPUT, "PBK_Results_Report.html")),
@@ -373,6 +371,6 @@
                                       Population = Population,
                                       Test_study = Test_study)
   )
-  browseURL(here("PBK_Results_Report.html"))  
-  
-  
+  browseURL(here("PBK_Results_Report.html"))
+  # 
+  # 

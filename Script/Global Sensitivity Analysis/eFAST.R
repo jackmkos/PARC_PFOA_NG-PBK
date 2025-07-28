@@ -299,35 +299,10 @@
   
   # Parameter upper and lower bounds
 
-  Parameters <- read_excel(here("Input/Parameters.GSA.xlsx")) 
+  Parameters <- read_excel(here("Output/efast1000/Parameters.eFAST.F.xlsx")) #"Input/Parameters.GSA.xlsx" 
   
-  P <- Parameters %>% select(Abbreviation, Distribution, Initial_value, Binf, Bsup, Mean, sdlog, zscore) %>%
-    filter(Abbreviation %in% c("expOral",
-                               "fup", 
-                               "SF_OAT", 
-                               "R_PTL", 
-                               "Km_OAT4c", 
-                               "QT",
-                               "BW",
-                               "QC",
-                               "SF_OATP1B1",
-                               "KmBSEPc",
-                               "GFRc",
-                               "Vmax_OAT4c",
-                               "SF_BSEP",
-                               "Km_OATP1B1c",
-                               "VKc",
-                               "QKc",
-                               "VILc",
-                               "VPTc",
-                               "VmaxBSEPc",
-                               "PLc",
-                               "Vmax_OATP1B1c",
-                               "VL_icc",
-                               "Hct",
-                               "SF_OATP1B3",
-                               "R_L_ec")) # "SA_SI", "QKc", "SF_OATP1B1", "Vmax_OAT4c", "Km_OATP1B1c", "tco", "Papp_SI", "VPc", "VKc", "VPTc", "Hct", "PAc", "Vmax_OATP1B1c", "Km_OATP1B3c"))
-
+  P <- Parameters %>% select(Abbreviation, Distribution, Initial_value, Binf, Bsup, sdlog, zscore) 
+  
   parm.c <- as.list(setNames(Parameters$Initial_value, Parameters$Abbreviation))
 
   # SET eFAST EXPERIMENT DESIGN ####
@@ -391,21 +366,15 @@
   # CALCULATE eFAST INDICES ####
   # ---------------------------------------------------------------------------- #
   
+  #All outputs
   sim.results.eFAST <- as.matrix(y)
   
   for (i in (1:length(sim.results.eFAST[,1])))
   {
     tell(Experience, sim.results.eFAST[i,])
   }
-  # AUC <- results["AUC",]
-  # CP <- results[1:11,]
-  # Experience$y <- CP
-  # tell(Experience)
-  # plot(Experience)
-  # 
-  plot(Experience)
   
-  plot(Experience)  
+  plot(Experience)
   
   Variance <- Experience$V # Total variance
   names(Variance) <- GSA.parms
@@ -433,30 +402,180 @@
   
   write.csv(lowry_data, file = here("eFASTresults.csv"), row.names = FALSE)
   
-  lowry_data <- read.csv(here("eFASTresults.csv"))
+  # CP
+  CP.sim.results.eFAST <- sim.results.eFAST[str_detect(rownames(sim.results.eFAST), "CP") &
+                                              !str_detect(rownames(sim.results.eFAST), "TT"), ]
+  
+  for (i in (1:length(CP.sim.results.eFAST[,1])))
+  {
+    tell(Experience, CP.sim.results.eFAST[i,])
+  }
+  
+  plot(Experience)
+  
+  Variance <- Experience$V # Total variance
+  names(Variance) <- GSA.parms
+  
+  Done <- Experience$D1
+  names(Done) <- GSA.parms
+  
+  Dt <- Experience$Dt
+  names(Dt) <- GSA.parms
+  
+  first_order <- Done / Variance  # D1 is the estimated Variance of the Conditional Expectation (VCE) with respect to each factor, normalized by total variance
+  names(first_order) <- GSA.parms
+  
+  total_order <- Dt / Experience$V  # Dt is the estimated VCE with respect to each factor complementary set of factors ("all but Xi"), normalized by total variance
+  names(total_order) <- GSA.parms
+  
+  lowry_data <- data.frame(
+    Parameter = GSA.parms,
+    Main.Effect = first_order,
+    Interaction = total_order) %>% 
+    mutate(
+      Main.Effect = Main.Effect/sum(Main.Effect), # to normalise
+      Interaction = Interaction/sum(Interaction)  # to normalise
+    ) 
+  
+  write.csv(lowry_data, file = here("CP.eFASTresults.csv"), row.names = FALSE)
+  
+  #CPTT
+  CPTT.sim.results.eFAST <- sim.results.eFAST[str_detect(rownames(sim.results.eFAST), "CPTT"), ]
+  
+  for (i in (1:length(CPTT.sim.results.eFAST[,1])))
+  {
+    tell(Experience, CPTT.sim.results.eFAST[i,])
+  }
+  
+  plot(Experience)
+  
+  Variance <- Experience$V # Total variance
+  names(Variance) <- GSA.parms
+  
+  Done <- Experience$D1
+  names(Done) <- GSA.parms
+  
+  Dt <- Experience$Dt
+  names(Dt) <- GSA.parms
+  
+  first_order <- Done / Variance  # D1 is the estimated Variance of the Conditional Expectation (VCE) with respect to each factor, normalized by total variance
+  names(first_order) <- GSA.parms
+  
+  total_order <- Dt / Experience$V  # Dt is the estimated VCE with respect to each factor complementary set of factors ("all but Xi"), normalized by total variance
+  names(total_order) <- GSA.parms
+  
+  lowry_data <- data.frame(
+    Parameter = GSA.parms,
+    Main.Effect = first_order,
+    Interaction = total_order) %>% 
+    mutate(
+      Main.Effect = Main.Effect/sum(Main.Effect), # to normalise
+      Interaction = Interaction/sum(Interaction)  # to normalise
+    ) 
+  
+  write.csv(lowry_data, file = here("CPTT.eFASTresults.csv"), row.names = FALSE)
+  
+  #CPTL
+  CPTL.sim.results.eFAST <- sim.results.eFAST[str_detect(rownames(sim.results.eFAST), "CPTL"), ]
+  
+  for (i in (1:length(CPTL.sim.results.eFAST[,1])))
+  {
+    tell(Experience, CPTL.sim.results.eFAST[i,])
+  }
+  
+  plot(Experience)
+  
+  Variance <- Experience$V # Total variance
+  names(Variance) <- GSA.parms
+  
+  Done <- Experience$D1
+  names(Done) <- GSA.parms
+  
+  Dt <- Experience$Dt
+  names(Dt) <- GSA.parms
+  
+  first_order <- Done / Variance  # D1 is the estimated Variance of the Conditional Expectation (VCE) with respect to each factor, normalized by total variance
+  names(first_order) <- GSA.parms
+  
+  total_order <- Dt / Experience$V  # Dt is the estimated VCE with respect to each factor complementary set of factors ("all but Xi"), normalized by total variance
+  names(total_order) <- GSA.parms
+  
+  lowry_data <- data.frame(
+    Parameter = GSA.parms,
+    Main.Effect = first_order,
+    Interaction = total_order) %>% 
+    mutate(
+      Main.Effect = Main.Effect/sum(Main.Effect), # to normalise
+      Interaction = Interaction/sum(Interaction)  # to normalise
+    ) 
+  
+  write.csv(lowry_data, file = here("CPTL.eFASTresults.csv"), row.names = FALSE)
+  
+  #CL_ic
+  CL_ic.sim.results.eFAST <- sim.results.eFAST[str_detect(rownames(sim.results.eFAST), "CL_ic"), ]
+
+  for (i in (1:length(CL_ic.sim.results.eFAST[,1])))
+  {
+    tell(Experience, CL_ic.sim.results.eFAST[i,])
+  }
+  
+  plot(Experience)
+  
+  Variance <- Experience$V # Total variance
+  names(Variance) <- GSA.parms
+  
+  Done <- Experience$D1
+  names(Done) <- GSA.parms
+  
+  Dt <- Experience$Dt
+  names(Dt) <- GSA.parms
+  
+  first_order <- Done / Variance  # D1 is the estimated Variance of the Conditional Expectation (VCE) with respect to each factor, normalized by total variance
+  names(first_order) <- GSA.parms
+  
+  total_order <- Dt / Experience$V  # Dt is the estimated VCE with respect to each factor complementary set of factors ("all but Xi"), normalized by total variance
+  names(total_order) <- GSA.parms
+  
+  lowry_data <- data.frame(
+    Parameter = GSA.parms,
+    Main.Effect = first_order,
+    Interaction = total_order) %>% 
+    mutate(
+      Main.Effect = Main.Effect/sum(Main.Effect), # to normalise
+      Interaction = Interaction/sum(Interaction)  # to normalise
+    ) 
+  
+  write.csv(lowry_data, file = here("CL_ic.eFASTresults.csv"), row.names = FALSE)
+  
+  
+  
+  
+  
+  
+  # lowry_data <- read.csv(here("eFASTresults.csv"))
   
   ordered_data <- lowry_data %>%
     arrange(desc(Main.Effect)) %>%
     mutate(
       Parameter = factor(Parameter, levels = Parameter), 
       Total.effect = Main.Effect + Interaction,
-      Cumulative.main = cumsum(Main.Effect) 
-    )
+      Cumulative.main = cumsum(Main.Effect))
   long_data <- ordered_data %>% pivot_longer(c(Main.Effect, Interaction))
   long_data$name <- factor(long_data$name, levels = c("Main.Effect", "Interaction"))
   
+  ordered_data$Cumulative.total = cumsum(ordered_data$Total.effect)
   
   lowry_plot <- 
     ggplot(long_data) +
     geom_col(aes(x = Parameter, y = value, fill = name),
-             position = position_stack(reverse = FALSE),
+             position = position_stack(reverse = TRUE),
              width = 0.8,
              alpha = 0.8) +
     geom_ribbon(
       data = ordered_data,
       aes(x = as.numeric(Parameter),
           ymin = lag(Cumulative.main, default = 0),
-          ymax = Cumulative.main),
+          ymax = pmin(Cumulative.total,1)),
       fill = "grey50", alpha = 0.3, color = "grey50", linewidth = 0.2
     ) +
     scale_fill_manual(

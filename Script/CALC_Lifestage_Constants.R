@@ -326,7 +326,7 @@ Variables_df = Variables_df %>%
 
 ## # Baseline neonatal GFR should be 20.0 mL/min: Qi = (20*0.9)/107.3 = 0.1678 mg/dL (Smeets 2022, https://doi.org/10.1681/ASN.2021101326)
 Variables_df <- Variables_df %>% 
-  # Calculate default population SCrQ values for children and adults
+  # Calculate median SCr value for age/sex
   mutate(
     SCrQ_M = if_else(age < 18, 0.1678 + ((0.90  - 0.1678) / 18) * age,
                      SCr_M),
@@ -335,8 +335,8 @@ Variables_df <- Variables_df %>%
   # Baseline GFR for males and females (in L/day)
   # (mL/min/1.73m^2 -> L/day)  # scale to actual BSA: SA_B*1e-4 / 1.73
   mutate( 
-    GFR_M_base = (107.3 * 1.44*(BSA_M)/1.73) / (SCr_M/SCrQ_M),
-    GFR_F_base = (107.3 * 1.44*(BSA_F)/1.73) / (SCr_F/SCrQ_F)
+    GFR_M_base = (107.3 * 1.44*(BSA_M)/1.73) / (SCr_M/SCrQ_M), # Pottel et al. 2016 doi: 10.1093/ndt/gfv454
+    GFR_F_base = (107.3 * 1.44*(BSA_F)/1.73) / (SCr_F/SCrQ_F)  # Pottel et al. 2016 doi: 10.1093/ndt/gfv454
   ) %>% 
   # Exponential decline after age 40
   mutate(
