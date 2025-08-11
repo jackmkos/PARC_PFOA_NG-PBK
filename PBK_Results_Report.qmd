@@ -129,7 +129,7 @@ if (params$Population == "Yes") {
 ```
 
 ```{r}
-#| label: Exposure vs CP predicted
+#| label: Exposure vs CP
 #| echo: false
 
 if (params$Population == "Yes") {
@@ -139,26 +139,23 @@ if (params$Population == "Yes") {
     Pop.POST.RUN_RESULTS[[2]]  
   }
 }
-
 ```
 
 ```{r}
-#| label: Age vs CP predicted
+#| label: Exposure vs HL
 #| echo: false
 
 if (params$Population == "Yes") {
   if (knitr::is_html_output()) {
     ggplotly(Pop.POST.RUN_RESULTS[[3]])
   } else {
-    Pop.POST.RUN_RESULTS[[3]]  # Directly print the ggplot object
+    Pop.POST.RUN_RESULTS[[3]]  
   }
 }
-
-
 ```
 
 ```{r}
-#| label: GFR vs CP predicted
+#| label: Age vs Predictions
 #| echo: false
 
 if (params$Population == "Yes") {
@@ -168,12 +165,10 @@ if (params$Population == "Yes") {
     Pop.POST.RUN_RESULTS[[4]]  
   }
 }
-
-
 ```
 
 ```{r}
-#| label: Exposure vs HL predicted
+#| label: GFR vs Predictions
 #| echo: false
 
 if (params$Population == "Yes") {
@@ -183,37 +178,35 @@ if (params$Population == "Yes") {
     Pop.POST.RUN_RESULTS[[5]]  
   }
 }
-
-
 ```
 
-```{r}
-#| label: Age vs HL predicted
-#| echo: false
-
-if (params$Population == "Yes") {
-  if (knitr::is_html_output()) {
-    ggplotly(Pop.POST.RUN_RESULTS[[6]])
-  } else {
-    Pop.POST.RUN_RESULTS[[6]]  
-  }
-}
-
-
-```
 
 ```{r}
-#| label: GFR vs HL predicted
+#| label: Goodness of fit
 #| echo: false
 
-if (params$Population == "Yes") {
-  if (knitr::is_html_output()) {
-    ggplotly(Pop.POST.RUN_RESULTS[[7]])
-  } else {
-    Pop.POST.RUN_RESULTS[[7]]  
-  }
-}
+  if (params$Population == "Yes") {
+  PredObs <- Pop.POST.RUN_RESULTS[[9]]
+  PredObs <- PredObs %>% 
+    mutate(across(everything(), ~as.numeric(.))) %>% 
+    mutate(across(where(is.numeric), ~round(., 2)))  } else {  } 
 
+if (knitr::is_html_output()) {
+
+  datatable(PredObs, 
+            options = list(pageLength = 10, 
+                           scrollX = TRUE, 
+                           scrollY = "50vh",
+                           scrollCollapse = TRUE))
+  } else {
+    
+    kable(PredObs, 
+        format = "latex",     
+        booktabs = TRUE,
+        caption = "Summary Table",
+        escape = FALSE)
+    
+}
 
 ```
 
@@ -222,15 +215,13 @@ if (params$Population == "Yes") {
 #| echo: false
 
 if (params$Population == "Yes" && 
-    !is.character(Pop.POST.RUN_RESULTS[[8]])) {
+    !is.character(Pop.POST.RUN_RESULTS[[6]])) {
   if (knitr::is_html_output()) {
-    ggplotly(Pop.POST.RUN_RESULTS[[8]])
+    ggplotly(Pop.POST.RUN_RESULTS[[6]])
   } else {
-    Pop.POST.RUN_RESULTS[[8]] 
+    Pop.POST.RUN_RESULTS[[6]] 
   }
 }
-
-
 ```
 
 ```{r}
@@ -238,14 +229,13 @@ if (params$Population == "Yes" &&
 #| echo: false
 
 if (params$Population == "Yes" && 
-    !is.character(Pop.POST.RUN_RESULTS[[9]])) {
+    !is.character(Pop.POST.RUN_RESULTS[[7]])) {
   if (knitr::is_html_output()) {
-    ggplotly(Pop.POST.RUN_RESULTS[[9]])
+    ggplotly(Pop.POST.RUN_RESULTS[[7]])
   } else {
-    Pop.POST.RUN_RESULTS[[9]]  
+    Pop.POST.RUN_RESULTS[[7]]  
   }
 }
-
 ```
 
 ```{r}
@@ -254,12 +244,11 @@ if (params$Population == "Yes" &&
 
 if (params$Population == "Yes") {
   if (knitr::is_html_output()) {
-    ggplotly(Pop.POST.RUN_RESULTS[[10]])
+    ggplotly(Pop.POST.RUN_RESULTS[[8]])
   } else {
-    Pop.POST.RUN_RESULTS[[10]]  
+    Pop.POST.RUN_RESULTS[[8]]  
   }
 }
-
 ```
 
 ```{r}
@@ -273,7 +262,6 @@ if (params$Population == "No") {
     Pers.POST.RUN_RESULTS$OUT_Plots[[1]]
   }
 }
-
 ```
 
 ```{r}
@@ -287,8 +275,6 @@ if (params$Population == "No") {
     Pers.POST.RUN_RESULTS$OUT_Plots[[2]]
   }
 }
-
-
 ```
 
 ```{r}
@@ -302,6 +288,4 @@ if (params$Population == "No") {
     Pers.POST.RUN_RESULTS$OUT_Plots[[3]]
   }
 }
-
-
 ```

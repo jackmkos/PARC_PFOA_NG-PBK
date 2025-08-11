@@ -7,6 +7,7 @@
   rm(list=ls()) 
   
   # Packages
+  library(readxl)
   library(here)
   library(tidyverse)
   library(deSolve)
@@ -36,7 +37,7 @@
   dir.create(OUTPUT, recursive = TRUE)
   
   # Input file
-  INPUT_dummy <- read.csv(here("Input", "INPUT_dummy.csv")) 
+  INPUT_dummy <- read.csv(here("Input", "INPUT_dummy.csv"))
   
   # Choose if physiology should change with age ("Yes" to include physiological changes due to age and "No" to assume the same physiology over time)
   Lifestage = "Yes" 
@@ -45,7 +46,7 @@
   Population = "Yes" 
   
   # Choose study from input file, or ID_range
-  Test_study = "Test" #Arvidsjaur, EFSA, EffectOfLifestageEq, Olsen, dummy
+  Test_study = "Ratier" #Arvidsjaur, EFSA, EffectOfLifestageEq, Olsen, dummy
   
   # Load files
   Physio.c <- read_csv(here("Input", "PhysioVariables.csv"))
@@ -57,7 +58,7 @@
   
   if(Population == "Yes"){
     
-    Input <- INPUT_dummy %>% filter(Study == Test_study) # Choose the study you're interested in
+    Input <- INPUT_dummy %>% filter(Study == Test_study) #Choose the study you're interested in
     
     
     if(Lifestage == "Yes" && any(is.na(Input$expAGE))){

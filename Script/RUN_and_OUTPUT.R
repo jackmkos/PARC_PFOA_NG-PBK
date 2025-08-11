@@ -571,13 +571,14 @@ Pers.POST.Run <- function(exposure_type,
   
   ## Plot organ concentrations ####
   # Create df with organ concentrations
+ 
   C_organs.df <- switch (exposure_type,
                          "Oral" = PBK_OUTPUT %>% 
                            transmute(
                              time = time,
-                             CI = CI + CIL,
-                             CL = CL_ec + CL_ic,
-                             CK = CPTT + CPTL + CRKT + CRKL,
+                             CI = CI,
+                             CL = CL_ic,
+                             CK = CPTT, 
                              CA, CR, CP  
                            ) %>% 
                            rename("Intestine" = CI, 
@@ -590,9 +591,9 @@ Pers.POST.Run <- function(exposure_type,
                          "Dermal" = PBK_OUTPUT %>% 
                            transmute(
                              time = time,
-                             CI = CI + CIL,
-                             CL = CL_ec + CL_ic,
-                             CK = CPTT + CPTL + CRKT + CRKL,
+                             CI = CI,
+                             CL = CL_ic,
+                             CK = CPTT, 
                              CSk, CA, CR, CP  
                            ) %>% 
                            rename("Intestine" = CI, 
@@ -606,9 +607,9 @@ Pers.POST.Run <- function(exposure_type,
                          "Oral_Dermal" = PBK_OUTPUT %>% 
                            transmute(
                              time = time,
-                             CI = CI + CIL,
-                             CL = CL_ec + CL_ic,
-                             CK = CPTT + CPTL + CRKT + CRKL,
+                             CI = CI,
+                             CL = CL_ic, 
+                             CK = CPTT, 
                              CSk, CA, CR, CP  
                            ) %>% 
                            rename("Intestine" = CI, 
@@ -622,9 +623,9 @@ Pers.POST.Run <- function(exposure_type,
                          "Inhalation" = PBK_OUTPUT %>% 
                            transmute(
                              time = time,
-                             CI = CI + CIL,
-                             CL = CL_ec + CL_ic,
-                             CK = CPTT + CPTL + CRKT + CRKL,
+                             CI = CI,
+                             CL = CL_ic, 
+                             CK = CPTT, 
                              CLu, CA, CR, CP  
                            ) %>% 
                            rename("Intestine" = CI, 
@@ -747,31 +748,29 @@ Pop.POST.Run <- function(Input,
   GFR <- sapply(Parameters, function(x) x$GFR)
   QKc <- sapply(Parameters, function(x) x$QKc)
   QC <- sapply(Parameters, function(x) x$QC)
-  # GFR.ff <- 0.18*QKc*QC
-  
+
   
   PredictedObserved <- data.frame(
     Idcode = Input$Idcode,
-    exp = Input$exp,
-    exp_Oral = Input$exp_Oral,
-    exp_Dermal = Input$exp_Dermal,
-    expSTOP = Input$expSTOP, # this is the time of the stop of exposure in days
-    CP_observed = Input$CP_measured, # measured plasma PFOA concentration
-    samplingT = Input$samplingT, # time at which the plasma concentration was measured
-    HL_observed = Input$HL_observed, # half life reported in the HBM study
+    exp = as.numeric(Input$exp),
+    exp_Oral = as.numeric(Input$exp_Oral),
+    exp_Dermal = as.numeric(Input$exp_Dermal),
+    expSTOP = as.numeric(Input$expSTOP), # this is the time of the stop of exposure in days
+    CP_observed = as.numeric(Input$CP_measured), # measured plasma PFOA concentration
+    samplingT = as.numeric(Input$samplingT), # time at which the plasma concentration was measured
+    HL_observed = as.numeric(Input$HL_observed), # half life reported in the HBM study
     sex = Input$sex,
-    expAGE = Input$expAGE,
+    expAGE = as.numeric(Input$expAGE),
     BW = BW,
-    GFR = GFR #,
-    # GFR.ff = GFR.ff
-  ) 
+    GFR = GFR
+    ) 
   PredictedObserved <- PredictedObserved %>% 
     mutate(log_exp = log10(exp),
            log_exp_Oral = log10(exp_Oral),
            log_exp_Dermal = log10(exp_Dermal))
   
   # Add predicted concentration at the sampling time 
-  PredictedObserved <-  PredictedObserved %>% 
+  PredictedObserved <- PredictedObserved %>% 
     mutate(
       CP_predicted = map2_dbl( 
         PBK_OUT,samplingT, ~ {
@@ -788,7 +787,6 @@ Pop.POST.Run <- function(Input,
     separate(col = HalfLife, into = c("HL_predicted", "unit"), sep = "_") %>%
     mutate(HL_predicted = as.numeric(HL_predicted), 
            HL_predicted = round(HL_predicted,1))
-  
   
   ## Plots ####
   
@@ -808,20 +806,84 @@ Pop.POST.Run <- function(Input,
           axis.title = element_text(size = 7),
           plot.margin = margin(0, 0, 0, 0, "cm") 
     )
-    
   Histograms_variables
   
-  ### Exposure estimate vs predicted plasma concentration ####
-  Plot_exp_vs_P_CP <- PredictedObserved %>% 
+  ### Exposure estimate vs plasma concentration ####
+  
+  if(all(PredictedObserved$CP_observed >0) &&
+     !any(is.na(PredictedObserved$CP_observed))) {
+    
+    Plot_exp_vs_O_CP <- PredictedObserved %>% 
+      ggplot(aes(exp, CP_observed)) +
+      geom_point(color = "black", size = 0.5) +
+      CP_theme +
+      labs(title="Exposure vs observed plasma concentration",
+           x="\n Exposure (\u03BCg/kg bw/dayL)", 
+           y="Observed concentration (\u03BCg/L)\n") 
+    
+    Plot_exp_vs_Pr_CP <- PredictedObserved %>% 
+      ggplot(aes(exp, CP_predicted)) +
+      geom_point(color = "black", size = 0.5) +
+      CP_theme +
+      labs(title="Exposure vs predicted plasma concentration",
+           x="\n Exposure (\u03BCg/kg bw/dayL)", 
+           y="Predicted concentration (\u03BCg/L)\n") 
+    
+    Plot_exp_vs_CP <- Plot_exp_vs_O_CP | Plot_exp_vs_Pr_CP
+    
+  } else{ 
+    
+    Plot_exp_vs_P_CP <- PredictedObserved %>% 
     ggplot(aes(exp, CP_predicted)) +
     geom_point(color = "black", size = 0.5) +
     CP_theme +
     labs(title="Exposure vs predicted plasma concentration",
          x="\n Exposure (\u03BCg/kg bw/dayL)", 
          y="Predicted concentration (\u03BCg/L)\n") 
-  Plot_exp_vs_P_CP
+    
+    Plot_exp_vs_CP <- Plot_exp_vs_P_CP
+    
+    }
   
-  ### Exposure age  vs predicted plasma concentration ####
+  ### Exposure estimate vs half life ####
+  
+  if(all(PredictedObserved$HL_observed >0) &&
+     !any(is.na(PredictedObserved$HL_observed))) {
+    
+    Plot_exp_vs_O_HL <- PredictedObserved %>% 
+      ggplot(aes(exp, HL_observed)) +
+      geom_point(color = "black", size = 1) +
+      CP_theme +
+      labs(title="Exposure vs observed half life",
+           x="\n Exposure (\u03BCg/kg bw/dayL)", 
+           y="Predicted half life (years)") 
+    
+    Plot_exp_vs_Pr_HL <- PredictedObserved %>% 
+      ggplot(aes(exp, HL_predicted)) +
+      geom_point(color = "black", size = 1) +
+      CP_theme +
+      labs(title="Exposure vs predicted half life",
+           x="\n Exposure (\u03BCg/kg bw/dayL)", 
+           y="Predicted half life (years)") 
+    
+    Plot_exp_vs_HL <- Plot_exp_vs_O_HL | Plot_exp_vs_Pr_HL
+    
+  } else{ 
+    
+    Plot_exp_vs_P_HL <- PredictedObserved %>% 
+      ggplot(aes(exp, HL_predicted)) +
+      geom_point(color = "black", size = 1) +
+      CP_theme +
+      labs(title="Exposure vs predicted half life",
+           x="\n Exposure (\u03BCg/kg bw/dayL)", 
+           y="Predicted half life (years)") 
+    
+    Plot_exp_vs_HL <- Plot_exp_vs_P_HL
+    
+  }
+  
+  ### Exposure age vs predictions ####
+  
   Plot_age_vs_P_CP <- PredictedObserved %>% 
     ggplot(aes(expAGE, CP_predicted)) +
     geom_point(color = "black", size = 0.5) +
@@ -829,9 +891,19 @@ Pop.POST.Run <- function(Input,
     labs(title="Age at the start of exposure vs predicted plasma concentration",
          x="\n Exposure age (years)", 
          y="Predicted concentration (\u03BCg/L)\n") 
-  Plot_age_vs_P_CP
   
-  ### GFR  vs predicted plasma concentration ####
+  Plot_age_vs_P_HL <- PredictedObserved %>% 
+    ggplot(aes(expAGE, HL_predicted)) +
+    geom_point(color = "black", size = 1) +
+    CP_theme +
+    labs(title="Age at the start of exposure vs predicted half life",
+         x="\n Exposure age (years)", 
+         y="Predicted half life (years)") 
+  
+  Plot_age <- Plot_age_vs_P_CP | Plot_age_vs_P_HL
+  
+  ### GFR  vs predictions ####
+  
   Plot_GFR_vs_P_CP <- PredictedObserved %>% 
     ggplot() +
     geom_point(aes(GFR, CP_predicted), color = "black", size = 1) +
@@ -840,29 +912,7 @@ Pop.POST.Run <- function(Input,
     labs(title="Glomerular filtration rate vs predicted plasma concentration",
          x="\n GFR (L/d)", 
          y="Predicted concentration (\u03BCg/L)\n") 
-  Plot_GFR_vs_P_CP
   
-  ### Exposure estimate vs predicted plasma concentration ####
-  Plot_exp_vs_P_HL <- PredictedObserved %>% 
-    ggplot(aes(exp, HL_predicted)) +
-    geom_point(color = "black", size = 1) +
-    CP_theme +
-    labs(title="Exposure vs predicted half life",
-         x="\n Exposure (\u03BCg/kg bw/dayL)", 
-         y="Predicted half life (years)") 
-  Plot_exp_vs_P_HL
-  
-  ### Exposure age vs predicted half life ####
-  Plot_age_vs_P_HL <- PredictedObserved %>% 
-    ggplot(aes(expAGE, HL_predicted)) +
-    geom_point(color = "black", size = 1) +
-    CP_theme +
-    labs(title="Age at the start of exposure vs predicted half life",
-         x="\n Exposure age (years)", 
-         y="Predicted half life (years)") 
-  Plot_age_vs_P_HL
-  
-  ### GFRvs predicted plasma concentration ####
   Plot_GFR_vs_P_HL <- PredictedObserved %>% 
     ggplot() +
     geom_point(aes(GFR, HL_predicted), color = "black", size = 1) +
@@ -871,9 +921,11 @@ Pop.POST.Run <- function(Input,
     labs(title="Glomerular filtration rate vs predicted half life",
          x="\n GFR (L/d)", 
          y="Predicted half life (years)") 
-  Plot_GFR_vs_P_HL
+
+  Plot_GFR <- Plot_GFR_vs_P_CP | Plot_GFR_vs_P_HL
   
   ### Plot predicted half lives over those reported in literature ####
+  
   HL_literature <- Lit.HalfLifes %>%
     filter(species == "human", chemical == "pfoa", parameter == "HalfLife") %>%
     select(c(value_average, n, sex)) %>%
@@ -884,7 +936,6 @@ Pop.POST.Run <- function(Input,
     mutate(value = case_when(sex == "F" ~ 0.75,  
                              sex == "M" ~ 1.5),
            Origin = "Observed") 
-  
   
   HL_predicted <- data.frame(
     HL_predicted = PredictedObserved$HL_predicted, 
@@ -925,6 +976,8 @@ Pop.POST.Run <- function(Input,
     theme(legend.position = "right")
   HL_violin_plot
   
+  ### Plot predicted Vs Observed CP ####
+  
   if(all(PredictedObserved$CP_observed > 0) &&
      !any(is.na(PredictedObserved$CP_observed > 0))){
     ### Observed vs Predicted plasma concentrations ####
@@ -937,16 +990,18 @@ Pop.POST.Run <- function(Input,
       geom_abline(intercept = 0, slope = 1, linetype = "solid", linewidth = 0.3, color = "grey50") +  
       geom_abline(intercept = log(2), slope = 1, linetype = "dashed", linewidth = 0.2, color = "grey50") + #2 fold
       geom_abline(intercept = log(0.5), slope = 1, linetype = "dashed", linewidth = 0.2, color = "grey50") + #2 fold
-      geom_abline(intercept = log(3), slope = 1, linetype = "dotted", linewidth = 0.1, color = "grey50") +  #3 fold
-      geom_abline(intercept = log(1/3), slope = 1, linetype = "dotted", linewidth = 0.1, color = "grey50") + #3 fold
+      geom_abline(intercept = log(5), slope = 1, linetype = "dotted", linewidth = 0.1, color = "grey50") +  #5 fold
+      geom_abline(intercept = log(1/5), slope = 1, linetype = "dotted", linewidth = 0.1, color = "grey50") + #5 fold
       geom_point(color = "black", size = 1) +
       CP_theme +
       labs(title="Observed vs predicted plasma concentrations",
            x="\n log10 (Observed concentration) (\u03BCg/L)", 
            y=" log10 (Predicted concentration) (\u03BCg/L)\n") 
     CP_Regression_plot
-  } else{ CP_Regression_plot <- "no regression plot as no observed data"
+  } else{ CP_Regression_plot <- "No regression plot as no observed data"
     message("Predicted Vs Observed Plasma concentrations cannot be plotted as observed plasma concentrations have not been provided")} 
+  
+  ### Plot predicted Vs Observed HL ####
   
   if(all(PredictedObserved$HL_observed >0) &&
      !any(is.na(PredictedObserved$HL_observed))) {
@@ -968,21 +1023,24 @@ Pop.POST.Run <- function(Input,
            x = "log10 (Observed Half life) (years)", 
            y = "log10 (Predicted Half life) (years)")
     HL_Regression_plot
-  } else{ HL_Regression_plot <- "no regression plot as no observed data"
+  } else{ HL_Regression_plot <- "No regression plot as no observed data"
   message("Predicted Vs Observed half lives cannot be plotted as observed half lives have not been provided")}
   
   message("Population post run analysis finished")
   
+  PredictedObserved.df <- PredictedObserved %>% select(c(CP_observed, CP_predicted, HL_observed, HL_predicted))
+  
+  
   return(list(Histograms_variables,
-              Plot_exp_vs_P_CP,
-              Plot_age_vs_P_CP,
-              Plot_GFR_vs_P_CP,
-              Plot_exp_vs_P_HL,
-              Plot_age_vs_P_HL,
-              Plot_GFR_vs_P_HL,
+              Plot_exp_vs_CP,
+              Plot_exp_vs_HL,
+              Plot_age,
+              Plot_GFR,
               CP_Regression_plot,
               HL_Regression_plot,
-              HL_violin_plot))
+              HL_violin_plot,
+              PredictedObserved.df
+              ))
   
 
   }
