@@ -103,9 +103,10 @@ The basic PBK model specifies the organs that are necessary to describe the toxi
 - Passive (tubular fluid flow driven) flow of PFOA from the proximal tubule lumen to the lumen of the rest of the kidney structures.
 - Renal excretion, from the lumen of the rest of the kindey structures to the urine, based on the physiological urinary flow rate.
 
-Given the affinity of PFOA to different type of lipids, a simple adipose compartment is also added. All other organs are lumped together in a "rest" compartment.
+PFOA excretion via menstrual plasma clearance is also simulated, as well as serum albumin variation throughout lifestage.
 
-![PFOA_PBK_model](https://github.com/user-attachments/assets/8ca3f246-8781-4aba-b35e-36149908a123)
+Given the affinity of PFOA to different type of lipids, a simple adipose compartment is also added. All other organs are lumped together in a "rest" compartment.
+<img width="2873" height="2473" alt="Schematic_representation_PBK_model" src="https://github.com/user-attachments/assets/4eb31d98-9db9-42e4-9649-6efbeed03b45" />
 
 ## Oral exposure
 The PBK model for oral exposure is exactly that of the base structure. The initial amount of PFOA from oral dose is added to the intestinal lumen.
@@ -116,12 +117,8 @@ The PBK model for dermal exposure has two additional compartments: skin and skin
 - PFOA absorption from the skin is modelled as a clearance from the epidermis to the skin (vascular and cellular).
 - Distribution to the rest of the body from the skin is plasma flow driven.
 
-![PFOA_PBK_Dermal](https://github.com/user-attachments/assets/dc2d8f21-6dca-4b3f-beba-2df227999535)
-
 ## Oral and dermal exposure
 As described above
-
-![PFOA_PBK_Oral_Dermal](https://github.com/user-attachments/assets/a28ace2d-fdad-4366-961a-f911661c5d0c)
 
 ## Inhalation
 A lung compartment is added. Plasma is devided in arterial and venous. 
