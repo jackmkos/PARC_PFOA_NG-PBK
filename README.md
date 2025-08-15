@@ -106,7 +106,7 @@ The basic PBK model specifies the organs that are necessary to describe the toxi
 PFOA excretion via menstrual plasma clearance is also simulated, as well as serum albumin variation throughout lifestage.
 
 Given the affinity of PFOA to different type of lipids, a simple adipose compartment is also added. All other organs are lumped together in a "rest" compartment.
-<img width="2873" height="2473" alt="Schematic_representation_PBK_model" src="https://github.com/user-attachments/assets/4eb31d98-9db9-42e4-9649-6efbeed03b45" />
+<img width="3022" height="2488" alt="Schematic_representation_PBK_model" src="https://github.com/user-attachments/assets/55afc791-05ac-4b71-9bd6-ae763b5c77a5" />
 
 ## Oral exposure
 The PBK model for oral exposure is exactly that of the base structure. The initial amount of PFOA from oral dose is added to the intestinal lumen.
@@ -123,7 +123,4 @@ As described above
 ## Inhalation
 A lung compartment is added. Plasma is devided in arterial and venous. 
 Exposure is directly added to the lung compartment. In future versions a more mechanistic description of the inhalation exposure will be added, based on available mechanistic studies. 
-
-![PFOA_PBK_Inhalation](https://github.com/user-attachments/assets/86a6d8c7-75a4-4db9-8b9f-284c4800e178)
-
 
