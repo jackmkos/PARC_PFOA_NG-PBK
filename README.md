@@ -53,9 +53,9 @@ Required input to run the model, provided in the *INPUT_dummy.csv* file, or mann
 - **expBW**: (kg) if available the bodyweight of the subject at the time of exposure
 - **expAGE**: (number in years) if available the age of the subject at the begining of exposure
 - **exposure_type**: (characters) Oral if exposure was only oral, Dermal if exposure was only dermal, Inhalation if exposure was only via inhalation, Oral_Dermal if exposure was both oral and dermal simultaneously
-- **exp**: (number in ug/kg/day) PFOA concentration at the begining of exposure, the model assumes that the exposure concentration is constant from the start until the end of exposure duration. In case of simultaneous oral and dermal exposures it should be the sum of those two. 
-- **exp_Oral**: (number in ug/kg/day), only relevant in case exposure is modelled via both Oral and Dermal routes, if not, it can be left as NA or can contain the same value as expCONC, if exposure is Oral. PFOA concentration at the begining of exposure, the model assumes that the exposure concentration is constant from the start until the end of exposure duration.
-- **exp_Dermal**: (number in ug/kg/day), only relevant in case exposure is modelled via both Oral and Dermal routes, if not, it can be left as NA or can contain the same value as expCONC, if exposure is Dermal. PFOA concentration at the begining of exposure, the model assumes that the exposure concentration is constant from the start until the end of exposure duration.
+- **exp**: (number in ug/kg/day) PFOA exposure, the model assumes that the exposure is constant from the start until the end of exposure duration. In case of simultaneous oral and dermal exposures it should be the sum of those two. 
+- **exp_Oral**: (number in ug/kg/day), only relevant in case exposure is modelled via both Oral and Dermal routes, if not, it can be left as NA or can contain the same value as expCONC, if exposure is Oral. 
+- **exp_Dermal**: (number in ug/kg/day), only relevant in case exposure is modelled via both Oral and Dermal routes, if not, it can be left as NA or can contain the same value as expCONC, if exposure is Dermal. 
 - **expSTOP**: (number in days), time after which the exposure should stop
 - **Tinput**: (number in days), time that it takes for the exposure to happen, or where each exposure lasts (for example the dermal application of a make-up product is 8hours) (for oral exposure via water or food it's minimal and can be assumed 1)
 - **tinterval**: (number in days), time between each exposure (for example the interval between each dermal application of a make-up product is 24h) (for oral exposure it can be assumed 1)
@@ -103,9 +103,10 @@ The basic PBK model specifies the organs that are necessary to describe the toxi
 - Passive (tubular fluid flow driven) flow of PFOA from the proximal tubule lumen to the lumen of the rest of the kidney structures.
 - Renal excretion, from the lumen of the rest of the kindey structures to the urine, based on the physiological urinary flow rate.
 
-Given the affinity of PFOA to different type of lipids, a simple adipose compartment is also added. All other organs are lumped together in a "rest" compartment.
+PFOA excretion via menstrual plasma clearance is also simulated, as well as serum albumin variation throughout lifestage.
 
-![PFOA_PBK_model](https://github.com/user-attachments/assets/8ca3f246-8781-4aba-b35e-36149908a123)
+Given the affinity of PFOA to different type of lipids, a simple adipose compartment is also added. All other organs are lumped together in a "rest" compartment.
+<img width="3022" height="2488" alt="Schematic_representation_PBK_model" src="https://github.com/user-attachments/assets/55afc791-05ac-4b71-9bd6-ae763b5c77a5" />
 
 ## Oral exposure
 The PBK model for oral exposure is exactly that of the base structure. The initial amount of PFOA from oral dose is added to the intestinal lumen.
@@ -116,17 +117,10 @@ The PBK model for dermal exposure has two additional compartments: skin and skin
 - PFOA absorption from the skin is modelled as a clearance from the epidermis to the skin (vascular and cellular).
 - Distribution to the rest of the body from the skin is plasma flow driven.
 
-![PFOA_PBK_Dermal](https://github.com/user-attachments/assets/dc2d8f21-6dca-4b3f-beba-2df227999535)
-
 ## Oral and dermal exposure
 As described above
-
-![PFOA_PBK_Oral_Dermal](https://github.com/user-attachments/assets/a28ace2d-fdad-4366-961a-f911661c5d0c)
 
 ## Inhalation
 A lung compartment is added. Plasma is devided in arterial and venous. 
 Exposure is directly added to the lung compartment. In future versions a more mechanistic description of the inhalation exposure will be added, based on available mechanistic studies. 
-
-![PFOA_PBK_Inhalation](https://github.com/user-attachments/assets/86a6d8c7-75a4-4db9-8b9f-284c4800e178)
-
 
