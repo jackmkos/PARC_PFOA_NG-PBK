@@ -1,0 +1,113 @@
+model NG_PBK_PFOA()
+
+## COMPARTMENTS
+## := (value changes over time) ##
+   compartment IL         := V_IL         ## Compartment of Intestinal lumen (volume in L)
+   compartment I          := V_I          ## Compartment of Intestinal tissue (volume in L)
+   compartment Fe          = 1            ## Compartment of storage of Feces
+   compartment L_ec       := VL_ec        ## Compartment of Liver extracellular space (volume in L)
+   compartment L_ic       := VL_ic        ## Compartment of Liver intracellular space (volume in L)
+   compartment PTT        := VPTT         ## Compartment of Kidney proximal tubule tissue (volume in L)
+   compartment PTL        := VPTL         ## Compartment of Kidney proximal tubule lumen (volume in L)
+   compartment RKT        := VRKT         ## Compartment of Kidney rest of kidney tissue (volume in L)
+   compartment RKL        := VRKL         ## Compartment of Kidney rest of kidney lumen (volume in L)
+   compartment Ur          = 1            ## Compartment of storage of Urine
+   compartment A          := VA           ## Compartment of Adipose (volume in L)
+   compartment R          := VR           ## Compartment of Rest (volume in L)
+   compartment P          := VP           ## Compartment of Plasma (volume in L)
+   compartment Mp          = 1            ## Compartment of storage of Menstrual plasma
+
+## SPECIES
+## substanceOnly to indicate that only PFOA amounts change ##
+   substanceOnly species AIL       in IL     ## Quantity of chemical in Intestinal lumen (in ug)
+   substanceOnly species AI        in I      ## Quantity of chemical in Intestinal tissue (in ug)
+   substanceOnly species AFe       in Fe     ## Cumulative quantity of chemical in Feces (in ug)
+   substanceOnly species AL_ec     in L_ec   ## Quantity of chemical in Liver extracellular space (in ug)
+   substanceOnly species AL_ic     in L_ic   ## Quantity of chemical in Liver intracellular space (in ug)
+   substanceOnly species APTT      in PTT    ## Quantity of chemical in Kidney proximal tubule tissue (in ug)
+   substanceOnly species APTL      in PTL    ## Quantity of chemical in Kidney proximal tubule lumen (in ug)
+   substanceOnly species ARKT      in RKT    ## Quantity of chemcial in Kidney rest of kidney tissue (in ug)
+   substanceOnly species ARKL      in RKL    ## Quantity of chemical in Kidney rest of kidney lumen (in ug)
+   substanceOnly species AUr       in Ur     ## Cumulative quantity of chemical in Urine (in ug)
+   substanceOnly species AA        in A      ## Quantity of chemical in Adipose (in ug)
+   substanceOnly species AR        in AR     ## Quantity of chemical in Rest (in ug)
+   substanceOnly species AP        in AP     ## Quantity of chemical in Plasma (in ug)
+   substanceOnly species AMp       in Mp     ## Cumulative quantity of chemical in Menstrual plasma (in ug)
+
+## INITIAL AMOUNTS
+   AIL    = 0    ## Initial amount in IL (in ug)
+   AI     = 0    ## Initial amount in I (in ug)
+   AFe    = 0    ## Initial amount in Fe (in ug)
+   AL_ec  = 0    ## Initial amount in L_ec (in ug)
+   AL_ic  = 0    ## Initial amount in L_ic (in ug)
+   APTT   = 0    ## Initial amount in PTT (in ug)
+   APTL   = 0    ## Initial amount in PTL (in ug)
+   ARKT   = 0    ## Initial amount in RKT (in ug)
+   ARKL   = 0    ## Initial amount in RKL (in ug)
+   AUr    = 0    ## Initial amount in Ur (in ug)
+   AA     = 0    ## Initial amount in A (in ug)
+   AR     = 0    ## Initial amount in R (in ug)
+   AP     = 0    ## Initial amount in A (in ug)
+   AMp     = 0    ## Initial amount in Mp (in ug)
+
+## PARAMETERS
+
+   # Time parameters
+   
+   Age := / 365     ## Age (in years)
+   
+   # PHYSIOLOGICAL PARAMETERS
+   
+      ## Bodyweight over lifetime
+      BW         := (3.938425 + 0.7518199*Age*12 - 0.02023793*(Age*12)^2 + 0.0002921682*(Age*12)^3 - 2.06762e-06*(Age*12)^4 + 8.469e-09*(Age*12)^5 - 2.188427e-11*(Age*12)^6 + 3.699776e-14*(Age*12)^7 - 4.099077e-17*(Age*12)^8 + 2.874804e-20*(Age*12)^9 - 1.159732e-23*(Age*12)^10 + 2.052602e-27*(Age*12)^11)
+      
+      # Fractional volume of organs over lifetime
+      ## piecewise, function for a polynomial ##
+      f_V_I      := piecewise((0.0021) + (-8.2562e-05*(Age^2) + 1.3523e-03*Age + 1.293e-02), Age < 16, (0.0021) + 0.014)
+      f_V_L
+      f_V_K
+      
+      # Constants
+      f_V_IL     := 10  ## Example number, this fractional volume is assumed to be constant over time
+      f_SA_SI    :=
+      f_V_L_ic   :=
+      f_V_L_ec   := 
+      f_V_PT     := ## fractional volume of kidney proximal tubule
+      f_V_PTT    := ## fractional volume of kidney proximal tubule tissue
+      
+      # Volume of organs (in L)
+      V_IL       := f_V_IL * BW
+      V_I        := f_V_I * BW
+      VL         := f_V_L * BW                  
+      VL_ic      := f_V_L_ic * VL
+      VL_ec      := f_V_L_ec * VL 
+      VK         := f_V_K * BW 
+      VPT        := f_V_PT * VK
+      VPTT       := VPT * f_V_PTT
+      
+      # Surface aeria (in cm2)
+      SA_SI <- f_SA_SI * BW
+
+  
+   # PHYSICOCHEMICAL PARAMETERS
+   
+
+   # BIOKINETIC PARAMETERS
+   
+
+## REACTIONS
+
+   # DISTRIBUTION
+   ## The order does not matter ##
+   ## Two processes can be summed if they concern the same flow ##
+   ## One line per flow ##
+   J1_:    AIL       -> AI;       CL_IL*CIL + (VmaxOATP2B1/(Km_OATP2B1 + CIL))*CIL
+   J3_:    AL        -> AIL;      (Vmax_BSEP/(Km_BSEP + (CL_ic*fu_Lic)))*CL_ic*fu_Lic
+   J4_:    AI        -> AP;       QI*CVI
+   J5_:    AP        -> AI;       QI*CP
+
+## 
+
+   J6_:    AIL       -> AFe;      tco*AIL
+
+end
