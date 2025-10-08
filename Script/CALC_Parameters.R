@@ -22,7 +22,7 @@ BASE_PARAMS <- function(expAGE = NULL, expBW = NULL, sex = NULL) {
   if (is.na(sex)) {
     sex <- "M"  # Default sex is male...
   }
-  # 25ml plasma per cycle (29.2 days per cycle until; 12.5 cycles per year ); Ruark
+  # 25ml plasma per cycle (29.2 days per cycle until; 12.5 cycles per year ); Ruark (12.89 +- 9.11 cycles per year)
   
   # Menstruation, reference Ruark et al 2016 http://dx.doi.org/10.1016/j.envint.2016.11.030
   if (sex == "F" && expAGE >= 12 && expAGE < 45){  
@@ -33,43 +33,43 @@ BASE_PARAMS <- function(expAGE = NULL, expBW = NULL, sex = NULL) {
     CL_menses <- 0 # L/day
   }
   
-  # Serum albumin (g_HSA /L_serum, or mg/ml); Weaving et al 2016; DOI: 10.1177/0004563215593561
-  if (expAGE <= 5) {
-    SAlb <- 43  
-  } else if (expAGE <= 15 && sex == "M") {
-    SAlb <- 44
-  } else if (expAGE <= 25 && sex == "M") {
-    SAlb <- 46
-  } else if (expAGE <= 35 && sex == "M") {  
-    SAlb <- 45
-  } else if (expAGE <= 50 && sex == "M") {
-    SAlb <- 44
-  } else if (expAGE <= 60 && sex == "M") {
-    SAlb <- 43
-  } else if (expAGE <= 75 && sex == "M") {
-    SAlb <- 42
-  } else if (expAGE <= 80 && sex == "M") {
-    SAlb <- 41
-  } else if (expAGE <= 90 && sex == "M") {
-    SAlb <- 40
-  } else if (expAGE <= 10 && sex == "F") {
-    SAlb <- 45
-  } else if (expAGE <= 20 && sex == "F") {
-    SAlb <- 44
-  } else if (expAGE <= 40 && sex == "F") {
-    SAlb <- 43
-  } else if (expAGE <= 75 && sex == "F") {
-    SAlb <- 42
-  } else if (expAGE <= 85 && sex == "F") {
-    SAlb <- 41
-  } else if (expAGE <= 90 && sex == "F") {
-    SAlb <- 40
-  } else if (expAGE <= 94) { 
-    SAlb <- 39
-  } else { 
-    SAlb <- 38
-  } 
-  
+  # # Serum albumin (g_HSA /L_serum, or mg/ml); Weaving et al 2016; DOI: 10.1177/0004563215593561
+  # if (expAGE <= 5) {
+  #   SAlb <- 43  
+  # } else if (expAGE <= 15 && sex == "M") {
+  #   SAlb <- 44
+  # } else if (expAGE <= 25 && sex == "M") {
+  #   SAlb <- 46
+  # } else if (expAGE <= 35 && sex == "M") {  
+  #   SAlb <- 45
+  # } else if (expAGE <= 50 && sex == "M") {
+  #   SAlb <- 44
+  # } else if (expAGE <= 60 && sex == "M") {
+  #   SAlb <- 43
+  # } else if (expAGE <= 75 && sex == "M") {
+  #   SAlb <- 42
+  # } else if (expAGE <= 80 && sex == "M") {
+  #   SAlb <- 41
+  # } else if (expAGE <= 90 && sex == "M") {
+  #   SAlb <- 40
+  # } else if (expAGE <= 10 && sex == "F") {
+  #   SAlb <- 45
+  # } else if (expAGE <= 20 && sex == "F") {
+  #   SAlb <- 44
+  # } else if (expAGE <= 40 && sex == "F") {
+  #   SAlb <- 43
+  # } else if (expAGE <= 75 && sex == "F") {
+  #   SAlb <- 42
+  # } else if (expAGE <= 85 && sex == "F") {
+  #   SAlb <- 41
+  # } else if (expAGE <= 90 && sex == "F") {
+  #   SAlb <- 40
+  # } else if (expAGE <= 94) { 
+  #   SAlb <- 39
+  # } else { 
+  #   SAlb <- 38
+  # } 
+  # 
   ## Input
   Physio_params <- Physio.c
   
@@ -110,6 +110,7 @@ BASE_PARAMS <- function(expAGE = NULL, expBW = NULL, sex = NULL) {
   
   GFR <- Physio_params[[paste0("GFR", suffix)]]                 # Age/creatinine dependent glomerular filtration rate (L/day)
   
+  SAlb <- Physio_params[[paste0("SAlb", suffix)]]               # Serum albumin concentration (g_HSA /L_serum, or mg/ml)
   ### Organ volumes -------------------------
   
   
@@ -222,6 +223,7 @@ BASE_PARAMS <- function(expAGE = NULL, expBW = NULL, sex = NULL) {
   D_ALB <- k_ALB*DAlb # L_w/L_hsa; distribution coefficient
   FV_Alb <- SAlb*10^-3 # kg/kg of albumin in serum
 
+  
   DGlob <- 1.20 #kg/L density of globulin
   k_GLOB <- 10^2.16 # Lw/Kg_globulin; globulin/water partition coefficient 
   D_Glob <- 10^2.16*DGlob # L_w/L_hsa; distribution coefficient
@@ -230,6 +232,7 @@ BASE_PARAMS <- function(expAGE = NULL, expBW = NULL, sex = NULL) {
   FV_W <- 1 - FV_Alb - FV_Glob # serum mass balance
   
   fup <- 1/(1 + (D_ALB*(FV_Alb/FV_W)) + (D_Glob*(FV_Glob/FV_W)))
+
   
   ### Partition coefficients -------------------------
   # Code for calculating the partition coefficients is a slightly modified version from Utsey et al. 2020 https://github.com/metrumresearchgroup/PBPK_PC/blob/master/script/CalcKp_Schmitt.R

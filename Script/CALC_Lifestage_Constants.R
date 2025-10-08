@@ -344,13 +344,21 @@ Variables_df <- Variables_df %>%
                     GFR_M_base * 0.988^(age - 40)),
     GFR_F = if_else(age <= 40, GFR_F_base,
                     GFR_F_base * 0.988^(age - 40))
-  )#%>% 
+  ) %>% 
   # mutate(
   #   GFR_M = Q_GFRc_M*0.6944444444*1.73,
   #   GFR_F = Q_GFRc_F*0.6944444444*1.73
   # )
+  # Serum Albumin per age: (g_HSA /L_serum, or mg/ml);
+  # Derived from Weaving et al 2016; DOI: 10.1177/0004563215593561, Figure 1
+  mutate( 
+    SAlb_M = 3.9330e+01 + (5.8156e-01*age) - (1.9072e-02*(age^2)) +
+      (2.3220e-04*(age^3)) - (1.0313e-06*(age^4)), 
+    SAlb_F = 4.0540e+01 + (6.0605e-01*age) - (3.5316e-02*(age^2)) +
+      7.9681e-04*(age^3) - (7.8062e-06*(age^4)) + (2.7227e-08*(age^5))
+  )
 
-write.csv(Variables_df, here("Input", "PhysioVariables.csv"), row.names = FALSE)
+# write.csv(Variables_df, here("Input", "PhysioVariables.csv"), row.names = FALSE)
 
 
 # ## Check mass balance volumes and flows ####
@@ -406,11 +414,26 @@ write.csv(Variables_df, here("Input", "PhysioVariables.csv"), row.names = FALSE)
 # 
 
 ## Plots ####
-Flows <- Variables_df %>% 
-  mutate(FGFR_M = Q_kidneyFraction_M*CardOut_M*0.18, 
-         FGFR_F = Q_kidneyFraction_F*CardOut_F*0.18) %>% 
+
+CP_theme <- theme_minimal() +
+  theme(
+    axis.title = element_text(size = 44, face = "bold"),
+    axis.text = element_text(size = 40),
+    plot.title = element_text(hjust = 0, size = 48, face = "bold"),
+    plot.margin = margin(0.3, 0.3, 0.3, 0.3, "cm"), 
+    axis.line = element_line(size = 0.1),
+    panel.grid = element_line(size = 0.3),
+    plot.caption = element_text(hjust = 0, size = 40, face= "italic"),
+    plot.title.position = "plot", 
+    plot.caption.position = "plot",
+    legend.position = "none"
+  )  
+
+Flows <- Variables_df %>%
+  mutate(FGFR_M = Q_kidneyFraction_M*CardOut_M*0.18,
+         FGFR_F = Q_kidneyFraction_F*CardOut_F*0.18) %>%
   mutate(QK_M = Q_kidneyFraction_M*CardOut_M,
-         QK_F = Q_kidneyFraction_M*CardOut_F) %>% 
+         QK_F = Q_kidneyFraction_M*CardOut_F) %>%
   mutate(QA_M = Q_adiposeFraction_M*CardOut_M,
          QA_F = Q_adiposeFraction_F*CardOut_F,
          QL_M = Q_liverFraction_M*CardOut_M,
@@ -418,7 +441,7 @@ Flows <- Variables_df %>%
          QG_M = Q_gutFraction_M*CardOut_M,
          QG_F = Q_gutFraction_F*CardOut_F)
 
-Flows %>% 
+Flows %>%
   ggplot()+
   geom_path(aes(age, QL_M, color = "Liver", linetype = "Male")) +
   geom_path(aes(age, QL_F, color = "Liver", linetype = "Female")) +
@@ -437,83 +460,83 @@ Flows %>%
   scale_linetype_manual(values = c("Male" = "dashed",
                                    "Female" = "solid"),
                         name = "") +
-  theme_minimal()+
+  CP_theme +
   ylab("Blood flow (L/d)") +
-  xlab("Age (years)")+
-  theme(axis.title = element_text(size = 15),
-        axis.text = element_text(size = 14),
-        legend.position = "bottom", 
-        legend.text = element_text(size = 14))
-ggsave(filename = here("OrganFlows.png"), 
-       dpi = 300,
-       width = 12,      
-       height = 8,      
+  xlab("Age (years)")
+  # theme(axis.title = element_text(size = 15),
+  #       axis.text = element_text(size = 14),
+  #       legend.position = "bottom",
+  #       legend.text = element_text(size = 14))
+ggsave(filename = here("OrganFlows.png"),
+       dpi = 600,
+       width = 10,
+       height = 8,
        units = "cm")
 
 
-ggplot() + 
-  geom_path(data = Variables_df, aes(age, GFR_M, linetype = "Creatinine", color = "Male")) +
-  geom_path(data = Variables_df, aes(age, GFR_F, linetype = "Creatinine", color = "Female")) +
-  geom_path(data = Flows, aes(age, FGFR_M, linetype = "Filtration fraction", color = "Male")) +
-  geom_path(data = Flows, aes(age, FGFR_F, linetype = "Filtration fraction", color = "Female")) +
-  scale_linetype_manual(values = c("Creatinine" = "dashed",
-                                 "Filtration fraction" = "solid"),
-                      name = "") +
-  scale_color_manual(values = c("Male" = "orange",
-                                "Female" = "purple"),
+ggplot() +
+  geom_path(data = Variables_df, aes(age, GFR_M, linetype = "Male")) +
+  geom_path(data = Variables_df, aes(age, GFR_F, linetype = "Female")) +
+  # geom_path(data = Flows, aes(age, FGFR_M, linetype = "Filtration fraction", color = "Male")) +
+  # geom_path(data = Flows, aes(age, FGFR_F, linetype = "Filtration fraction", color = "Female")) +
+  # scale_linetype_manual(values = c("Creatinine" = "dashed",
+  #                                "Filtration fraction" = "solid"),
+  #                     name = "") +
+  scale_color_manual(values = c("Male" = "dashed",
+                                "Female" = "solide"),
                                 name = "")+
-  theme_minimal()+
+  CP_theme +
   ylab("GFR (ml/min)") +
-  xlab("Age (years)")+
-  theme(axis.title = element_text(size = 15),
-        axis.text = element_text(size = 14),
-        legend.position = "bottom", 
-        legend.text = element_text(size = 14))
-ggsave(filename = here("GFR.png"), 
-       dpi = 300,
-       width = 10,      
-       height = 8,      
+  xlab("Age (years)")
+  # theme(axis.title = element_text(size = 15),
+  #       axis.text = element_text(size = 14),
+  #       legend.position = "bottom",
+  #       legend.text = element_text(size = 14))
+ggsave(filename = here("GFR.png"),
+       dpi = 600,
+       width = 10,
+       height = 8,
        units = "cm")
 
-ggplot() + 
+ggplot() +
   geom_path(data = Variables_df, aes(age, BW_M, linetype = "Male")) +
   geom_path(data = Variables_df, aes(age, BW_F, linetype = "Female")) +
   scale_linetype_manual(values = c("Male" = "dashed",
                                    "Female" = "solid"),
                         name = "") +
-  theme_minimal()+
+  CP_theme +
   ylab("BW (kg)") +
   xlab("Age (years)")+
   theme(axis.title = element_text(size = 15),
         axis.text = element_text(size = 14),
-        legend.position = "bottom", 
+        legend.position = "bottom",
         legend.text = element_text(size = 14))
-ggsave(filename = here("BW.png"), 
-       dpi = 300,
-       width = 12,      
-       height = 8,      
+ggsave(filename = here("BW.png"),
+       dpi = 600,
+       width = 10,
+       height = 8,
        units = "cm")
 
-ggplot() + 
+ggplot() +
   geom_path(data = Variables_df, aes(age, CardOut_M, linetype = "Male")) +
   geom_path(data = Variables_df, aes(age, CardOut_F, linetype = "Female")) +
   scale_linetype_manual(values = c("Male" = "dashed",
                                    "Female" = "solid"),
                         name = "") +
-  theme_minimal()+
+  CP_theme+
   ylab("QC (L/d)") +
   xlab("Age (years)")
-  theme(axis.title = element_text(size = 15),
-        axis.text = element_text(size = 14),
-        legend.position = "bottom", 
-        legend.text = element_text(size = 14))
-ggsave(filename = here("QC.png"), 
-       dpi = 300,
-       width = 12,      
-       height = 8,      
+  # theme(axis.title = element_text(size = 15),
+  #       axis.text = element_text(size = 14),
+  #       legend.position = "bottom",
+  #       legend.text = element_text(size = 14))
+ggsave(filename = here("QC.png"),
+       dpi = 600,
+       width = 10,
+       height = 8,
        units = "cm")
 
-Volumes <-Variables_df %>% 
+Volumes <-Variables_df %>%
   mutate(VK_M = V_kidneyFraction_M*BW_M,
          VK_F = V_kidneyFraction_M*BW_F,
          VA_M = V_adiposeFraction_M*BW_M,
@@ -523,7 +546,7 @@ Volumes <-Variables_df %>%
          VG_M = V_gutFraction_M*BW_M,
          VG_F = V_gutFraction_F*BW_F)
 
-Volumes %>% 
+Volumes %>%
   ggplot()+
   geom_path(aes(age, VL_M, color = "Liver", linetype = "Male")) +
   geom_path(aes(age, VL_F, color = "Liver", linetype = "Female")) +
@@ -542,37 +565,18 @@ Volumes %>%
     scale_linetype_manual(values = c("Male" = "dashed",
                                    "Female" = "solid"),
                         name = "") +
-  theme_minimal()+
+  CP_theme +
   ylab("Weight (Kg)") +
-  xlab("Age (years)")+
-  theme(axis.title = element_text(size = 15),
-        axis.text = element_text(size = 14),
-        legend.position = "bottom", 
-        legend.text = element_text(size = 14))
-ggsave(filename = here("OrganVolumes.png"), 
-       dpi = 300,
-       width = 12,      
-       height = 8,      
+  xlab("Age (years)")
+  # theme(axis.title = element_text(size = 15),
+  #       axis.text = element_text(size = 14),
+  #       legend.position = "bottom",
+  #       legend.text = element_text(size = 14))
+ggsave(filename = here("OrganVolumes.png"),
+       dpi = 600,
+       width = 10,
+       height = 8,
        units = "cm")
-
-CalcPhysioParams <- cbind(Flows, Volumes)
-write.csv(CalcPhysioParams, here("Input", "CalculatedPhysiologicalParams.csv"), row.names = FALSE)
-
-# Get the corresponding value from column U
-# BW.EFSAstudy <- data.frame(
-#   BW.infant_M = CalcPhysioParams$BW_M[which.min(abs(CalcPhysioParams$age - 0.002))],
-#   BW.toddler_M = CalcPhysioParams$BW_M[which.min(abs(CalcPhysioParams$age - 1))],
-#   BW.child_M = CalcPhysioParams$BW_M[which.min(abs(CalcPhysioParams$age - 4))],
-#   BW.teenager_M = CalcPhysioParams$BW_M[which.min(abs(CalcPhysioParams$age - 12))],
-#   BW.adult_M = CalcPhysioParams$BW_M[which.min(abs(CalcPhysioParams$age - 18))],
-#   BW.elderly_M = CalcPhysioParams$BW_M[which.min(abs(CalcPhysioParams$age - 60))],
-#   BW.veryelderly_M = CalcPhysioParams$BW_M[which.min(abs(CalcPhysioParams$age - 70))],
-#   BW.infant_F = CalcPhysioParams$BW_F[which.min(abs(CalcPhysioParams$age - 0.002))],
-#   BW.toddler_F = CalcPhysioParams$BW_F[which.min(abs(CalcPhysioParams$age - 1))],
-#   BW.child_F = CalcPhysioParams$BW_F[which.min(abs(CalcPhysioParams$age - 4))],
-#   BW.teenager_F = CalcPhysioParams$BW_F[which.min(abs(CalcPhysioParams$age - 12))],
-#   BW.adult_F = CalcPhysioParams$BW_F[which.min(abs(CalcPhysioParams$age - 18))],
-#   BW.elderly_F = CalcPhysioParams$BW_F[which.min(abs(CalcPhysioParams$age - 60))],
-#   BW.veryelderly_F = CalcPhysioParams$BW_F[which.min(abs(CalcPhysioParams$age - 70))]
-# )
-# write.csv(BW.EFSAstudy, here("Input", "BW.EFSAstudy.csv"), row.names = FALSE)
+# 
+# CalcPhysioParams <- cbind(Flows, Volumes)
+# write.csv(CalcPhysioParams, here("Input", "CalculatedPhysiologicalParams.csv"), row.names = FALSE)

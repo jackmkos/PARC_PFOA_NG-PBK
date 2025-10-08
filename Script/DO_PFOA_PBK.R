@@ -46,7 +46,7 @@
   Population = "Yes" 
   
   # Choose study from input file, or ID_range
-  Test_study = "Ratier" #Arvidsjaur, EFSA, EffectOfLifestageEq, Olsen, dummy
+  Test_study = "CorrelationM" #Arvidsjaur, EFSA, EffectOfLifestageEq, Olsen, dummy, "Ratier"
   
   # Load files
   Physio.c <- read_csv(here("Input", "PhysioVariables.csv"))
@@ -93,7 +93,7 @@
     exp = exp_Oral + exp_Dermal # ug/kg/day 
     Tinput = 1 # for repeated exposure or so default = 1
     tinterval = 1 # for repeated exposure or so default = 1
-    expSTOP = 50*365 #7300 #50*365 # time in days after which the exposure stopped
+    expSTOP = 5*365 #7300 #50*365 # time in days after which the exposure stopped
     
     # Subject-relevant information
     expAGE = 0 #65  # years, old age at exposure if not provided then age argument is not used physiology is based on BW
@@ -102,8 +102,8 @@
     
     # Simulation relevant information
     Tstart = 0 # days, start of the simulation
-    Tstop = 80*357 #5*357 # days, stop of the simulation
-    Dt = 10 #1/10000 # days, iteration steps (decrease/increase depending on run time)
+    Tstop = 15*365 # days, stop of the simulation
+    Dt = 1 #1/10000 # days, iteration steps (decrease/increase depending on run time)
     
     
     RawData <- list(
@@ -365,13 +365,13 @@
   #                                     Test_study = Test_study)
   # )
   # 
-  quarto_render(input = (here("PBK_Results_Report.qmd")),
-                output_format = "html",
-                # output_file = (here(OUTPUT, "PBK_Results_Report.html")),
-                execute_params = list(Lifestage = Lifestage,
-                                      Population = Population,
-                                      Test_study = Test_study)
-  )
-  browseURL(here("PBK_Results_Report.html"))
+  # quarto_render(input = (here("PBK_Results_Report.qmd")),
+  #               output_format = "html",
+  #               # output_file = (here(OUTPUT, "PBK_Results_Report.html")),
+  #               execute_params = list(Lifestage = Lifestage,
+  #                                     Population = Population,
+  #                                     Test_study = Test_study)
+  # )
+  # browseURL(here("PBK_Results_Report.html"))
   # 
   # 

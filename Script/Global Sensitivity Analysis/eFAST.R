@@ -24,7 +24,6 @@
   library(readxl)
   library(purrr)
 
-  
   # For plotting
   library(showtext)
   font_add(family = "Garamond", regular = "GARA.TTF")
@@ -114,11 +113,11 @@
       Km_OATP1B3 <- Km_OATP1B3c*MW                                        # ug/L (uM -> ug/L)
       
       # Biliary excretion
-      VmaxBSEP <- VmaxBSEPc*MW*60*24*SF_BSEP*VL_ic         # ug/d
+      VmaxBSEP <- Vmax_BSEPc*MW*60*24*SF_BSEP*VL_ic         # ug/d
       Km_BSEP <- Km_BSEPc*MW                                 # ug/L (uM -> ug/L)
       
       # Renal clearance
-      Vmax_OAT4 = Vmax_OAT4c*MW*60*24*SF_OAT4*VPT           # ug/d (umol -> ug, min -> d)
+      Vmax_OAT4 = Vmax_OAT4c*MW*60*24*SF_OAT*VPT           # ug/d (umol -> ug, min -> d)
       Km_OAT4 = Km_OAT4c*MW                                # ug/L (uM -> ug/L)
       
       
@@ -299,53 +298,106 @@
   
   # Parameter upper and lower bounds
 
-  Parameters <- read_excel(here("Output/efast1000/Parameters.eFAST.F.xlsx")) #"Input/Parameters.GSA.xlsx" 
+  Parameters <- read_excel(here("Input", "ParameterseFAST.F.xlsx")) #"Input/Parameters.GSA.xlsx" 
+  # Parameters <- read_excel(here("Output/efast1000/Parameters.eFAST.F.xlsx")) #"Input/Parameters.GSA.xlsx" 
+
+  P <- Parameters %>% select(Parameter, Distribution, Value, Std, CV, eFAST) 
+  # P <- Parameters %>% select(Abbreviation, Distribution, Initial_value, Binf, Bsup, sdlog, zscore) 
   
-  P <- Parameters %>% select(Abbreviation, Distribution, Initial_value, Binf, Bsup, sdlog, zscore) 
-  
-  parm.c <- as.list(setNames(Parameters$Initial_value, Parameters$Abbreviation))
+  parm.c <- as.list(setNames(Parameters$Value, Parameters$Parameter))
+  # parm.c <- as.list(setNames(Parameters$Initial_value, Parameters$Abbreviation))
 
   # SET eFAST EXPERIMENT DESIGN ####
   # ---------------------------------------------------------------------------- #
-  
-  GSA.parms <- P$Abbreviation
 
-  eFAST.factors <- nrow(P)
+  GSA.P <- P %>% filter(eFAST == "Y") %>% 
+    mutate(
+      Mean = as.numeric(Value),
+      Std = as.numeric(Std),
+      Binf = Value*0.9, 
+      Bsup = Value*1.1,
+      meanlog = if_else(Distribution == "LogNormal",
+                       log(Mean / sqrt(1 + (Std/Mean)^2)), 
+                       NA),
+      sdlog = if_else(Distribution == "LogNormal",
+                      sqrt(log(1 + (Std/Mean)^2)),
+                      NA),
+      zscore = c(3,NA,NA,5,3.5,3,3,3,NA,NA,NA,NA,4,4,3,NA,NA,4,4),
+      q = ifelse(Distribution == "LogNormal", "qlnorm", "qunif"))
   
-  P$Mean <- as.numeric(P$Mean)
-  P$sdlog <- as.numeric(P$sdlog)
+  eFAST.factors <- nrow(GSA.P)
+  
+  GSA.parms <- GSA.P$Parameter
+  # GSA.parms <- P$Abbreviation
+  
+  # # P$Mean <- as.numeric(P$Mean)
+  # P$sdlog <- as.numeric(P$sdlog)
 
   # Define q: q needs to be a list of character strings, giving the names of the quantile functions
-  q <- ifelse(P$Distribution == "LogNormal", "qlnorm", "qunif") 
+  # q <- ifelse(P$Distribution == "LogNormal", "qlnorm", "qunif") 
   
   # Define q.arg: q.arg needs to be a list of lists
-  q.arg <- lapply(1:nrow(P), function(i) { # apply the function to eachone of the rows of P
-    if (P$Distribution[i] == "qunif") { #if the distribution in uniform
-      list(min = P$Binf[i], max = P$Bsup[i]) #create a list containing min (Bing of row i) and max (Bsup of row i) per row
+  GSA.P$q.arg <- lapply(1:nrow(GSA.P), function(i) { # apply the function to eachone of the rows of P
+    if (GSA.P$q[i] == "qunif") { #if the distribution in uniform
+      list(min = GSA.P$Binf[i], max = GSA.P$Bsup[i]) #create a list containing min (Bing of row i) and max (Bsup of row i) per row
     } else {
-      list(meanlog = log(P$Mean[i]), sdlog = P$sdlog[i]) #if not then create a list containing mean and sdlog
+      list(meanlog = GSA.P$meanlog[i], sdlog = GSA.P$sdlog[i]) #if not then create a list containing mean and sdlog
     }
   })
-
-  names(q.arg) <- GSA.parms
   
+  q <- GSA.P$q
+  names(q) <- GSA.P$Parameter
+  
+  q.arg <- GSA.P$q.arg
+  names(q.arg) <- GSA.P$Parameter
   # eFAST test function
   set.seed(1234)
   
-  length(q) == length(q.arg)
+  length(GSA.P$q) == length(GSA.P$q.arg)
 
   Experience <- fast99(
     model = NULL, #PBK_4_GSA,
     factors = GSA.parms, # These are the parameters that will be varying in the model
-    n = 1000,            # Integer giving the sample size, i.e. the length of the discretization of the s-space
+    n = 10000,   #1000         # Integer giving the sample size, i.e. the length of the discretization of the s-space
     q = q,
     q.arg = q.arg
   )
 
-  dim(Experience$X) # dataframe of: n factors(number of parameters) * n n(1000) number of observations, of n factors(number of parameters) number of variables
+  INITIALdesign <- Experience$X
+  write.csv(INITIALdesign, "INITIALeFAST.ExpDesign.csv", row.names = FALSE)
+  
+  pdf("INITIALDistr_ParFull.pdf")
+  par(mfrow=c(4,3))
+  for( i in 1:ncol(INITIALdesign)){ hist(INITIALdesign[,i], breaks=100, col="purple", main=colnames(INITIALdesign)[i] ) }
+  dev.off()
+  save(Experience, file = "INITIALExperienceFull.RData")
+  
+  # P$zscore <- as.numeric(P$zscore)
+  
+  for (i in 1:nrow(GSA.P)) {
+    if (GSA.P$Distribution[i] != "Uniform" && GSA.P$Parameter[i] != "fup" ) {
+      
+      par_name <- GSA.parms[i]
+     
+      min_val <- exp(GSA.P$meanlog[i] - GSA.P$zscore[i] * GSA.P$sdlog[i])
+      max_val <- exp(GSA.P$meanlog[i] + GSA.P$zscore[i] * GSA.P$sdlog[i])
+      
+      Experience$X[, par_name] <- pmax(Experience$X[, par_name], min_val)
+      Experience$X[, par_name] <- pmin(Experience$X[, par_name], max_val)
+      
+    } 
+    # else if (GSA.P$Parameter[i] == "fup") {
+    # 
+    #   log_fup <- log(Experience$X[, "fup"] + 1e-10)
+    #   log_fup <- pmin(log_fup, quantile(log_fup, 0.99))
+    #   Experience$X[,"fup"] <- exp(log_fup)
+    # 
+    # }
+  }
+
   design <- Experience$X
   write.csv(design, "eFAST.ExpDesign.csv", row.names = FALSE)
-
+  
   pdf("Distr_ParFull.pdf")
   par(mfrow=c(4,3))
   for( i in 1:ncol(design)){ hist(design[,i], breaks=100, col="purple", main=colnames(design)[i] ) }
