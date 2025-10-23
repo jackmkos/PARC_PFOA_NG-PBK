@@ -1,6 +1,7 @@
 # --------------------------------------------------------------------------- #
 # SCRIPT FOR RUNNING THE EFSA 2020 PFOA and PFOS PBPK models
-# using Westerhout 2024 model code as starting point
+# using Westerhout et al. 2024 model code 
+# by: Joost Westerhout
 # Date: 13-06-2025
 # --------------------------------------------------------------------------- #
 
@@ -26,10 +27,10 @@ dir.create(OUTPUT, recursive = TRUE)
 #### Settings ----
 # Input is that of the Abraham study; Abraham et al. 2024 https://doi.org/10.1016/j.envint.2024.109047 
 TSTART <- 0 # years in days
-TSTOP <- 450 # days
-DT <- 1/1000
-TIME <- seq(TSTART, TSTOP, bY=DT)
-TIME.variables <- seq(66*365,67*365,by=1/10)
+TSTOP <- 7300 #20*365 # days
+DT <- 1
+TIME <- seq(TSTART, TSTOP, by=DT)
+TIME.variables <- seq(30*365,50*365,by=1/10)
 
 Variables_df <- as.data.frame(list(TIME.variables = TIME.variables))
 Variables_df <- Variables_df %>%
@@ -40,7 +41,7 @@ Variables_df <- Variables_df %>%
   mutate(age = (TIME.variables/(365))) # in years
 
 # EXPOSURE PARAMETERS
-exposure_duration = 1 # Duration of exposure (d)
+exposure_duration = 50*365 #20*365 # Duration of exposure (d)
 
 # Drinking water exposure 
 Drinkrate = 0 #13 # Drinking water rate (mL/kg/day)
@@ -118,7 +119,7 @@ VP_PFOA = 2.34 # 10^0.37 # Pa [Zhang 2021]; 1 mmHg = 133.322368 Pa; 0.15 mmHg (h
 # Pab_PFOA <- 1/(10^(6.96-(1.04*log10(VP_PFOA)) - 0.533*logP_PFOA - 0.00495*MW_PFOA))
 
 # Oral exposure via the mother
-Oralexpo_PFOA = 0.048 # ug/kg/day, (for Abraham: 3.96/BW of 82Kg) #0.000187 # µg/kg/day [EFSA 2020; page 143]
+Oralexpo_PFOA = 0.00005184 # ug/kg/day, (for Abraham: 3.96/BW of 82Kg) #0.000187 # µg/kg/day [EFSA 2020; page 143]
 Drinkconc_PFOA = 0 # Drinking water concentration (ug/L or ppb) 
 PFOAmaternal = 0# 2.0 # maternal concentration ng/mL at delivery [EFSA opinion 2020, p368 (different from p.152)]
 
@@ -317,7 +318,7 @@ Variables_df <- Variables_df %>%
                                                                                                          if_else(age >= 0.833 & age < 0.917, Intakemilkk_PFOA/BW,
                                                                                                                  if_else(age >= 0.917 & age < 1, Intakemilkl_PFOA/BW,
                                                                                                                          Oralexpo_PFOA))))))))))))) %>% # (ug/day)
-  mutate(if_else(day > exposure_duration,0,Oraldose_PFOA*BW)) %>% # stop exposure after exposure_duration
+  mutate(Oraldose_PFOA = if_else(day > exposure_duration,0,Oralexpo_PFOA*BW)) %>% # stop exposure after exposure_duration
   mutate(Oraldose_PFOS = if_else(age < 0.083, Intakemilka_PFOS/BW,
                                  if_else(age >= 0.083 & age < 0.167, Intakemilkb_PFOS/BW,
                                          if_else(age >= 0.167 & age < 0.250, Intakemilkc_PFOS/BW,
@@ -433,7 +434,7 @@ Variables_df <- Variables_df %>%
 # # varVlun <- approxfun(Variables_df$TIME, Variables_df$Vlun, rule = 2)
 # varVR <- approxfun(Variables_df$TIME, Variables_df$VR, rule = 2)
 # 
-# varOraldose_PFOA <- approxfun(Variables_df$TIME, Variables_df$Oraldose_PFOA, rule = 2)
+varOraldose_PFOA <- approxfun(Variables_df$TIME, Variables_df$Oraldose_PFOA, rule = 2)
 # varOraldose_PFOS <- approxfun(Variables_df$TIME, Variables_df$Oraldose_PFOS, rule = 2)
 # 
 # varDrinkdose_PFOA <- approxfun(Variables_df$TIME, Variables_df$Drinkdose_PFOA, rule = 2)
@@ -448,7 +449,7 @@ Variables_df <- Variables_df %>%
 # varTm_PFOA <- approxfun(Variables_df$TIME, Variables_df$Tm_PFOA, rule = 2)
 # varTm_PFOS <- approxfun(Variables_df$TIME, Variables_df$Tm_PFOS, rule = 2)
 
-age = 67
+age = 30
 
 kurine_PFOA <- Variables_df[[age, "kurine_PFOA"]]
 kurine_PFOS <- Variables_df[[age, "kurine_PFOS"]]
@@ -533,7 +534,7 @@ PFAS_extended <- function(t, A, parms) {
     # # Valv <- varValv(t)
     # # Vlun <- varVlun(t)
     # VR <- varVR(t)
-    # Oraldose_PFOA <- varOraldose_PFOA(t) # Dose expressed in ug/kg/day
+    Oraldose_PFOA <- varOraldose_PFOA(t) # Dose expressed in ug/kg/day
     # Oraldose_PFOS <- varOraldose_PFOS(t) # Dose expressed in ug/kg/day
     # Drinkdose_PFOA <- varDrinkdose_PFOA(t) # Dose expressed in ug/kg/day
     # Drinkdose_PFOS <- varDrinkdose_PFOS(t) # Dose expressed in ug/kg/day
@@ -650,7 +651,7 @@ PFAS_extended <- function(t, A, parms) {
     # dAart_PFOS <- QCP*Clun_bl_PFOS*Free_PFOS - QCP*Cart_PFOS*Free_PFOS - Qfil*Cart_PFOS*Free_PFOS 
     
     # Gut compartment 
-    dAG_PFOA <- QG*(CA_PFOA*Free_PFOA-CG_PFOA*FreeG_PFOA) #+ Oraldose_PFOA + Drinkdose_PFOA 
+    dAG_PFOA <- QG*(CA_PFOA*Free_PFOA-CG_PFOA*FreeG_PFOA) + Oraldose_PFOA + Drinkdose_PFOA 
     
     dAG_PFOS <- QG*(CA_PFOS*Free_PFOS-CG_PFOS*FreeG_PFOS) + Oraldose_PFOS + Drinkdose_PFOS 
     
@@ -740,7 +741,7 @@ parms_PFAS_extended <- c(Kt_PFOA,
 # Initial values
 A_init_PFAS_extended <- c(            ASk_PFOA = 0,#ASk_PFOA_background,
                                       APlas_PFOA = 0, #APlas_PFOA_background,
-                                      AG_PFOA = 0.048*BW, #AG_PFOA_background,
+                                      AG_PFOA = 0, #0.048*BW, #AG_PFOA_background,
                                       AL_PFOA = 0, #AL_PFOA_background, # Initial amount in liver (ug)
                                       AF_PFOA = 0, #AF_PFOA_background,
                                       AK_PFOA = 0, #AK_PFOA_background,
@@ -813,7 +814,7 @@ write.csv(output.df, file = here(OUTPUT, "RESULTS_EFSA 2020.csv"))
 
 # PFOA concentration in plasma (ug/L)
 Figure_PFAS <- ggplot() +
-  geom_line(data=output.df, aes(x=time, y=CA_PFOA, color="CA_PFOA", lty="CA_PFOA")) +
+  geom_line(data=output.df, aes(x=time/365, y=CA_PFOA, color="CA_PFOA", lty="CA_PFOA")) +
   # geom_line(data=output.df, aes(x=time, y=CA_PFOS, color="CA_PFOS", lty="CA_PFOS")) +
 
   scale_colour_manual(name='Output',
@@ -829,7 +830,7 @@ Figure_PFAS <- ggplot() +
                                  'CA_PFOS'='PFOS concentration in plasma')) +
 
   theme_bw() +
-  labs(title="PFAS concentration-time profiles",x="\nTime (d)", y="Concentration (\u03BCg/L)\n") +
+  labs(title="PFAS concentration-time profiles",x="\nTime (years)", y="Concentration (\u03BCg/L)\n") +
   theme(plot.title = element_text(hjust = 0.5))
 
 # tiff("EFSA 2020 - Figure PFAS kinetics.tif",
@@ -908,3 +909,19 @@ Figure_PFAS
 # Figure_PFAS
 # 
 # dev.off()
+
+
+
+CPlasma <- output.df[ , "CA_PFOA"] # ug/L or ng/ml
+Plasma <- (last(CPlasma))
+print(Plasma)
+
+CLiver <- output.df[ , "CL_PFOA"] # ug/L or ng/ml
+Liver <- (last(CLiver))
+print(Liver)
+
+CKidney <- output.df[ , "CK_PFOA"] # ug/L or ng/ml
+Kidney <- last(CKidney)
+print(Kidney)
+
+
