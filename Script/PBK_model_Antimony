@@ -2,157 +2,357 @@ model NG_PBK_PFOA()
 
 ## COMPARTMENTS
 ## := (value changes over time) ##
-   compartment IL         := V_IL         ## Compartment of Intestinal lumen (volume in L)
-   compartment I          := V_I          ## Compartment of Intestinal tissue (volume in L)
-   compartment Fe          = 1            ## Compartment of storage of Feces
-   compartment L_ec       := VL_ec        ## Compartment of Liver extracellular space (volume in L)
-   compartment L_ic       := VL_ic        ## Compartment of Liver intracellular space (volume in L)
-   compartment PTT        := VPTT         ## Compartment of Kidney proximal tubule tissue (volume in L)
-   compartment PTL        := VPTL         ## Compartment of Kidney proximal tubule lumen (volume in L)
-   compartment RKT        := VRKT         ## Compartment of Kidney rest of kidney tissue (volume in L)
-   compartment RKL        := VRKL         ## Compartment of Kidney rest of kidney lumen (volume in L)
-   compartment Ur          = 1            ## Compartment of storage of Urine
-   compartment A          := VA           ## Compartment of Adipose (volume in L)
-   compartment R          := VR           ## Compartment of Rest (volume in L)
-   compartment P          := VP           ## Compartment of Plasma (volume in L)
-   compartment Mp          = 1            ## Compartment of storage of Menstrual plasma
+
+     compartment P          := VP           ##   compartment of Plasma (volume in L)
+     compartment IL         := V_IL         ##   compartment of Intestinal lumen (volume in L)
+     compartment I          := V_I          ##   compartment of Intestinal tissue (volume in L)
+     compartment L_ec       := VL_ec        ##   compartment of Liver extracellular space (volume in L)
+     compartment L_ic       := VL_ic        ##   compartment of Liver intracellular space (volume in L)
+     compartment PTT        := VPTT         ##   compartment of Kidney proximal tubule tissue (volume in L)
+     compartment PTL        := VPTL         ##   compartment of Kidney proximal tubule lumen (volume in L)
+     compartment RKT        := VRKT         ##   compartment of Kidney rest of kidney tissue (volume in L)
+     compartment RKL        := VRKL         ##   compartment of Kidney rest of kidney lumen (volume in L)
+     compartment A          := VA           ##   compartment of Adipose (volume in L)
+     compartment R          := VR           ##   compartment of Rest (volume in L)
+     compartment Fe          = 1            ##   compartment of storage of Feces
+     compartment Ur          = 1            ##   compartment of storage of Urine
+     compartment Mp          = 1            ##   compartment of storage of Menstrual plasma
+
 
 ## SPECIES
 ## substanceOnly to indicate that only PFOA amounts change ##
-   substanceOnly species AIL       in IL     ## Quantity of chemical in Intestinal lumen (in ug)
-   substanceOnly species AI        in I      ## Quantity of chemical in Intestinal tissue (in ug)
-   substanceOnly species AFe       in Fe     ## Cumulative quantity of chemical in Feces (in ug)
-   substanceOnly species AL_ec     in L_ec   ## Quantity of chemical in Liver extracellular space (in ug)
-   substanceOnly species AL_ic     in L_ic   ## Quantity of chemical in Liver intracellular space (in ug)
-   substanceOnly species APTT      in PTT    ## Quantity of chemical in Kidney proximal tubule tissue (in ug)
-   substanceOnly species APTL      in PTL    ## Quantity of chemical in Kidney proximal tubule lumen (in ug)
-   substanceOnly species ARKT      in RKT    ## Quantity of chemcial in Kidney rest of kidney tissue (in ug)
-   substanceOnly species ARKL      in RKL    ## Quantity of chemical in Kidney rest of kidney lumen (in ug)
-   substanceOnly species AUr       in Ur     ## Cumulative quantity of chemical in Urine (in ug)
-   substanceOnly species AA        in A      ## Quantity of chemical in Adipose (in ug)
-   substanceOnly species AR        in AR     ## Quantity of chemical in Rest (in ug)
-   substanceOnly species AP        in AP     ## Quantity of chemical in Plasma (in ug)
-   substanceOnly species AMp       in Mp     ## Cumulative quantity of chemical in Menstrual plasma (in ug)
+
+     substanceOnly species AP        in AP     ## Quantity of chemical in Plasma (in ug)
+     substanceOnly species AIL       in IL     ## Quantity of chemical in Intestinal lumen (in ug)
+     substanceOnly species AI        in I      ## Quantity of chemical in Intestinal tissue (in ug)
+     substanceOnly species AL_ec     in L_ec   ## Quantity of chemical in Liver extracellular space (in ug)
+     substanceOnly species AL_ic     in L_ic   ## Quantity of chemical in Liver intracellular space (in ug)
+     substanceOnly species APTT      in PTT    ## Quantity of chemical in Kidney proximal tubule tissue (in ug)
+     substanceOnly species APTL      in PTL    ## Quantity of chemical in Kidney proximal tubule lumen (in ug)
+     substanceOnly species ARKT      in RKT    ## Quantity of chemcial in Kidney rest of kidney tissue (in ug)
+     substanceOnly species ARKL      in RKL    ## Quantity of chemical in Kidney rest of kidney lumen (in ug)
+     substanceOnly species AA        in A      ## Quantity of chemical in Adipose (in ug)
+     substanceOnly species AR        in AR     ## Quantity of chemical in Rest (in ug)
+     substanceOnly species AFe       in Fe     ## Cumulative quantity of chemical in Feces (in ug)
+     substanceOnly species AUr       in Ur     ## Cumulative quantity of chemical in Urine (in ug)
+     substanceOnly species AMp       in Mp     ## Cumulative quantity of chemical in Menstrual plasma (in ug)
+
 
 ## INITIAL AMOUNTS
-   AIL    = 0    ## Initial amount in IL (in ug)
-   AI     = 0    ## Initial amount in I (in ug)
-   AFe    = 0    ## Initial amount in Fe (in ug)
-   AL_ec  = 0    ## Initial amount in L_ec (in ug)
-   AL_ic  = 0    ## Initial amount in L_ic (in ug)
-   APTT   = 0    ## Initial amount in PTT (in ug)
-   APTL   = 0    ## Initial amount in PTL (in ug)
-   ARKT   = 0    ## Initial amount in RKT (in ug)
-   ARKL   = 0    ## Initial amount in RKL (in ug)
-   AUr    = 0    ## Initial amount in Ur (in ug)
-   AA     = 0    ## Initial amount in A (in ug)
-   AR     = 0    ## Initial amount in R (in ug)
-   AP     = 0    ## Initial amount in A (in ug)
-   AMp     = 0    ## Initial amount in Mp (in ug)
+
+    AP     = 0    ## Initial amount in A (in ug)
+    AIL    = 0    ## Initial amount in IL (in ug)
+    AI     = 0    ## Initial amount in I (in ug)
+    AL_ec  = 0    ## Initial amount in L_ec (in ug)
+    AL_ic  = 0    ## Initial amount in L_ic (in ug)
+    APTT   = 0    ## Initial amount in PTT (in ug)
+    APTL   = 0    ## Initial amount in PTL (in ug)
+    ARKT   = 0    ## Initial amount in RKT (in ug)
+    ARKL   = 0    ## Initial amount in RKL (in ug)
+    AA     = 0    ## Initial amount in A (in ug)
+    AR     = 0    ## Initial amount in R (in ug)
+    AFe    = 0    ## Initial amount in Fe (in ug)
+    AUr    = 0    ## Initial amount in Ur (in ug)
+    AMp    = 0    ## Initial amount in Mp (in ug)
+
 
 ## PARAMETERS
 
-   # Time parameters
+    # Time parameters
    
-   Age := / 365     ## Age (in years)
+    Age := / 365     ## Age (in years)
    
-   # PHYSIOLOGICAL PARAMETERS
    
-      ## Constants
-      ## Assumed to be the same over lifetime ##
-      VILc     = 10  ## Example number, this fractional volume is assumed to be constant over time
-      SA_SIc   = ## small intestinal surface area, body weight corrected
-      VL_icc   = ## fractional volume of liver intracellular space
-      VL_ecc   = ## fractional volume of liver extracellular space
-      VPTc     = ## fractional volume of kidney proximal tubule
-      VPTTc    = ## fractional volume of kidney proximal tubule tissue
-      VPTLc    = ## fractional volume of kidney proximal tubule lumen
-      VRKLc    = ## fractional volume of kidney rest of kidney lumen
-      VTotc    = 0.94 
-      QTotc    = 0.96
-      QUrc     = ## fractional urine excretion flow
-      QTc      = ## fractional proximal tubuli fluid flow
-      tco      = ## bowel residence time
-     
-      ## Bodyweight over lifetime (in kg)
-      BW         := (3.938425 + 0.7518199*Age*12 - 0.02023793*(Age*12)^2 + 0.0002921682*(Age*12)^3 - 2.06762e-06*(Age*12)^4 + 8.469e-09*(Age*12)^5 - 2.188427e-11*(Age*12)^6 + 3.699776e-14*(Age*12)^7 - 4.099077e-17*(Age*12)^8 + 2.874804e-20*(Age*12)^9 - 1.159732e-23*(Age*12)^10 + 2.052602e-27*(Age*12)^11)
-      
-      ## Hematocrit over lifetime
-      Hct
-      
-      ## Plasma flow over lifetime (in L/day)
-      QC
-      
-      ## Glomerular filtration over lifetime (in L/day)
-      GFR
-      
-      ## Serum albumin concentration over lifetime (in mg/ml)
-      Salb
-      
-      # Fractional volume of organs over lifetime
-      ## piecewise, function for a polynomial ##
-      VIc      := piecewise((0.0021) + (-8.2562e-05*(Age^2) + 1.3523e-03*Age + 1.293e-02), Age < 16, (0.0021) + 0.014)
-      VLc      :=
-      VKc      :=
-      VAc      :=
-      MAc      := ## adipose mass
-      VPc      :=
-      
-      # Fractional plasma flow of organs over lifetime
-      QIc      := 
-      QLc      := 
-      QKc      :=
-      QAc      :=
-      
-      # Volume of organs (in L)
-      V_IL       := VIcL * BW
-      V_I        := VIc * BW
-      VL         := VLc * BW                  
-      VL_ic      := VL_icc * VL
-      VL_ec      := VL_ecc * VL 
-      VK         := VKc * BW 
-      VPT        := VPTc * VK
-      VPTT       := VPT * VPTTc
-      VPTL       := VPT * VPTLc
-      VRKL       := (VK - VPT) * VRKLc      ## can this be done in this section? ##
-      VRKT       := VK - VPTT - VPTL - VRKL ## can this be done in this section? ##
-      VA         := VAc * BW/0.9 + MAc/0.9  
-      VP         := VPc * (1-Hct) * BW
-      VTot       := VTotc * BW
-      VR         := VTot - (VI + VL + VK + VA + VP)
-      
-      # Surface aeria (in cm2)
-      SA_SI      := SA_SIc * BW
-      
-      # Plasma flow of organs (in L/d)
-      QI         := QIc/QTotc * QC
-      QL         := QLc/QTotc * QC
-      QK         := QKc/QTotc * QC
-      QA         := QAc/QTotc * QC
-      QR         := QC - (QA + QI + QK + QL)
-      
-      # Other body fluid flows (in L/d)
-      QT         := QTc * GFR ## proximal tubule fluid flow
-  
-   # PHYSICOCHEMICAL PARAMETERS
+    # PHYSIOLOGICAL PARAMETERS
    
+        ## Bodyweight over lifetime (in kg)
+       
+        BW_M       := (3.938425 + 0.7518199*Age*12 - 0.02023793*(Age*12)^2 + 0.0002921682*(Age*12)^3 - 2.06762e-06*(Age*12)^4 + 8.469e-09*(Age*12)^5 - 2.188427e-11*(Age*12)^6 + 3.699776e-14*(Age*12)^7 - 4.099077e-17*(Age*12)^8 + 2.874804e-20*(Age*12)^9 - 1.159732e-23*(Age*12)^10 + 2.052602e-27*(Age*12)^11)
 
-   # BIOKINETIC PARAMETERS
+
+        ## Hematocrit over lifetime
+        
+        Param1_M    = 33.455469
+        Param2_M    = 53.206039
+        Param3_M    = 8.277945
+        Param4_M    = 40.492556
+        Param5_M    = 46.899695
+      
+        b1_M        = (Param4_M - Param1_M -(Param2_M - Param1_M) * exp(-Param3_M))/5
+        a1_M        = Param4_M - 6*b1_M
+        b2_M        = (Param5_M - Param4_M)/5
+        a2_M        = Param4_M - 15*b2_M
+      
+        ## ??? is this correct ???
+        Hct_ven    := piecewise(Param5_M*0.01, age < 1, (Param1_M +(Param2_M-Param1_M)*exp(-Param3_M*age))*0.01, age < 6, (a1_M + b1_M*age)*0.01, age < 15, Param4_M*0.01, age < 20, (a2_M + b2_M*age)*0.01)
+        Hct        := Hct_ven*0.91
+      
+        ## Plasma flow over lifetime (in L/day)
+        ## ??? QC uses the hematocrit, can this be done here ???
+        
+        QC         := piecewise((-0.000895*age^2 + 0.0607*age + 5.54)*(1-Hct_M)*60*24, age < 33.37, (6.642 + (0.6 - 6.642)*exp(-0.1323*age))*(1-Hct_M)*60*24)
+
+
+        ## Glomerular filtration over lifetime (in L/day)
+        
+        SCr_M       = 0.90
+        SCrQ_M     := piecewise(SCr_M, age < 18, 0.1678 + ((0.90  - 0.1678) / 18) * age)
+        BSA_M       = exp(-3.75 + 0.42*log(BH_M)+0.52*log(BW_M))
+        GFR_M_base  = (107.3 * 1.44*(BSA_M)/1.73) / (SCr_M/SCrQ_M)
+        GFR        := piecewise(GFR_M_base * 0.988^(age - 40), age <= 40, GFR_M_base)
+   
+   
+        ## Serum albumin concentration over lifetime (in mg/ml)
+        
+        Salb       := 3.9330e+01 + (5.8156e-01*age) - (1.9072e-02*(age^2)) + (2.3220e-04*(age^3)) - (1.0313e-06*(age^4))
+
+
+        ## Constants, fractional volume of organs over lifetime
+        
+        V_adrenalFraction_M            := 0.0002 + (0.00171 - 0.0002)*exp(-2.02*age)
+        V_boneFraction_M               := (0.313 + (0.506 - 0.313)*exp(-0.0907*age))*0.095
+        V_bonenonperfusedFraction_M    := 0.095 -   V_boneFraction_M
+        V_brainFraction_M              := (1.450 + (0.353 - 1.450) * exp (-0.440*age))/BW
+        V_breastFraction_M             := 3.42E-4*1/(1 + exp(-1.42*age + 20.1))
+        V_heartFraction_M              := 0.0045
+        V_marrowFraction_M             := 0.05 + (0.0138 - 0.05)*exp(-0.112*age)
+        MuscleAtrophy_M                := piecewise(-0.0001264*age^2 + 0.006131*age + 0.926, age < 24.3, 1)
+        V_muscleFraction_M             := (0.3973 + (0.201 - 0.3973)*exp(-0.141*age)) * MuscleAtrophy_M
+        V_reproFraction_M              := piecewise(0.0008, age < 20.01, -1.5156E-07*age^3 + 9.3351E-06*age^2 - 1.1177E-04*age + 4.7966E-04)
+        V_pancreasFraction_M            = 0.00192
+        V_skinFraction_M               := piecewise(0.0452, age < 20.01, -1.1706E-05*age^3 + 5.4130E-04*age^2 - 6.1966E-03*age + 4.6231E-02)
+        V_spleenFraction_M              = 0.0021
+        V_thyroidFraction_M             = 0.000274
+        V_urinarytractFraction_M        = 0.00104
+        V_kidneyFraction_M             := 0.0042 + (0.00767 - 0.0042)*exp(-0.206*age)
+        V_lungFraction_M                = 0.0068
+        V_gutFraction_M                := piecewise(0.0140, age < 16, -0.000082562*age^2 + 0.0013523*age + 0.01293)
+        V_stomachFraction_M             = 0.0021  
+        V_liverFraction_M              := 0.0247 + (0.0409 - 0.0247)*exp(-0.218*age)
+        V_bloodFraction_M              := piecewise(0.0761 + (0.0289 - 0.0761)*exp(-0.592*age), age < 1, (-0.0273*age + 0.0771))
+        
+        
+        ## Constants, assumed to be the same over lifetime ##
+        
+        L        = 280                    ## length of the small intestine in cm, (adult of 70kg) Willmann2004 doi: 10.1021/jm030999b
+        R        = 1.75                   ## radius of the small intestine cm, (adult of 70kg mean value) Willmann2004 doi: 10.1021/jm030999b
+        VIL      = pi*L*(R^2)/1000        ## volume of the intestinal lumen in L, cm3/1000 #Value is the same as Punt et al. 2021 https://dx.doi.org/10.1021/acs.chemrestox.0c00307
+        VILc     = VIL/70                 ## deriving the constant by dividing by the BW of an adult of 70kg (Willmann2004 doi: 10.1021/jm030999b)
+        SA_SIc   = 2*pi*R*L*25/70         ## small intestinal surface area, body weight corrected
+        VL_icc   = 0.573                  ## fractional volume of liver intracellular space
+        VL_ecc   = 1 - 0.573              ## fractional volume of liver extracellular space
+        VPTc     = 0.398                  ## fractional volume of kidney proximal tubule
+        VPTTc    = 0.137*(1-Hct) + 0.460  ## fractional volume of kidney proximal tubule tissue (VPTTc = VPTBc*(1-Hct) + VPTCc, where VPTBc = 0.137 and VPTCc = 0.460)
+        VPTLc    = 0.403                  ## fractional volume of kidney proximal tubule lumen
+        VRKLc    = 0.283                  ## fractional volume of kidney rest of kidney lumen
+        VTotc    = 0.94                   ## fractional total body volume 
+        QTotc    = 0.96                   ## fractional total blood flow
+        QUrc     = 0.022                  ## fractional urine excretion flow, urine flow rate to the bladder 22 mL/kg BW/d [ICRP 89 page 161]
+        QTc      = 0.36                   ## fractional proximal tubuli fluid flow, based on reference values of GFR 120 and QT of 43.2 from Scotcher et al. 2016 https://doi.org/10.1016/j.ejps.2016.03.018 and Pletz
+        tco      = 0.14*24                ## bowel residence/transit time in the colon,/d, (24*/h) or 7h willmann2004 doi: 10.1021/jm030999b
+
+
+        ## Final constants used in the model ##
+        VIc      := V_gutFraction_M
+        VLc      := V_liverFraction_M
+        VKc      := V_kidneyFraction_M
+        MAc      := piecewise((-0.01129273*age^2 + 1.11817056*age + 56.74397436) - (74.16235828-(2*(74.16235828-57.19957758)/(exp(0.63466182*(age-13.31018000))+exp(0.05457656*(age-13.31018000)))), age < 19.00093277, 0)
+      
+        VAc      := 0.96 - V_adrenalFraction_M - V_boneFraction_M - V_bonenonperfusedFraction_M - V_brainFraction_M - V_breastFraction_M -V_heartFraction_M - 
+                  V_marrowFraction_M - V_muscleFraction_M - V_reproFraction_M -  V_pancreasFraction_M - V_skinFraction_M - V_spleenFraction_M - V_thyroidFraction_M - V_urinarytractFraction_M - V_kidneyFraction_M -
+                  V_lungFraction_M - V_gutFraction_M - V_stomachFraction_M - V_liverFraction_M - V_bloodFraction_M
+        VPc      := V_bloodFraction_M
+
+
+        # Fractional plasma flow of organs over lifetime
+        
+        QIc      := (V_gutFraction_M/0.0140)*0.144
+        QLc      := (V_liverFraction_M/0.0247)*0.065
+        QKc      := (V_kidneyFraction_M/0.0042)*0.196
+        QAc      := (V_adiposeFraction_M/0.20)*0.052
+
+
+        # Volume of organs (in L)
+        
+        V_IL     := VIcL * BW
+        V_I      := VIc * BW
+        VL       := VLc * BW                  
+        VL_ic    := VL_icc * VL
+        VL_ec    := VL_ecc * VL 
+        VK       := VKc * BW 
+        VPT      := VPTc * VK
+        VPTT     := VPT * VPTTc
+        VPTL     := VPT * VPTLc
+        VRKL     := (VK - VPT) * VRKLc      ## can this be done in this section? ##
+        VRKT     := VK - VPTT - VPTL - VRKL ## can this be done in this section? ##
+        VA       := VAc * BW/0.9 + MAc/0.9  
+        VP       := VPc * (1-Hct) * BW
+        VTot     := VTotc * BW
+        VR       := VTot - (VI + VL + VK + VA + VP)
+  
+        # Surface aeria (in cm2)
+        
+        SA_SI    := SA_SIc * BW
+        
+        # Plasma flow of organs (in L/d)
+        
+        QI       := QIc/QTotc * QC
+        QL       := QLc/QTotc * QC
+        QK       := QKc/QTotc * QC
+        QA       := QAc/QTotc * QC
+        QR       := QC - (QA + QI + QK + QL)
+        
+        # Other body fluid flows (in L/d)
+        QT       := QTc * GFR ## proximal tubule fluid flow
+  
+  
+     # PHYSICOCHEMICAL PARAMETERS
+   
+       MW = 414.07
+     
+       Calb_P    = SAlb                   ## g/L plasma (see above for values)
+       Calb_PTL  = 14.4e-3                ## g/L proximal tubule 
+       Calb_IL   = 0.007e-3               ## g/L intestinal lumen
+       Calb_L_ec = 0.0012e-3              ## g/L Liver extracellular 
+      
+       # Based on the Poulin and Theil 2009, below Table 6
+       # Albumin ratio
+       R_PTL    = Calb_P/Calb_PTL         ## plasma to proximal tubule lumen albumin ratio
+       R_L_ec   = Calb_P/Calb_L_ec        ## plasma to liver albumin ratio
+       R_IL     = Calb_P/Calb_IL          ## plasma to intestinal lumen albumin ratio
+     
+     
+       ## Distribution coefficients to different matrices 
+       logML    = 3.52                    ## 3.52 ± 0.08 from Ebert A., Allendorf F. et al (2020), https://dx.doi.org/10.1021/acs.est.0c00175  (Liposomes composed of POPC (1-palmitoyl-2-oleoyl-glycero-3-phosphocholine))
+       logSP    = 1.61                    ## 1.61 ± 0.15 from Allendorf, F., Goss, K.-U. and Ulrich, N. (2021), https://doi.org/10.1002/etc.4954  (Structural proteins from chicken breast fillet (actin & myosin 60-95%), Recovery 95%)
+       logALB   = 4.48                    ## Fischer et al 2024 logALB = 4.48±0.04 https://pubs.acs.org/doi/pdf/10.1021/acs.est.3c07415?ref=article_openPDF; 4.33                  ## 4.33 ± 0.05 from Allendorf, F., Goss, K.-U. and Ulrich, N. (2021), https://doi.org/10.1002/etc.4954 (BSA (fatty acid free) Molar ratio compound to BSA < 0.1 72-96h, Recovery 94%))
+       logSL    = -1.37                   ## -1.37 ± 0.01 from Allendorf, F., Goss, K.-U. and Ulrich, N. (2021), https://doi.org/10.1002/etc.4954 (Olive oil with a high fraction of unsaturated fatty acids, Recovery 95%)
+       logFABP  = 4.3                     ## calculated by Allendorf, F., Goss, K.-U. and Ulrich, N. (2021), https://doi.org/10.1002/etc.4954
+     
+       k_ML     = 10^logML                ## neutral phospholipids:water partition coefficient
+       k_SP     = 10^logSP                ## structural protein:water partition coefficient
+       k_ALB    = 10^logALB               ## albumin:water partition coefficient
+       k_SL     = 10^logSL                ## structural lipids:water partition coefficient
+       k_FABP   = 10^logFABP              ## fatty acid-binding protein:water partition coefficient
+     
+       ## Fraction unbound in plasma (equation for calculating fraction unbound in plasma was taken from https://doi.org/10.1021/acs.est.3c07415)
+     
+       DAlb     = 1.36                    ## kg/L density of albumin
+       D_ALB    = k_ALB*DAlb              ## L_w/L_hsa; distribution coefficient
+       FV_Alb   = SAlb*10^-3              ## kg/kg of albumin in serum
+       DGlob    = 1.20                    ## kg/L density of globulin
+       k_GLOB   = 10^2.16                 ## Lw/Kg_globulin; globulin/water partition coefficient 
+       D_Glob   = 10^2.16*DGlob           ## L_w/L_hsa; distribution coefficient
+       FV_Glob  = 0.031                   ## kg/kg of globulin in serum
+       FV_W     = 1 - FV_Alb - FV_Glob    ## serum mass balance
+     
+       fup      = 1/(1 + (D_ALB*(FV_Alb/FV_W)) + (D_Glob*(FV_Glob/FV_W)))
+     
+       ## Fraction unbound in tissues
+     
+       fu_PTL   = R_PTL*fup/(1 + ((R_PTL-1)*fup))     ## Proximal tubule lumen
+       fu_Lic   = R_L_ec*fup/(1 + ((R_L_ec-1)*fup))   ## Liver intracellular space
+
+
+     # BIOKINETIC PARAMETERS
+   
+       ## Uptake from the gastro-intestinal duct 
+     
+       Papp_SI          = 7.31 * 1e-6                            ## cm/s, 7.31 ± 0.43, Janssen et al. 2024 http://dx.doi.org/10.1007/s00204-024-03851-x, epiIntestinal
+       Vmax_OATP2B1c    = 0.001493                               ## umol/min/mg protein, 1493 ± 543 pmol/min/mg protein; Lin et al. 2023 http://dx.doi.org/10.1021/acs.est.2c05642 (pmol -> umol)
+       Km_OATP2B1c      = 148.68                                 ## umol/L, 148.68 ± 132.89 uM, Lin et al. 2023
+       REF_OATP2B1      = 1.6/0.812                              ## relative expression factor OATP2B1, calculated from: OATP2B1_vivo/OATP2B1_vitro (pmol/mg membrane protein / pmol/mg membrane protein); Lin et al. 2023 http://dx.doi.org/10.1021/acs.est.2c05642 tables7 and s6, ref23
+       mgOATP.mgI       = 0.13                                   ## mg of protein per mg intestine; Utsey et al. 2020 http://dx.doi.org/10.1124/dmd.120.090498
+       SF_OATP2B1       = mgOATP.mgI * REF_OATP2B1 * 1e6         ## (mg liver * 1e6 -> kg liver)
+     
+       CL_IL            = (Papp_SI*SA_SI*1e-3)*60*60*24          ## L/d, Intestinal lumen to intestinal tissue (calculations: cm/s -> L/s /1000 -> L/d *60*60*24)
+       VmaxOATP2B1      = Vmax_OATP2B1c*MW*60*24*SF_OATP2B1*VIL  ## ug/d
+       Km_OATP2B1       = Km_OATP2B1c*MW                         ## ug/L (uM -> ug/L)
+      
+     
+       ## Uptake to the liver
+     
+       Vmax_OATP1B1c   = 0.002305                                ## umol/min/mg protein, 2305 ± 295 pmol/min/mg protein, Lin et al. 2023 (pmol -> umol)
+       Km_OATP1B1c     = 52.65                                   ## umol/L, 52.65 ± 23.28 uM, Lin et al. 2023
+       Vmax_OATP1B3c   = 0.002694                                ## umol/min/mg protein, 2694 ± 470 pmol/min/mg protein, Lin et al. 2023 (pmol -> umol)
+       Km_OATP1B3c     = 91.61                                   ## umol/L, 91.61 ± 47.70 uM, Lin et al. 2023
+       REF_OATP1B1     = 2/0.120                                 ## relative expression factor OATP1B1, calculated from: OATP1B1_vivo / OATP1B1_vitro  (pmol/mg membrane protein/pmol/mg membrane protein); Lin et al. 2023 http://dx.doi.org/10.1021/acs.est.2c05642 tables7 and s6, ref23
+       REF_OATP1B3     = 1/0.719                                 ## relative expression factor OATP1B3, calculated from: OATP1B3_vivo / OATP1B3_vitro  (pmol/mg membrane protein/pmol/mg membrane protein); Lin et al. 2023 http://dx.doi.org/10.1021/acs.est.2c05642 tables7 and s6, ref23
+       mgOATP.mgL      = 0.18                                    ## mg of protein per mg liver; Utsey et al. 2020 http://dx.doi.org/10.1124/dmd.120.090498
+       SF_OATP1B1      = mgOATP.mgL * REF_OATP1B1 * 1e6          ## (mg liver * 1e6 -> kg liver)
+       SF_OATP1B3      = mgOATP.mgL * REF_OATP1B3 * 1e6          ## (mg liver * 1e6 -> kg liver)
+     
+       Vmax_OATP1B1    = Vmax_OATP1B1c*MW*60*24*SF_OATP1B1*VL_ec ## ug/d
+       Km_OATP1B1      = Km_OATP1B1c*MW                          ## ug/L (uM -> ug/L)
+       Vmax_OATP1B3    = Vmax_OATP1B3c*MW*60*24*SF_OATP1B3*VL_ec ## ug/d
+       Km_OATP1B3      = Km_OATP1B3c*MW     
+     
+     
+       ## Biliary clearance
+     
+       Vmax_BSEPc      = 7                                       ## umol/min/mg BSEP, Average active transport of bile acids, assuming that the maximum velocity of PFOA transport by BSEP corresponds to that of bile acids ; de Bruijn et al. 2024 https://doi.org/10.14573/altex.2302011 
+       Km_BSEPc        = 16.4                                    ## umol/L, uM, Average affinity constant of bile acids to BSEP, following the above assumption ; de Bruijn et al. 2024 https://doi.org/10.14573/altex.2302011
+       mgBSEP.HC       = 0.839 * 140000 * 1e-9                   ## mg BSEP/1e6 hepatocytes (0.839 pmole BSEP/1e6 hepatocytes (amound of BSEP per hepatocyte) * 140000 g/mole (MW BSEP) -> pg * 1e-9 -> mg) de Bruijn et al. 2024 https://doi.org/10.14573/altex.2302011]
+       HC.GL           = 99                                      ## 1e6 hepatocytes in the liver ; de Bruijn et al. 2024 https://doi.org/10.14573/altex.2302011
+       SF_BSEP         = mgBSEP.HC * HC.GL * 1e3                 ## Scaling factor for BSEP mediated hepatic efflux for GCA and GCDC ; de Bruijn et al. 2024 https://doi.org/10.14573/altex.2302011
+     
+       Vmax_BSEP       = Vmax_BSEPc*MW*60*24*SF_BSEP*VL_ic       ## ug/d
+       Km_BSEP         = Km_BSEPc*MW                             ## ug/L (uM -> ug/L)
+      
+     
+       ## Renal Clearance
+       Vmax_OAT4c      = 4.5 *1e-3                               ## umol/min/mg protein, Louisse et al. 2024 doi.org/10.1016/j.tox.2024.153961 (nmol -> umol)
+       Km_OAT4c        = 47                                      ## ug/L, scaled from uM, Louisse et al. 2024 doi.org/10.1016/j.tox.2024.153961
+       REF_OAT4        = 1.9/0.063                               ## relative expression factor OAT,  calculated from: OAT4_vivo / OAT4_vitro  (pmol/mg membrane protein/ pmol/mg membrane protein); in vivo: Al-Madjoub et al 2021 (https://doi.org/10.1002/cpt.2396), in vitro:; Lin et al. 2023 http://dx.doi.org/10.1021/acs.est.2c05642 tables5
+       mgOAT.mgK       = 0.17                                    ## mg of protein per mg kidney; Utsey et al. 2020 http://dx.doi.org/10.1124/dmd.120.090498
+       SF_OAT          = mgOAT.mgK * REF_OAT4 * 1e6              ## (mg kidney * 1e6 -> kg kidney)
+     
+       Vmax_OAT4       = Vmax_OAT4c*MW*60*24*SF_OAT*VPT          ## ug/d (umol -> ug, min -> d)
+       Km_OAT4         = Km_OAT4c*MW                             ## ug/L (uM -> ug/L)
+     
+      
+     # Clearance via menstruation
+       CL_menses       = CL_menses                               ## L/d, plasma menstrual loss
    
 
 ## REACTIONS
 
-   # DISTRIBUTION
    ## The order does not matter ##
    ## Two processes can be summed if they concern the same flow ##
    ## One line per flow ##
-   J1_:    AIL       -> AI;       CL_IL*CIL + (VmaxOATP2B1/(Km_OATP2B1 + CIL))*CIL
-   J3_:    AL        -> AIL;      (Vmax_BSEP/(Km_BSEP + (CL_ic*fu_Lic)))*CL_ic*fu_Lic
-   J4_:    AI        -> AP;       QI*CVI
-   J5_:    AP        -> AI;       QI*CP
+   ### Where do I input the OD ???
+   
+      # DISTRIBUTION
+      
+      J1_:    AIL    -> AI;       CL_IL*CIL + (VmaxOATP2B1/(Km_OATP2B1 + CIL))*CIL
+      J3_:    AL_ic  -> AIL;      (Vmax_BSEP/(Km_BSEP + (CL_ic*fu_Lic)))*CL_ic*fu_Lic
+      
+      J4_:    AP     -> AI;       QI*CP
+      J5_:    AI     -> AP;       QI*CVI
+      J6_:    AI     -> AL_ec;    QI*CVI
+      
+      J7_:    AP     -> AL_ec;    QL*CP
+      J8_:    AL_ec  -> AP;       (QI + QL)*CVL_ec
+      J9_:    AL_ec  -> AL_ic;    (Vmax_OATP1B1/(Km_OATP1B1 + (CL_ec*fup)))*CL_ec*fup + (Vmax_OATP1B3/(Km_OATP1B3 + (CL_ec*fup)))*CL_ec*fup  
+      
+      J10_:   AP     -> APTT;     QK*CP
+      J11_:   APTT   -> ARKT;     QK*CPTT
+      J12_:   ARKT   -> AP;       QK*CVRKT
+      J13_:   AP     -> APTL;     fup*GFR*CP
+      J14_:   APTL   -> ARKL;     QT*CPTL
+      J15_:   APTL   -> APTT;     (Vmax_OAT4/(Km_OAT4+(CPTL*fu_PTL)))*CPTL*fu_PTL
+      J16_:   AP     -> AA;       QA*CP
+      J17_:   AA     -> AP;       QA*CVA 
+      J18_:   AP     -> AR;       QR*CP
+      J19_:   AR     -> AP;       QR*CVR
+      
+      # ELIMINATION
+      
+      J20_:   AIL    -> AFe;      tco*AIL
+      J21_:   ARKL   -> AUr;      QUr*CRKL
+      J22_:   AP     -> AMp;      CL_menses*CP
+
 
 ## 
-
-   J6_:    AIL       -> AFe;      tco*AIL
 
 end
