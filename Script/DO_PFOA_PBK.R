@@ -43,7 +43,7 @@
   Lifestage = "Yes" 
   
   # Choose to include population or individual exposure ("Yes" to include population based and "No" to only run the model for one person)
-  Population = "Yes" 
+  Population = "No" 
   
   # Choose study from input file, or ID_range
   Test_study = "CorrelationM" #Arvidsjaur, EFSA, EffectOfLifestageEq, Olsen, dummy, "Ratier"
@@ -93,17 +93,17 @@
     exp = exp_Oral + exp_Dermal # ug/kg/day 
     Tinput = 1 # for repeated exposure or so default = 1
     tinterval = 1 # for repeated exposure or so default = 1
-    expSTOP = 5*365 #7300 #50*365 # time in days after which the exposure stopped
+    expSTOP = 1 #5*365 #7300 #50*365 # time in days after which the exposure stopped
     
     # Subject-relevant information
-    expAGE = 0 #65  # years, old age at exposure if not provided then age argument is not used physiology is based on BW
+    expAGE = 30 #65  # years, old age at exposure if not provided then age argument is not used physiology is based on BW
     expBW = NA # 82 # kg, if not provided then the BW of the corresponding age and sex is taken; if both BW and Age are not given then a default BW = 70 is taken; if BW is higher than the BW from the lifestage equations then the actual BW overwrites the calculated one
-    sex = "F" # sex either "F" or "M" if none then default is "M"
+    sex = "M" # sex either "F" or "M" if none then default is "M"
     
     # Simulation relevant information
     Tstart = 0 # days, start of the simulation
-    Tstop = 15*365 # days, stop of the simulation
-    Dt = 1 #1/10000 # days, iteration steps (decrease/increase depending on run time)
+    Tstop = 1 # days, stop of the simulation
+    Dt = 1/1000 # days, iteration steps (decrease/increase depending on run time)
     
     
     RawData <- list(
