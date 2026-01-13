@@ -1,0 +1,592 @@
+model PBK_PFOA()
+
+# Units of the model :
+    unit time_unit = 86400 second;
+    unit day = 86400 second;
+    unit substance = microg;
+    unit microg_kg = 1e-6 gram/1000 gram;
+    unit microg = 1e-6 gram;
+    unit volume = 1 litre;
+    unit kg = 1000 gram;
+    unit L = 1 litre;
+    unit UNITLESS = dimensionless;
+    unit L_per_day = 1 litre / 86400 second;
+    unit microg_per_L = 1e-6 gram / 1 litre;
+    unit microg_per_day = 1e-6 gram / 86400 second;
+    unit microg_per_day_per_L = (1e-6 gram / 86400 second) / 1 litre;
+    unit g = 1 gram;
+
+# Compartments
+compartment Intestine_lumen;
+    Intestine_lumen is "intestine lumen"
+    Intestine_lumen has L;
+    Intestine_lumen := VIntestine_lumen
+
+compartment Intestine_tissue;
+    Intestine_tissue is "intestine tissue";
+    Intestine_tissue has L;
+    Intestine_tissue := VIntestine_tissue;
+
+compartment Liver_extracellular;
+    Liver_extracellular is "liver extracellular";
+    Liver_extracellular has L;
+    Liver_extracellular := VLiver_extracellular;
+
+compartment Liver_intracellular;
+    Liver_intracellular is "liver intracellular";
+    Liver_intracellular has L;
+    Liver_intracellular := VLiver_intracellular;
+
+compartment Plasma;
+    Plasma is "plasma";
+    Plasma has L;
+    Plasma := VPlasma;
+
+compartment Kidney_tubule_tissue;
+    Kidney_tubule_tissue is "kidney proximal tubule tissue";
+    Kidney_tubule_tissue has L;
+    Kidney_tubule_tissue := VKidney_tubule_tissue;
+
+compartment Kidney_tubule_lumen;
+    Kidney_tubule_lumen is "kidney proximal tubule lumen";
+    Kidney_tubule_lumen has L;
+    Kidney_tubule_lumen := VKidney_tubule_lumen;
+
+compartment Kidney_rest_tissue;
+    Kidney_rest_tissue is "kidney rest of kidney tissue";
+    Kidney_rest_tissue has L;
+    Kidney_rest_tissue := VKidney_rest_tissue;
+
+compartment Kidney_rest_lumen;
+    Kidney_rest_lumen is "kidney rest of kidney lumen";
+    Kidney_rest_lumen has L;
+    Kidney_rest_lumen := VKidney_rest_lumen;
+
+compartment Adipose;
+    Adipose is "adipose";
+    Adipose has L;
+    Adipose := VAdipose;
+
+compartment Rest;
+    Rest is "restbody";
+    Rest has L;
+    Rest := VRest;
+
+compartment Feces;
+    Feces is "feces";
+    Feces has L;
+    Feces = 1;
+
+compartment Urine;
+    Urine is "urine";
+    Urine has L;
+    Urine = 1;
+
+compartment Menstrual;
+    Menstrual is "menstrual plasma";
+    Menstrual has L;
+    Menstrual = 1;
+
+# Substances
+
+substanceOnly species AIntestine_lumen in Intestine_lumen;    
+    AIntestine_lumen is "amount of chemical in intestinal lumen";
+    AIntestine_lumen = 0;
+
+substanceOnly species AIntestine_tissue in Intestine_tissue;
+    AIntestine_tissue is "amount of chemical in intestinal tissue";
+    AIntestine_tissue = 0;
+
+substanceOnly species ALiver_extracellular in Liver_extracellular;
+    ALiver_extracellular is "amount of chemical in liver extracellular";
+    ALiver_extracellular = 0;
+
+substanceOnly species ALiver_intracellular in Liver_intracellular;
+    ALiver_intracellular is "amount of chemical in liver intracellular";
+    ALiver_intracellular = 0;
+
+substanceOnly species APlasma in Plasma;
+    APlasma is "amount of chemical in plasma";
+    APlasma = 0;
+
+substanceOnly species AKidney_tubule_tissue in Kidney_tubule_tissue;
+    AKidney_tubule_tissue is "amount of chemical in kidney tubule tissue";
+    AKidney_tubule_tissue = 0;
+
+substanceOnly species AKidney_tubule_lumen in Kidney_tubule_lumen;
+    AKidney_tubule_lumen is "amount of chemical in kidney tubule lumen";
+    AKidney_tubule_lumen = 0;
+
+substanceOnly species AKidney_rest_tissue in Kidney_rest_tissue;
+    AKidney_rest_tissue is "amount of chemical in rest kidney tissue";
+    AKidney_rest_tissue = 0;
+
+substanceOnly species AKidney_rest_lumen in Kidney_rest_lumen;
+    AKidney_rest_lumen is "amount of chemical in rest kidney lumen";
+    AKidney_rest_lumen = 0;
+
+substanceOnly species AAdipose in Adipose;
+    AAdipose is "amount of chemical in adipose";
+    AAdipose = 0;
+
+substanceOnly species ARest in Rest;
+    ARest is "amount of chemical in restbody";
+    ARest = 0;
+
+substanceOnly species AFeces in Feces;
+    AFeces is "cumulative amount of chemical in feces";
+    AFeces = 0;
+
+substanceOnly species AUrine in Urine;
+    AUrine is "cumulative amount of chemical in urine";
+    AUrine = 0;
+
+substanceOnly species AMenstrual in Menstrual;
+    AMenstrual is "cumulative amount of chemical in menstrual plasma";
+    AMenstrual = 0;
+
+# Parameters
+var BW;
+    BW is "bodyweight";
+    BW has L;
+    BW := 80.126;
+
+var QC;
+    QC is "Plasma cardiac output";
+    QC has L_per_day;
+    QC := 5388.262;
+
+var HCT;
+    HCT is "hematocrit";
+    HCT has UNITLESS;
+    HCT := 0.427;
+
+var VIntestine_lumen;
+    VIntestine_lumen is "volume of intestine lumen";
+    VIntestine_lumen has L;
+    VIntestine_lumen := VIntestine_lumenc * BW;
+
+    const VIntestine_lumenc;
+        VIntestine_lumenc is "volume fraction of intestine lumen";
+        VIntestine_lumenc has UNITLESS;
+        VIntestine_lumenc = 0.038;
+
+var VIntestine_tissue;
+    VIntestine_tissue is "volume of intestine tissue";
+    VIntestine_tissue has L;
+    VIntestine_tissue := VIntestine_tissuec * BW;
+
+    const VIntestine_tissuec; ## Lifetime equation gives negative value after 23 yo
+        VIntestine_tissuec is "volume fraction of intestine tissue";
+        VIntestine_tissuec has UNITLESS;
+        VIntestine_tissuec = 0.0140;
+
+var QIntestine;
+    QIntestine is "plasma flow to intestine";
+    QIntestine has L_per_day;
+    QIntestine := QIntestinec/0.96 * QC;
+
+    var QIntestinec;
+        QIntestinec is "Blood flow fraction to intestine tissue";
+        QIntestinec has UNITLESS;
+        QIntestinec := (VIntestine_tissuec/0.014) * 0.144;
+
+var VKidney;
+    VKidney is "volume of kidney";
+    VKidney has L;
+    VKidney := VKidneyc * BW;
+
+    var VKidneyc;
+        VKidneyc is "volume fraction of kidney";
+        VKidneyc has UNITLESS;
+        VKidneyc := 0.00421;
+
+var VKidney_tubule_tissue;
+    VKidney_tubule_tissue is "volume of kidney proximal tubule tissue";
+    VKidney_tubule_tissue has L;
+    VKidney_tubule_tissue := 0.398 * VKidney * (0.137 * (1 - HCT) + 0.46);
+
+var VKidney_tubule_lumen;
+    VKidney_tubule_lumen is "volume of kidney proximal tubule lumen";
+    VKidney_tubule_lumen has L;
+    VKidney_tubule_lumen := 0.398 * VKidney * 0.403;
+
+var VKidney_rest_tissue;
+    VKidney_rest_tissue is "volume of rest of kidney tissue";
+    VKidney_rest_tissue has L;
+    VKidney_rest_tissue := VKidney - VKidney_tubule_tissue - VKidney_tubule_lumen - VKidney_rest_lumen;
+
+var VKidney_rest_lumen;
+    VKidney_rest_lumen is "volume of rest of kidney lumen";
+    VKidney_rest_lumen has L;
+    VKidney_rest_lumen := (VKidney - (0.398 * VKidney)) * 0.283;
+
+var QKidney;
+    QKidney is "plasma flow to kidney";
+    QKidney has L_per_day;
+    QKidney:= QKidneyc / 0.96 * QC;
+
+    var QKidneyc;
+        QKidneyc is "blood fraction to kidney";
+        QKidneyc has UNITLESS;
+        QKidneyc := (VKidneyc / 0.00421) * 0.196;
+
+var VAdipose;
+    VAdipose is "volume of adipose tissue";
+    VAdipose has L;
+    VAdipose := VAdiposec * BW/0.9 + MAc/0.9;
+
+    var VAdiposec;
+        VAdiposec is "volume fraction of adipose tissue";
+        VAdiposec has UNITLESS;
+        VAdiposec := 0.96 - VAdrenalc - VBonec - VBonenonperfusedc - VBrainc - VBreastc - VHeartc - VMarrowc - VMusclec - VGonadc - VPancreasc - VSkinc - VSpleenc - VThyroidc - VUrinarytractc - VKidneyc - VLungc - VIntestine_tissuec - VStomachc - VLiverc - VBloodc;
+
+        var VAdrenalc;
+            VAdrenalc is "volume fraction of adrenal";
+            VAdrenalc has UNITLESS;
+            VAdrenalc := 2e-04;
+
+        var VBonec;
+            VBonec is "volume fraction of bone";
+            VBonec has UNITLESS;
+            VBonec := 0.032;
+
+        var VBonenonperfusedc;
+            VBonenonperfusedc is "volution fraction of bone perfused";
+            VBonenonperfusedc has UNITLESS;
+            VBonenonperfusedc := 0.095 - VBonec;
+
+        var VBrainc;
+            VBrainc is "volume fraction of brain";
+            VBrainc has UNITLESS;
+            VBrainc := 1.450/BW;
+
+        var VBreastc;
+            VBreastc is "volume fraction of breast";
+            VBreastc has UNITLESS;
+            VBreastc := 0.000342;
+
+        var VHeartc;
+            VHeartc is "volume fraction of heart";
+            VHeartc has UNITLESS;
+            VHeartc := 0.0045;
+
+        var VMarrowc;
+            VMarrowc is "volume fraction of marrow";
+            VMarrowc has UNITLESS;
+            VMarrowc := 0.047;
+
+        var VMusclec;
+            VMusclec is "volume fraction of muscle";
+            VMusclec has UNITLESS;
+            VMusclec := 0.390;
+
+        var VGonadc;
+            VGonadc is "volume fraction of gonads";
+            VGonadc has UNITLESS;
+            VGonadc := 0.001;
+
+        var VPancreasc;
+            VPancreasc is "volume fraction of pancreas";
+            VPancreasc has UNITLESS;
+            VPancreasc := 0.00192;
+
+        var VSkinc;
+            VSkinc is "volume fraction of skin";
+            VSkinc has UNITLESS;
+            VSkinc := 0.0488;
+
+        var VSpleenc;
+            VSpleenc is "volume fraction of spleen";
+            VSpleenc has UNITLESS;
+            VSpleenc := 0.0021;
+
+        var VThyroidc;
+            VThyroidc is "volume fraction of thyroid";
+            VThyroidc has UNITLESS;
+            VThyroidc := 0.000274;
+
+        var VUrinarytractc;
+            VUrinarytractc is "volume fraction of urinary tract";
+            VUrinarytractc has UNITLESS;
+            VUrinarytractc := 0.00104;
+
+        var VLungc;
+            VLungc is "volume fraction of lung";
+            VLungc has UNITLESS;
+            VLungc := 0.0068;
+
+        var VStomachc;
+            VStomachc is "volume fraction of stomach";
+            VStomachc has UNITLESS;
+            VStomachc := 0.0021;
+
+        var VBloodc;
+            VBloodc is "volume fraction of blood";
+            VBloodc has UNITLESS;
+            VBloodc := 0.0761;
+
+    var MAc;
+        MAc has UNITLESS;
+        MAc := 2.398;
+
+var QAdipose;
+    QAdipose is "plasma flow to adipose";
+    QAdipose has L_per_day;
+    QAdipose := QAdiposec /0.96 * QC;
+
+    var QAdiposec;
+        QAdiposec is "blood fraction to adipose tissue";
+        QAdiposec has UNITLESS;
+        QAdiposec := (VAdiposec/0.20)*0.052;
+
+var VRest;
+    VRest is "volume of restbody";
+    VRest has L;
+    VRest := 0.94 * BW - (VIntestine_tissue + VLiver + VKidney + VAdipose + VPlasma);
+
+var QRest;
+    QRest is "plasma flow to rest of the body";
+    QRest has L_per_day;
+    QRest := QC - (QAdipose + QIntestine + QKidney + QLiver);
+
+var VLiver;
+    VLiver is "volume of liver";
+    VLiver has L;
+    VLiver := VLiverc * BW;
+
+    const VLiverc;
+        VLiverc is "volume fraction of liver";
+        VLiverc has UNITLESS;
+        VLiverc = 0.0248;
+
+var QLiver;
+    QLiver is "plasma flow to liver";
+    QLiver has L_per_day;
+    QLiver:= QLiverc /0.96 * QC;
+
+    var QLiverc;
+        QLiverc is "blood fraction to liver";
+        QLiverc has UNITLESS;
+        QLiverc := (VLiverc/0.0247)*0.065;
+
+var VLiver_extracellular;
+    VLiver_extracellular is "volume of liver extracellular";
+    VLiver_extracellular has L;
+    VLiver_extracellular := VLiver * (1-0.573);
+
+var VLiver_intracellular;
+    VLiver_intracellular is "volume of liver intracellular";
+    VLiver_intracellular has L;
+    VLiver_intracellular := VLiver * 0.573;
+
+
+var VPlasma;
+    VPlasma is "volume of plasma";
+    VPlasma has L;
+    VPlasma := VBloodc * (1 - HCT) * BW;
+
+var kabs;
+    kabs is "Intestinal absorption";
+    kabs has L_per_day;
+    kabs := 0.694;
+
+var VmaxOATP2B1;
+    VmaxOATP2B1 is "Limiting rate of OAT P2B1";
+    VmaxOATP2B1 has microg_per_day;
+    VmaxOATP2B1 :=  VmaxOATP2B1c * VIntestine_lumen;
+
+    const VmaxOATP2B1c;
+        VmaxOATP2B1c is "Limiting rate of OAT P2B1 relativized by intestinal lumen volume";
+        VmaxOATP2B1c has microg_per_day_per_L;
+        VmaxOATP2B1c :=  228035946;
+
+var Km_OATP2B1;
+    Km_OATP2B1 is "Michaelis-Menten constant";
+    Km_OATP2B1 has microg_per_L;
+    Km_OATP2B1 := 61563.93
+
+var Vmax_OATP1B1;
+    Vmax_OATP1B1 is "Limiting rate of OAT P1B1";
+    Vmax_OATP1B1 has microg_per_day;
+    Vmax_OATP1B1 := Vmax_OATP1B1c * VLiver_extracellular;
+
+    var Vmax_OATP1B1c;
+        Vmax_OATP1B1c is "Limiting rate of OAT P1B1 relativized by extracellular liver";
+        Vmax_OATP1B1c has microg_per_day_per_L;
+        Vmax_OATP1B1c := 4123143432
+
+const Km_OATP1B1;
+    Km_OATP1B1 is "Michaelis_Menten constant";
+    Km_OATP1B1 has microg_per_L;
+    Km_OATP1B1 = 21800.79;
+
+var Vmax_OATP1B3;
+    Vmax_OATP1B3 is "Limiting rate of OAT P1B3";
+    Vmax_OATP1B3 has microg_per_day;
+    Vmax_OATP1B3 := Vmax_OATP1B3c * VLiver_extracellular;
+
+    var Vmax_OATP1B3c;
+        Vmax_OATP1B3c is "Limiting rate of OAT P1B3 relativized by extracellular liver";
+        Vmax_OATP1B3c has microg_per_day_per_L;
+        Vmax_OATP1B3c := 402140177;
+
+const Km_OATP1B3;
+    Km_OATP1B3 is "Michaelis_Menten constant";
+    Km_OATP1B3 has microg_per_L;
+    Km_OATP1B3 = 37932.95;
+
+const PIntestine;
+    PIntestine is "Partition coefficient plasma / intestine tissue";
+    PIntestine has UNITLESS;
+    PIntestine = 0.03431731;
+
+const PKidney;
+    PKidney is "Partition coefficient plasma / kidney";
+    PKidney has UNITLESS;
+    PKidney = 0.08494018;
+
+const PLiver;
+    PLiver is "Partition coefficient plasma / liver";
+    PLiver has UNITLESS;
+    PLiver = 0.07172916;
+
+const PAdipose;
+    PAdipose is "Partition coefficient plasma / adipose";
+    PAdipose has UNITLESS;
+    PAdipose = 0.09341268;
+
+const PRest;
+    PRest is "Partition coefficient plasma / Restbody";
+    PRest has UNITLESS;
+    PRest = 0.04101715;
+
+const Vmax_OAT4c;
+    Vmax_OAT4c is "Limiting rate of OAT4 relativized by kidney proximal tubule";
+    Vmax_OAT4c has microg_per_day_per_L;
+    Vmax_OAT4c = 13756588116;
+
+var Vmax_OAT4;
+    Vmax_OAT4 is "Limiting rate of OAT4";
+    Vmax_OAT4 has microg_per_day;
+    Vmax_OAT4 := Vmax_OAT4c * VKidney_tubule_tissue;
+
+const Km_OAT4;
+    Km_OAT4 is "Michaelis-Menten constant";
+    Km_OAT4 has microg_per_L;
+    Km_OAT4 := 19461.29;
+
+const Vmax_BSEPc;
+    Vmax_BSEPc is "Limiting rate of BSEP relativized by liver intracellular";
+    Vmax_BSEPc has microg_per_day_per_L;
+    Vmax_BSEPc = 48535498;
+
+var Vmax_BSEP;
+    Vmax_BSEP is "Limiting rate of BSEP";
+    Vmax_BSEP has microg_per_day;
+    Vmax_BSEP := Vmax_BSEPc * VLiver_intracellular;
+
+const Km_BSEP;
+    Km_BSEP is "Michaelis-Menten constant";
+    Km_BSEP has microg_per_L;
+    Km_BSEP = 6790.748;
+
+var CL_menses;
+    CL_menses is "Plasma menstrual loss";
+    CL_menses has L_per_day;
+    CL_menses := 0;
+
+const kfe;
+    kfe is "fecal excretion";
+    kfe has per_day;
+    kfe = 3.36;
+
+var GFR;
+    GFR is "glomerular filtration rate";
+    GFR has L_per_day;
+    GFR := 182.5913;
+
+var QUrine;
+    QUrine is "Urine secretion flow";
+    QUrine has L_per_day;
+    QUrine := 0.022 * BW;
+
+var QTubule;
+    QTubule is "proximaltubule fluid flow";
+    QTubule has L_per_day;
+    QTubule := 0.36 * GFR;
+
+var SAlb;
+    SAlb is "serum albumine concentration";
+    SAlb has UNITLESS;
+    SAlb := 45.15337;
+
+var fup;
+    fup is "fraction unbound in plasma";
+    fup has UNITLESS;
+    fup := 1/(1 + (41071.34*((SAlb*1e-3)/(1 - (SAlb*10^-3) - 0.031))) + (173.4528 * (0.031/(1 - (SAlb*1e-3) - 0.031))));
+
+var R_L_ec;
+    R_L_ec is "Albumin ratio between plasma and liver extracellular";
+    R_L_ec has UNITLESS;
+    R_L_ec := SAlb / 0.0012e-3;
+
+var fu_Liver_intracellular;
+    fu_Liver_intracellular is "fraction unbound in liver intracellular";
+    fu_Liver_intracellular has UNITLESS;
+    fu_Liver_intracellular := R_L_ec*fup/(1 + ((R_L_ec-1)*fup));
+
+var R_PTL;
+    R_PTL is "Albumin ratio between plasma and proximal tubule lumen";
+    R_PTL has UNITLESS;
+    R_PTL := SAlb / 14.4e-3;
+
+var fu_kidney_tubule;
+    fu_kidney_tubule is "fraction unbound in proximal tubule lumen";
+    fu_kidney_tubule has UNITLESS;
+    fu_kidney_tubule := R_PTL*fup/(1 + ((R_PTL-1)*fup));
+
+
+# EQUATION OF TRANSFER
+      
+    J1_:    AIntestine_lumen        -> AIntestine_tissue;       kabs * (AIntestine_lumen / VIntestine_lumen) + (VmaxOATP2B1/(Km_OATP2B1 + (AIntestine_lumen / VIntestine_lumen)))*(AIntestine_lumen / VIntestine_lumen)
+
+    J2_:    AIntestine_tissue       -> ALiver_extracellular;    QIntestine * (AIntestine_tissue / VIntestine_tissue / PIntestine)
+
+    J3_:    ALiver_extracellular    -> ALiver_intracellular;    (Vmax_OATP1B1/(Km_OATP1B1 + ((ALiver_extracellular/ VLiver_extracellular) * fup ))) * (ALiver_extracellular / VLiver_extracellular) * fup + (Vmax_OATP1B3/(Km_OATP1B3 + ((ALiver_extracellular/VLiver_extracellular)*fup)))*(ALiver_extracellular / VLiver_extracellular)*fup  
+
+    J4_:    ALiver_intracellular    -> AIntestine_lumen;        (Vmax_BSEP / (Km_BSEP + (ALiver_intracellular / VLiver_intracellular) * fu_Liver_intracellular)) * (ALiver_intracellular / VLiver_intracellular) * fu_Liver_intracellular;
+
+    J5_:    ALiver_extracellular    -> APlasma;                 (QIntestine + QLiver) * (ALiver_extracellular / VLiver_extracellular / PLiver);            
+
+    J6_:    APlasma                 -> ALiver_extracellular;    QLiver * (APlasma / VPlasma);
+
+    J7_:    APlasma                 -> AIntestine_tissue;       QIntestine * (APlasma / VPlasma);
+
+    J8_:    APlasma                 -> AKidney_tubule_tissue;   QKidney * (APlasma / VPlasma);
+
+    J9_:    APlasma                 -> AAdipose;                QAdipose * (APlasma / VPlasma);
+
+    J10_:   APlasma                 -> ARest;                   QRest * (APlasma / VPlasma);
+
+    J11_:   APlasma                 -> AKidney_tubule_lumen;    GFR * (APlasma / VPlasma) * fup;
+
+    J12_:   AAdipose                -> APlasma;                 QAdipose * (AAdipose / VAdipose / PAdipose);
+
+    J13_:   ARest                   -> APlasma;                 QRest * (ARest / VRest / PRest);
+
+    J14_:   AKidney_rest_tissue     -> APlasma;                 QKidney * (AKidney_rest_tissue / VKidney_rest_tissue / PKidney);
+
+    J15_:   AKidney_tubule_tissue   -> AKidney_rest_tissue;     QKidney * (AKidney_tubule_tissue / VKidney_tubule_tissue);
+
+    J16_:   AKidney_tubule_lumen    -> AKidney_rest_lumen;      QTubule * (AKidney_tubule_lumen / VKidney_tubule_lumen);
+
+    J17_:   AKidney_tubule_lumen    -> AKidney_tubule_tissue;   (Vmax_OAT4 / (Km_OAT4 + ((AKidney_tubule_lumen / VKidney_tubule_lumen) * fu_kidney_tubule))) * (AKidney_tubule_lumen / VKidney_tubule_lumen) * fu_kidney_tubule;
+
+    J18_:   AIntestine_lumen        -> AFeces;                  kfe * AIntestine_lumen;
+
+    J19_:   AKidney_rest_lumen      -> AUrine;                  QUrine * (AKidney_rest_lumen / VKidney_rest_lumen);
+
+    J20_:   APlasma                 -> AMenstrual;              CL_menses * (APlasma / VPlasma);
+
+end

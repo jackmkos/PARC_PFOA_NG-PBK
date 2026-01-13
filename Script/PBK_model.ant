@@ -1,0 +1,754 @@
+model *PBK_PFOA()
+
+  // Unit definitions:
+  unit time_unit = DAY;
+  unit day = 8.64e4 second;
+  unit substance = MicroGM;
+  unit microg = 1e-6 gram;
+  unit microg_kg = 1e-6 gram / 1e3 gram;
+  unit volume = L;
+  unit kg = 1e3 gram;
+  unit L = litre;
+  unit UNITLESS = dimensionless;
+  unit L_per_day = litre / 8.64e4 second;
+  unit microg_per_L = 1e-6 gram / litre;
+  unit microg_per_day = 1e-6 gram / 8.64e4 second;
+  unit microg_per_day_per_L = 1e-6 gram / (8.64e4 second * litre);
+  unit g = gram;
+  unit per_day = 1 / 8.64e4 second ;
+  unit DAY = 86400 second;
+  unit MicroGM = 1e-6 gram;
+  unit L_PER_DAY = litre / 86400 second;
+  unit MicroGM_PER_L = 1e-6 gram / litre;
+  unit MicroGM_PER_DAY = 1e-6 gram / 86400 second;
+
+  // Compartments and Compartment initializations:
+  compartment Intestine_lumen;
+    Intestine_lumen := VIntestine_lumen;
+    Intestine_lumen has L;
+
+  compartment Intestine_tissue;
+    Intestine_tissue := VIntestine_tissue;
+    Intestine_tissue has L;
+
+  compartment Liver_extracellular;
+    Liver_extracellular := VLiver_extracellular;
+    Liver_extracellular has L;
+  
+  compartment Liver_intracellular;
+    Liver_intracellular := VLiver_intracellular;
+    Liver_intracellular has L;
+  
+  compartment Plasma;
+    Plasma := VPlasma;
+    Plasma has L;
+  
+  compartment Kidney_proximal_tubule_tissue;
+    Kidney_proximal_tubule_tissue := VKidney_proximal_tubule_tissue;
+    Kidney_proximal_tubule_tissue has L;
+  
+  compartment Kidney_proximal_tubule_lumen;
+    Kidney_proximal_tubule_lumen := VKidney_proximal_tubule_lumen;
+    Kidney_proximal_tubule_lumen has L;
+  
+  compartment Kidney_rest_tissue;
+    Kidney_rest_tissue := VKidney_rest_tissue;
+    Kidney_rest_tissue has L;
+  
+  compartment Kidney_rest_lumen;
+    Kidney_rest_lumen := VKidney_rest_lumen;
+    Kidney_rest_lumen has L;
+
+  compartment Adipose;
+    Adipose := VAdipose;
+    Adipose has L;
+  
+  compartment Rest;
+    Rest := VRest;
+    Rest has L;
+
+  compartment Feces;
+    Feces = 1;
+    Feces has L;
+  
+  compartment Urine;
+    Urine = 1;
+    Urine has L;
+  
+  compartment Menstrual;
+    Menstrual = 1;
+    Menstrual has L;
+ 
+
+ 
+  // Species and Species initializations:
+  substanceOnly species AIntestine_lumen in Intestine_lumen;
+    AIntestine_lumen = 0;
+    AIntestine_lumen has microg_per_L;
+  
+  substanceOnly species AIntestine_tissue in Intestine_tissue;
+    AIntestine_tissue = 0;
+    AIntestine_tissue has microg_per_L;
+  
+  substanceOnly species ALiver_extracellular in Liver_extracellular;
+    ALiver_extracellular = 0;
+    ALiver_extracellular has microg_per_L;
+  
+  substanceOnly species ALiver_intracellular in Liver_intracellular;
+    ALiver_intracellular = 0;
+    ALiver_intracellular has microg_per_L;
+  
+  substanceOnly species APlasma in Plasma;
+    APlasma = 0;
+    APlasma has microg_per_L;
+  
+  substanceOnly species AKidney_proximal_tubule_tissue in Kidney_proximal_tubule_tissue;
+    AKidney_proximal_tubule_tissue = 0;
+    AKidney_proximal_tubule_tissue has microg_per_L;
+  
+  substanceOnly species AKidney_proximal_tubule_lumen in Kidney_proximal_tubule_lumen;
+    AKidney_proximal_tubule_lumen = 0;
+    AKidney_proximal_tubule_lumen has microg_per_L;
+  
+  substanceOnly species AKidney_rest_tissue in Kidney_rest_tissue;
+    AKidney_rest_tissue = 0;
+    AKidney_rest_tissue has microg_per_L;
+
+  substanceOnly species AKidney_rest_lumen in Kidney_rest_lumen;
+    AKidney_rest_lumen = 0;
+    AKidney_rest_lumen has microg_per_L;
+
+  substanceOnly species AAdipose in Adipose;
+    AAdipose = 0;
+    AAdipose has microg_per_L;
+
+  substanceOnly species ARest in Rest;
+    ARest = 0;
+    ARest has microg_per_L;
+
+  substanceOnly species AFeces in Feces;
+    AFeces = 0;
+    AFeces has microg_per_L;
+  
+  substanceOnly species AUrine in Urine;
+    AUrine = 0;
+    AUrine has microg_per_L;
+  
+  substanceOnly species AMenstrual in Menstrual;
+    AMenstrual = 0;
+    AMenstrual has microg_per_L;
+  
+  
+  // Parameters and their Assignment Rules and Variable initializations:
+  var BW;
+      BW has L;
+      BW := 80.126;
+
+  var QC;
+      QC has L_PER_DAY;
+      QC := 5388.262;
+  
+  var HCT;
+      HCT has UNITLESS;
+      HCT := 0.427;
+
+  var VIntestine_lumen;
+      VIntestine_lumen := VIntestine_lumenc*BW;
+      VIntestine_lumen has L;
+
+      const VIntestine_lumenc;
+            VIntestine_lumenc = 0.038;
+            VIntestine_lumenc has UNITLESS;
+
+  var VIntestine_tissue;
+      VIntestine_tissue := VIntestine_tissuec*BW;
+      VIntestine_tissue has L;
+
+      const VIntestine_tissuec;
+            VIntestine_tissuec = 0.014;
+            VIntestine_tissuec has UNITLESS;
+
+  var QIntestine;
+      QIntestine := (QIntestinec/0.96)*QC;
+      QIntestine has L_PER_DAY;
+
+      var QIntestinec;
+          QIntestinec := (VIntestine_tissuec/0.014)*0.144;
+          QIntestinec has UNITLESS;
+
+  var VKidney;
+      VKidney := VKidneyc*BW;
+      VKidney has L;
+
+      var VKidneyc;
+          VKidneyc := 0.00421;
+          VKidneyc has UNITLESS;
+
+  var VKidney_proximal_tubule_tissue;
+      VKidney_proximal_tubule_tissue := 0.398*VKidney*(0.137*(1 - HCT) + 0.46);
+      VKidney_proximal_tubule_tissue has L;
+
+  var VKidney_proximal_tubule_lumen;
+      VKidney_proximal_tubule_lumen := 0.398*VKidney*0.403;
+      VKidney_proximal_tubule_lumen has L;
+
+  var VKidney_rest_tissue;
+      VKidney_rest_tissue := VKidney - VKidney_proximal_tubule_tissue - VKidney_proximal_tubule_lumen - VKidney_rest_lumen;
+      VKidney_rest_tissue has L;
+
+  var VKidney_rest_lumen;
+      VKidney_rest_lumen := (VKidney - 0.398*VKidney)*0.283;
+      VKidney_rest_lumen has L;
+
+  var QKidney;
+      QKidney := (QKidneyc/0.96)*QC;
+      QKidney has L_PER_DAY;
+
+      var QKidneyc;
+          QKidneyc := (VKidneyc/0.00421)*0.196;
+          QKidneyc has UNITLESS;
+
+  var VAdipose;
+      VAdipose := VAdiposec*BW/0.9 + MAc/0.9;
+      VAdipose has L;
+
+      var VAdiposec;
+          VAdiposec := 0.96 - VAdrenalc - VBonec - VBonenonperfusedc - VBrainc - VBreastc - VHeartc - VMarrowc - VMusclec - VGonadc - VPancreasc - VSkinc - VSpleenc - VThyroidc - VUrinarytractc - VKidneyc - VLungc - VIntestine_tissuec - VStomachc - VLiverc - VBloodc;
+          VAdiposec has UNITLESS;
+        
+          var VAdrenalc;
+              VAdrenalc := 0.0002;
+              VAdrenalc has UNITLESS;
+
+          var VBonec;
+              VBonec := 0.032;
+              VBonec has UNITLESS;
+
+          var VBonenonperfusedc;
+              VBonenonperfusedc := 0.095 - VBonec;
+              VBonenonperfusedc has UNITLESS;
+
+          var VBrainc;
+              VBrainc := 1.45/BW;
+              VBrainc has UNITLESS;
+
+          var VBreastc;
+              VBreastc := 0.000342;
+              VBreastc has UNITLESS;
+
+          var VHeartc;
+              VHeartc := 0.0045;
+              VHeartc has UNITLESS;
+
+          var VMarrowc;
+              VMarrowc := 0.047;
+              VMarrowc has UNITLESS;
+
+          var VMusclec;
+              VMusclec := 0.39;
+              VMusclec has UNITLESS;
+
+          var VGonadc;
+              VGonadc := 0.001;
+              VGonadc has UNITLESS;
+
+          var VPancreasc;
+              VPancreasc := 0.00192;
+              VPancreasc has UNITLESS;
+
+          var VSkinc;
+              VSkinc := 0.0488;
+              VSkinc has UNITLESS;
+
+          var VSpleenc;
+              VSpleenc := 0.0021;
+              VSpleenc has UNITLESS;
+
+          var VThyroidc;
+              VThyroidc := 0.000274;
+              VThyroidc has UNITLESS;
+
+          var VUrinarytractc;
+              VUrinarytractc := 0.00104;
+              VUrinarytractc has UNITLESS;
+
+          var VLungc;
+              VLungc := 0.0068;
+              VLungc has UNITLESS;
+
+          var VStomachc;
+              VStomachc := 0.0021;
+              VStomachc has UNITLESS;
+
+          var VBloodc;
+              VBloodc := 0.0761;
+              VBloodc has UNITLESS;
+
+      var MAc;
+          MAc := 2.398;
+          MAc has UNITLESS;
+
+  var QAdipose;
+      QAdipose := (QAdiposec/0.96)*QC;
+      QAdipose has L_PER_DAY;
+
+      var QAdiposec;
+          QAdiposec := (VAdiposec/0.2)*0.052;
+          QAdiposec has UNITLESS;
+
+  var VRest;
+      VRest := 0.94*BW - (VIntestine_tissue + VLiver + VKidney + VAdipose + VPlasma);
+      VRest has L;
+
+  var QRest;
+      QRest := QC - (QAdipose + QIntestine + QKidney + QLiver);
+      QRest has L_PER_DAY;
+
+  var VLiver;
+      VLiver := VLiverc*BW;
+      VLiver has L;
+
+      const VLiverc;
+            VLiverc = 0.0248;
+            VLiverc has UNITLESS;
+
+  var VLiver_extracellular;
+      VLiver_extracellular := VLiver*(1 - 0.573);
+      VLiver_extracellular has L;
+
+  var VLiver_intracellular;
+      VLiver_intracellular := VLiver*0.573;
+      VLiver_intracellular has L;
+
+  var QLiver;
+      QLiver := (QLiverc/0.96)*QC;
+      QLiver has L_PER_DAY;
+
+      var QLiverc;
+          QLiverc := (VLiverc/0.0247)*0.065;
+          QLiverc has UNITLESS;
+
+  var VPlasma;
+      VPlasma := VBloodc*(1 - HCT)*BW;
+      VPlasma has L;
+
+  const PIntestine;
+        PIntestine = 0.03431731;
+        PIntestine has UNITLESS;
+  
+  const PKidney;
+        PKidney = 0.08494018;
+        PKidney has UNITLESS;
+  
+  const PLiver;
+        PLiver = 0.07172916;
+        PLiver has UNITLESS;
+
+  const PAdipose;
+        PAdipose = 0.09341268;
+        PAdipose has UNITLESS;
+
+  const PRest;
+        PRest = 0.04101715;
+        PRest has UNITLESS;
+
+  var kabs;
+      kabs := 0.694;
+      kabs has L_PER_DAY;
+
+  var VmaxOATP2B1;
+      VmaxOATP2B1 := VmaxOATP2B1c*VIntestine_lumen;
+      VmaxOATP2B1 has MicroGM_PER_DAY;
+
+      var VmaxOATP2B1c;
+          VmaxOATP2B1c := 228035946;
+          VmaxOATP2B1c has microg_per_day_per_L;
+
+  var Km_OATP2B1;
+      Km_OATP2B1 := 61563.93;
+      Km_OATP2B1 has MicroGM_PER_L;
+
+  var Vmax_OATP1B1;
+      Vmax_OATP1B1 := Vmax_OATP1B1c*VLiver_extracellular;
+      Vmax_OATP1B1 has MicroGM_PER_DAY;
+
+      var Vmax_OATP1B1c;
+          Vmax_OATP1B1c := 4123143432;
+          Vmax_OATP1B1c has microg_per_day_per_L;
+
+  const Km_OATP1B1;
+        Km_OATP1B1 = 21800.79;
+        Km_OATP1B1 has MicroGM_PER_L;
+
+  var Vmax_OATP1B3;
+      Vmax_OATP1B3 := Vmax_OATP1B3c*VLiver_extracellular;
+      Vmax_OATP1B3 has MicroGM_PER_DAY;
+
+      var Vmax_OATP1B3c;
+       Vmax_OATP1B3c := 402140177;
+       Vmax_OATP1B3c has microg_per_day_per_L;
+
+  const Km_OATP1B3;
+        Km_OATP1B3 = 37932.95;
+        Km_OATP1B3 has MicroGM_PER_L;
+
+  var Vmax_OAT4;
+      Vmax_OAT4 := Vmax_OAT4c*VKidney_proximal_tubule_tissue;
+      Vmax_OAT4 has MicroGM_PER_DAY;
+
+      const Vmax_OAT4c;
+            Vmax_OAT4c = 13756588116;
+            Vmax_OAT4c has microg_per_day_per_L;
+ 
+  var Km_OAT4;
+      Km_OAT4 := 19461.29;
+      Km_OAT4 has MicroGM_PER_L;
+
+  var Vmax_BSEP;
+      Vmax_BSEP := Vmax_BSEPc*VLiver_intracellular;
+      Vmax_BSEP has MicroGM_PER_DAY;
+
+      const Vmax_BSEPc;
+      Vmax_BSEPc = 48535498;
+      Vmax_BSEPc has microg_per_day_per_L;
+ 
+  const Km_BSEP;  
+        Km_BSEP = 6790.748;
+        Km_BSEP has MicroGM_PER_L;
+
+  var CL_menses;
+      CL_menses := 0;
+      CL_menses has L_per_day;
+
+  var GFR;
+      GFR := 182.5913;
+      GFR has L_PER_DAY;
+
+  var QUrine;
+      QUrine := 0.022*BW;
+      QUrine has L_PER_DAY;
+
+  var QTubule;
+      QTubule := 0.36*GFR;
+      QTubule has L_per_day;
+
+  var SAlb; 
+      SAlb := 45.15337;
+      SAlb has UNITLESS;
+
+  var fup;
+      fup := 1/(1 + 41071.34*(SAlb*0.001/(1 - SAlb*10^-3 - 0.031)) + 173.4528*(0.031/(1 - SAlb*0.001 - 0.031)));
+      fup has UNITLESS;
+
+  var R_L_ec;
+      R_L_ec := SAlb/1.2e-6;
+      R_L_ec has UNITLESS;
+
+  var fu_Liver_intracellular;
+      fu_Liver_intracellular := R_L_ec*fup/(1 + (R_L_ec - 1)*fup);
+      fu_Liver_intracellular has UNITLESS;
+
+  var R_PTL;
+      R_PTL := SAlb/0.0144;
+      R_PTL has UNITLESS;
+
+  var fu_Kidney_proximal_tubule;
+      fu_Kidney_proximal_tubule := R_PTL*fup/(1 + (R_PTL - 1)*fup);
+      fu_Kidney_proximal_tubule has UNITLESS;
+
+  const kfe;
+        kfe = 3.36;
+        kfe has per_day;
+
+  
+  // Reactions:
+  J1_: AIntestine_lumen                   -> AIntestine_tissue; kabs*(AIntestine_lumen/VIntestine_lumen) + (VmaxOATP2B1/(Km_OATP2B1 + AIntestine_lumen/VIntestine_lumen))*(AIntestine_lumen/VIntestine_lumen);
+  J2_: AIntestine_tissue                  -> ALiver_extracellular; QIntestine*(AIntestine_tissue/VIntestine_tissue/PIntestine);
+  J3_: ALiver_extracellular               -> ALiver_intracellular; (Vmax_OATP1B1/(Km_OATP1B1 + (ALiver_extracellular/VLiver_extracellular)*fup))*(ALiver_extracellular/VLiver_extracellular)*fup + (Vmax_OATP1B3/(Km_OATP1B3 + (ALiver_extracellular/VLiver_extracellular)*fup))*(ALiver_extracellular/VLiver_extracellular)*fup;
+  J4_: ALiver_intracellular               -> AIntestine_lumen; (Vmax_BSEP/(Km_BSEP + (ALiver_intracellular/VLiver_intracellular)*fu_Liver_intracellular))*(ALiver_intracellular/VLiver_intracellular)*fu_Liver_intracellular;
+  J5_: ALiver_extracellular               -> APlasma; (QIntestine + QLiver)*(ALiver_extracellular/VLiver_extracellular/PLiver);
+  J6_: APlasma                            -> ALiver_extracellular; QLiver*(APlasma/VPlasma);
+  J7_: APlasma                            -> AIntestine_tissue; QIntestine*(APlasma/VPlasma);
+  J8_: APlasma                            -> AKidney_proximal_tubule_tissue; QKidney*(APlasma/VPlasma);
+  J9_: APlasma                            -> AAdipose; QAdipose*(APlasma/VPlasma);
+  J10_: APlasma                           -> ARest; QRest*(APlasma/VPlasma);
+  J11_: APlasma                           -> AKidney_proximal_tubule_lumen; GFR*(APlasma/VPlasma)*fup;
+  J12_: AAdipose                          -> APlasma; QAdipose*(AAdipose/VAdipose/PAdipose);
+  J13_: ARest                             -> APlasma; QRest*(ARest/VRest/PRest);
+  J14_: AKidney_rest_tissue               -> APlasma; QKidney*(AKidney_rest_tissue/VKidney_rest_tissue/PKidney);
+  J15_: AKidney_proximal_tubule_tissue    -> AKidney_rest_tissue; QKidney*(AKidney_proximal_tubule_tissue/VKidney_proximal_tubule_tissue);
+  J16_: AKidney_proximal_tubule_lumen     -> AKidney_rest_lumen; QTubule*(AKidney_proximal_tubule_lumen/VKidney_proximal_tubule_lumen);
+  J17_: AKidney_proximal_tubule_lumen     -> AKidney_proximal_tubule_tissue; (Vmax_OAT4/(Km_OAT4 + (AKidney_proximal_tubule_lumen/VKidney_proximal_tubule_lumen)*fu_Kidney_proximal_tubule))*(AKidney_proximal_tubule_lumen/VKidney_proximal_tubule_lumen)*fu_Kidney_proximal_tubule;
+  J18_: AIntestine_lumen                  -> AFeces; kfe*AIntestine_lumen;
+  J19_: AKidney_rest_lumen                -> AUrine; QUrine*(AKidney_rest_lumen/VKidney_rest_lumen);
+  J20_: APlasma                           -> AMenstrual; CL_menses*(APlasma/VPlasma);
+
+  // Display Names:
+  
+  Intestine_lumen                  is "intestine lumen";
+  Intestine_tissue                 is "intestine tissue";
+  Liver_extracellular              is "liver extracellular";
+  Liver_intracellular              is "liver intracellular";
+  Plasma                           is "plasma";
+  Kidney_proximal_tubule_tissue    is "kidney proximal tubule tissue";
+  Kidney_proximal_tubule_lumen     is "kidney proximal tubule lumen";
+  Kidney_rest_tissue               is "kidney rest of kidney tissue";
+  Kidney_rest_lumen                is "kidney rest of kidney lumen";
+  Adipose                          is "adipose";
+  Rest                             is "restbody";
+  Feces                            is "feces";
+  Urine                            is "urine";
+  Menstrual                        is "menstrual plasma";
+
+  AIntestine_lumen                 is "amount of chemical in intestinal lumen";
+  AIntestine_tissue                is "amount of chemical in intestinal tissue";
+  ALiver_extracellular             is "amount of chemical in liver extracellular";
+  ALiver_intracellular             is "amount of chemical in liver intracellular";
+  APlasma                          is "amount of chemical in plasma";
+  AKidney_proximal_tubule_tissue   is "amount of chemical in kidney tubule tissue";
+  AKidney_proximal_tubule_lumen    is "amount of chemical in kidney tubule lumen";
+  AKidney_rest_tissue              is "amount of chemical in rest kidney tissue";
+  AKidney_rest_lumen               is "amount of chemical in rest kidney lumen";
+  AAdipose                         is "amount of chemical in adipose";
+  ARest                            is "amount of chemical in restbody";
+  AFeces                           is "cumulative amount of chemical in feces";
+  AUrine                           is "cumulative amount of chemical in urine";
+  AMenstrual                       is "cumulative amount of chemical in menstrual plasma";
+
+  VIntestine_lumen                 is "volume of intestine lumen";
+  VIntestine_tissue                is "volume of intestine tissue";
+  VLiver_extracellular             is "volume of liver extracellular";
+  VLiver_intracellular             is "volume of liver intracellular";
+  VLiver                           is "volume of liver";
+  VPlasma                          is "volume of plasma";
+  VKidney                          is "volume of kidney";
+  VKidney_proximal_tubule_tissue   is "volume of kidney proximal tubule tissue";
+  VKidney_proximal_tubule_lumen    is "volume of kidney proximal tubule lumen";
+  VKidney_rest_tissue              is "volume of rest of kidney tissue";
+  VKidney_rest_lumen               is "volume of rest of kidney lumen";
+  VAdipose                         is "volume of adipose tissue";
+  VRest                            is "volume of restbody";
+
+  BW                               is "bodyweight";
+  VIntestine_lumenc                is "volume fraction of intestine lumen";
+  VIntestine_tissuec               is "volume fraction of intestine tissue";
+  VLiverc                          is "volume fraction of liver";
+  VKidneyc                         is "volume fraction of kidney";
+  VAdiposec                        is "volume fraction of adipose tissue";
+  VAdrenalc                        is "volume fraction of adrenal";
+  VBonec                           is "volume fraction of bone";
+  VBonenonperfusedc                is "volution fraction of bone perfused";
+  VBrainc                          is "volume fraction of brain";
+  VBreastc                         is "volume fraction of breast";
+  VHeartc                          is "volume fraction of heart";
+  VMarrowc                         is "volume fraction of marrow";
+  VMusclec                         is "volume fraction of muscle";
+  VGonadc                          is "volume fraction of gonads";
+  VPancreasc                       is "volume fraction of pancreas";
+  VSkinc                           is "volume fraction of skin";
+  VSpleenc                         is "volume fraction of spleen";
+  VThyroidc                        is "volume fraction of thyroid";
+  VUrinarytractc                   is "volume fraction of urinary tract";
+  VLungc                           is "volume fraction of lung";
+  VStomachc                        is "volume fraction of stomach";
+  VBloodc                          is "volume fraction of blood";
+
+  QIntestine                       is "plasma flow to intestine";
+  QLiver                           is "plasma flow to liver";
+  QKidney                          is "plasma flow to kidney";
+  QAdipose                         is "plasma flow to adipose";
+  QRest                            is "plasma flow to rest of the body";
+  HCT                              is "hematocrit";
+  MAc                              is "Adipose mass";
+
+  QC                               is "Plasma cardiac output";
+  QIntestinec                      is "Blood flow fraction to intestine tissue";
+  QLiverc                          is "blood fraction to liver";
+  QKidneyc                         is "blood fraction to kidney";
+  QAdiposec                        is "blood fraction to adipose tissue";
+
+  PIntestine                       is "Partition coefficient plasma / intestine tissue";
+  PLiver                           is "Partition coefficient plasma / liver";
+  PKidney                          is "Partition coefficient plasma / kidney";
+  PAdipose                         is "Partition coefficient plasma / adipose";
+  PRest                            is "Partition coefficient plasma / Restbody";
+
+  kabs                             is "Intestinal absorption";
+  
+  VmaxOATP2B1                      is "Limiting rate of OAT P2B1";
+  VmaxOATP2B1c                     is "Limiting rate of OAT P2B1 relativized by intestinal lumen volume";
+  Km_OATP2B1                       is "Michaelis-Menten constant";
+
+  Vmax_OATP1B1                     is "Limiting rate of OAT P1B1";
+  Vmax_OATP1B1c                    is "Limiting rate of OAT P1B1 relativized by extracellular liver";
+  Km_OATP1B1                       is "Michaelis_Menten constant";
+
+  Vmax_OATP1B3                     is "Limiting rate of OAT P1B3";
+  Vmax_OATP1B3c                    is "Limiting rate of OAT P1B3 relativized by extracellular liver";
+  Km_OATP1B3                       is "Michaelis_Menten constant";
+
+  Vmax_OAT4c                       is "Limiting rate of OAT4 relativized by kidney proximal tubule";
+  Vmax_OAT4                        is "Limiting rate of OAT4";
+  Km_OAT4                          is "Michaelis-Menten constant";
+  
+  Vmax_BSEPc                       is "Limiting rate of BSEP relativized by liver intracellular";
+  Vmax_BSEP                        is "Limiting rate of BSEP";
+  Km_BSEP                          is "Michaelis-Menten constant";
+  
+  CL_menses                        is "Plasma menstrual loss";
+  
+  kfe                              is "fecal excretion";
+  
+  GFR                              is "glomerular filtration rate";
+  QUrine                           is "Urine secretion flow";
+  QTubule                          is "proximaltubule fluid flow";
+  
+  SAlb                             is "serum albumine concentration";
+  fup                              is "fraction unbound in plasma";
+  R_L_ec                           is "Albumin ratio between plasma and liver extracellular";
+  fu_Liver_intracellular           is "fraction unbound in liver intracellular";
+  R_PTL                            is "Albumin ratio between plasma and proximal tubule lumen";
+  fu_Kidney_proximal_tubule        is "fraction unbound in proximal tubule lumen";
+
+
+
+  // CV terms:
+  Intestine_lumen                  model_source "http://purl.obolibrary.org/obo/PBPKO_00478"
+  VIntestine_lumen                 model_source "http://purl.obolibrary.org/obo/PBPKO_00524"
+  Intestine_tissue                 model_source "http://purl.obolibrary.org/obo/PBPKO_00477"
+  VIntestine_tissue                model_source "http://purl.obolibrary.org/obo/PBPKO_00524"
+  Liver_extracellular              model_source "http://purl.obolibrary.org/obo/PBPKO_00558"
+  VLiver_extracellular             model_source "http://purl.obolibrary.org/obo/PBPKO_00077"
+  Liver_intracellular              model_source "http://purl.obolibrary.org/obo/PBPKO_00558"
+  VLiver_intracellular             model_source "http://purl.obolibrary.org/obo/PBPKO_00077"
+  Plasma                           model_source "http://purl.obolibrary.org/obo/PBPKO_00488"
+  VPlasma                          model_source "http://purl.obolibrary.org/obo/PBPKO_00103"
+  Kidney_proximal_tubule_tissue    model_source "http://purl.obolibrary.org/obo/PBPKO_00557"
+  VKidney_proximal_tubule_tissue   model_source "http://purl.obolibrary.org/obo/PBPKO_00079"
+  Kidney_proximal_tubule_lumen     model_source "http://purl.obolibrary.org/obo/PBPKO_00557"
+  VKidney_proximal_tubule_lumen    model_source "http://purl.obolibrary.org/obo/PBPKO_00079"
+  Kidney_rest_tissue               model_source "http://purl.obolibrary.org/obo/PBPKO_00557"
+  VKidney_rest_tissue              model_source "http://purl.obolibrary.org/obo/PBPKO_00079"
+  Kidney_rest_lumen                model_source "http://purl.obolibrary.org/obo/PBPKO_00557"
+  VKidney_rest_lumen               model_source "http://purl.obolibrary.org/obo/PBPKO_00079"
+  Adipose                          model_source "http://purl.obolibrary.org/obo/PBPKO_00460"
+  VAdipose                         model_source "http://purl.obolibrary.org/obo/PBPKO_00085"
+  Rest                             model_source "http://purl.obolibrary.org/obo/PBPKO_00450"
+  VRest                            model_source "http://purl.obolibrary.org/obo/PBPKO_00105"
+  Feces                            model_source "http://purl.obolibrary.org/obo/PBPKO_00555"
+  Urine                            model_source "http://purl.obolibrary.org/obo/PBPKO_00556"
+  AIntestine_lumen                 model_source "http://purl.obolibrary.org/obo/PBPKO_00496"
+  AIntestine_lumen                 identity "http://purl.obolibrary.org/obo/CHEBI_35549"
+  AIntestine_tissue                model_source "http://purl.obolibrary.org/obo/PBPKO_00496"
+  AIntestine_tissue                identity "http://purl.obolibrary.org/obo/CHEBI_35549"
+  ALiver_extracellular             model_source "http://purl.obolibrary.org/obo/PBPKO_00497"
+  ALiver_extracellular             identity "http://purl.obolibrary.org/obo/CHEBI_35549"
+  ALiver_intracellular             model_source "http://purl.obolibrary.org/obo/PBPKO_00497"
+  ALiver_intracellular             identity "http://purl.obolibrary.org/obo/CHEBI_35549"
+  APlasma model_source             "http://purl.obolibrary.org/obo/PBPKO_00502"
+  APlasma                          identity "http://purl.obolibrary.org/obo/CHEBI_35549"
+  AKidney_proximal_tubule_tissue   model_source "http://purl.obolibrary.org/obo/PBPKO_00498"
+  AKidney_proximal_tubule_tissue   identity "http://purl.obolibrary.org/obo/CHEBI_35549"
+  AKidney_proximal_tubule_lumen    model_source "http://purl.obolibrary.org/obo/PBPKO_00498"
+  AKidney_proximal_tubule_lumen    identity "http://purl.obolibrary.org/obo/CHEBI_35549"
+  AKidney_rest_tissue              model_source "http://purl.obolibrary.org/obo/PBPKO_00498"
+  AKidney_rest_tissue              identity "http://purl.obolibrary.org/obo/CHEBI_35549"
+  AKidney_rest_lumen               model_source "http://purl.obolibrary.org/obo/PBPKO_00498"
+  AKidney_rest_lumen               identity "http://purl.obolibrary.org/obo/CHEBI_35549"
+  AAdipose                         model_source "http://purl.obolibrary.org/obo/PBPKO_00550"
+  AAdipose                         identity "http://purl.obolibrary.org/obo/CHEBI_35549"
+  ARest                            model_source "http://purl.obolibrary.org/obo/PBPKO_00501"
+  ARest                            identity "http://purl.obolibrary.org/obo/CHEBI_35549"
+  AFeces                           model_source "http://purl.obolibrary.org/obo/PBPKO_00273"
+  AFeces                           identity "http://purl.obolibrary.org/obo/CHEBI_35549"
+  AUrine                           model_source "http://purl.obolibrary.org/obo/PBPKO_00272"
+  AUrine                           identity "http://purl.obolibrary.org/obo/CHEBI_35549"
+  AMenstrual                       identity "http://purl.obolibrary.org/obo/CHEBI_35549"
+  VIntestine_lumenc                model_source "http://purl.obolibrary.org/obo/PBPKO_00070"
+  BW                               model_source "http://purl.obolibrary.org/obo/PBPKO_00008"
+  VIntestine_tissuec               model_source "http://purl.obolibrary.org/obo/PBPKO_00070"
+  VLiver                           model_source "http://purl.obolibrary.org/obo/PBPKO_00077"
+  VBloodc                          model_source "http://purl.obolibrary.org/obo/PBPKO_00627"
+  HCT                              model_source "http://purl.obolibrary.org/obo/PBPKO_00527"
+  VKidney                          model_source "http://purl.obolibrary.org/obo/PBPKO_00079"
+  VAdiposec                        model_source "http://purl.obolibrary.org/obo/PBPKO_00086"
+  MAc                              model_source "http://purl.obolibrary.org/obo/PBPKO_00086"
+  QC                               model_source "http://purl.obolibrary.org/obo/PBPKO_00528"
+  QIntestine                       model_source "http://purl.obolibrary.org/obo/PBPKO_00531"
+  QIntestinec                      model_source "http://purl.obolibrary.org/obo/PBPKO_00017"
+  VKidneyc                         model_source "http://purl.obolibrary.org/obo/PBPKO_00080"
+  QKidney                          model_source "http://purl.obolibrary.org/obo/PBPKO_00026"
+  QKidneyc                         model_source "http://purl.obolibrary.org/obo/PBPKO_00027"
+  VBonec                           model_source "http://purl.obolibrary.org/obo/PBPKO_00092"
+  VBrainc                          model_source "http://purl.obolibrary.org/obo/PBPKO_00094"
+  VHeartc                          model_source "http://purl.obolibrary.org/obo/PBPKO_00084"
+  VMusclec                         model_source "http://purl.obolibrary.org/obo/PBPKO_00082"
+  VGonadc                          model_source "http://purl.obolibrary.org/obo/PBPKO_00088"
+  VPancreasc                       model_source "http://purl.obolibrary.org/obo/PBPKO_00076"
+  VSkinc                           model_source "http://purl.obolibrary.org/obo/PBPKO_00090"
+  VSpleenc                         model_source "http://purl.obolibrary.org/obo/PBPKO_00095"
+  VUrinarytractc                   model_source "http://purl.obolibrary.org/obo/PBPKO_00508"
+  VLungc                           model_source "http://purl.obolibrary.org/obo/PBPKO_00098"
+  VStomachc                        model_source "http://purl.obolibrary.org/obo/PBPKO_00068"
+  VLiverc                          model_source "http://purl.obolibrary.org/obo/PBPKO_00078"
+  QAdipose                         model_source "http://purl.obolibrary.org/obo/PBPKO_00032"
+  QAdiposec                        model_source "http://purl.obolibrary.org/obo/PBPKO_00033"
+  QRest                            model_source "http://purl.obolibrary.org/obo/PBPKO_00050"
+  QLiver                           model_source "http://purl.obolibrary.org/obo/PBPKO_00024"
+  QLiverc                          model_source "http://purl.obolibrary.org/obo/PBPKO_00025"
+  kabs                             model_source "http://purl.obolibrary.org/obo/PBPKO_00142"
+  kabs                             identity "http://purl.obolibrary.org/obo/CHEBI_35549"
+  VmaxOATP2B1                      model_source "http://purl.obolibrary.org/obo/PBPKO_00592"
+  VmaxOATP2B1                      identity "http://purl.obolibrary.org/obo/CHEBI_35549"
+  VmaxOATP2B1c                     model_source "http://purl.obolibrary.org/obo/PBPKO_00306"
+  VmaxOATP2B1c                     identity "http://purl.obolibrary.org/obo/CHEBI_35549"
+  Km_OATP2B1                       model_source "http://purl.obolibrary.org/obo/PBPKO_00307"
+  Km_OATP2B1                       identity "http://purl.obolibrary.org/obo/CHEBI_35549"
+  Vmax_OATP1B1                     model_source "http://purl.obolibrary.org/obo/PBPKO_00593"
+  Vmax_OATP1B1                     identity "http://purl.obolibrary.org/obo/CHEBI_35549"
+  Vmax_OATP1B1c                    model_source "http://purl.obolibrary.org/obo/PBPKO_00304"
+  Vmax_OATP1B1c                    identity "http://purl.obolibrary.org/obo/CHEBI_35549"
+  Km_OATP1B1                       model_source "http://purl.obolibrary.org/obo/PBPKO_00305"
+  Km_OATP1B1                       identity "http://purl.obolibrary.org/obo/CHEBI_35549"
+  Vmax_OATP1B3                     model_source "http://purl.obolibrary.org/obo/PBPKO_00593"
+  Vmax_OATP1B3                     identity "http://purl.obolibrary.org/obo/CHEBI_35549"
+  Vmax_OATP1B3c                    model_source "http://purl.obolibrary.org/obo/PBPKO_00304"
+  Vmax_OATP1B3c                    identity "http://purl.obolibrary.org/obo/CHEBI_35549"
+  Km_OATP1B3                       model_source "http://purl.obolibrary.org/obo/PBPKO_00305"
+  Km_OATP1B3                       identity "http://purl.obolibrary.org/obo/CHEBI_35549"
+  PIntestine                       model_source "http://purl.obolibrary.org/obo/PBPKO_00168"
+  PIntestine                       identity "http://purl.obolibrary.org/obo/CHEBI_35549"
+  PKidney                          model_source "http://purl.obolibrary.org/obo/PBPKO_00171"
+  PKidney                          identity "http://purl.obolibrary.org/obo/CHEBI_35549"
+  PLiver                           model_source "http://purl.obolibrary.org/obo/PBPKO_00170"
+  PLiver                           identity "http://purl.obolibrary.org/obo/CHEBI_35549"
+  PAdipose                         model_source "http://purl.obolibrary.org/obo/PBPKO_00174"
+  PAdipose                         identity "http://purl.obolibrary.org/obo/CHEBI_35549"
+  PRest                            model_source "http://purl.obolibrary.org/obo/PBPKO_00518"
+  PRest                            identity "http://purl.obolibrary.org/obo/CHEBI_35549"
+  Vmax_OAT4c                       model_source "http://purl.obolibrary.org/obo/PBPKO_00306"
+  Vmax_OAT4c                       identity "http://purl.obolibrary.org/obo/CHEBI_35549"
+  Vmax_OAT4                        model_source "http://purl.obolibrary.org/obo/PBPKO_00592"
+  Vmax_OAT4                        identity "http://purl.obolibrary.org/obo/CHEBI_35549"
+  Km_OAT4                          model_source "http://purl.obolibrary.org/obo/PBPKO_00307"
+  Km_OAT4                          identity "http://purl.obolibrary.org/obo/CHEBI_35549"
+  Vmax_BSEPc                       model_source "http://purl.obolibrary.org/obo/PBPKO_00306"
+  Vmax_BSEPc                       identity "http://purl.obolibrary.org/obo/CHEBI_35549"
+  Vmax_BSEP                        model_source "http://purl.obolibrary.org/obo/PBPKO_00592"
+  Vmax_BSEP                        identity "http://purl.obolibrary.org/obo/CHEBI_35549"
+  Km_BSEP                          model_source "http://purl.obolibrary.org/obo/PBPKO_00307"
+  Km_BSEP                          identity "http://purl.obolibrary.org/obo/CHEBI_35549"
+  kfe                              model_source "http://purl.obolibrary.org/obo/PBPKO_00230"
+  kfe                              identity "http://purl.obolibrary.org/obo/CHEBI_35549"
+  GFR                              model_source "http://purl.obolibrary.org/obo/PBPKO_00065"
+  fup                              model_source "http://purl.obolibrary.org/obo/PBPKO_00591"
+  fup                              identity "http://purl.obolibrary.org/obo/CHEBI_35549"
+  fu_Liver_intracellular           model_source "http://purl.obolibrary.org/obo/PBPKO_00154"
+  fu_Liver_intracellular           identity "http://purl.obolibrary.org/obo/CHEBI_35549"
+  fu_Kidney_proximal_tubule        model_source "http://purl.obolibrary.org/obo/PBPKO_00155"
+  fu_Kidney_proximal_tubule        identity "http://purl.obolibrary.org/obo/CHEBI_35549"
+
+  model taxon "http://purl.obolibrary.org/obo/NCBITaxon_9606"
+  model property "http://purl.obolibrary.org/obo/CHEBI_35549"
+
+end
