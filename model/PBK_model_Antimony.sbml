@@ -1,0 +1,2936 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sbml xmlns="http://www.sbml.org/sbml/level3/version2/core" level="3" version="2">
+  <model metaid="PBK_PFOA" id="PBK_PFOA" substanceUnits="MicroGM" timeUnits="DAY" volumeUnits="L" extentUnits="MicroGM">
+    <annotation>
+      <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+        <rdf:Description rdf:about="#PBK_PFOA">
+          <bqbiol:hasTaxon>
+            <rdf:Bag>
+              <rdf:li rdf:resource="http://purl.obolibrary.org/obo/NCBITaxon_9606"/>
+            </rdf:Bag>
+          </bqbiol:hasTaxon>
+          <bqbiol:hasProperty>
+            <rdf:Bag>
+              <rdf:li rdf:resource="http://purl.obolibrary.org/obo/CHEBI_35549"/>
+            </rdf:Bag>
+          </bqbiol:hasProperty>
+        </rdf:Description>
+      </rdf:RDF>
+    </annotation>
+    <listOfUnitDefinitions>
+      <unitDefinition id="time_unit">
+        <listOfUnits>
+          <unit kind="second" exponent="1" scale="4" multiplier="8.64"/>
+        </listOfUnits>
+      </unitDefinition>
+      <unitDefinition id="DAY">
+        <listOfUnits>
+          <unit kind="second" exponent="1" scale="4" multiplier="8.64"/>
+        </listOfUnits>
+      </unitDefinition>
+      <unitDefinition id="day">
+        <listOfUnits>
+          <unit kind="second" exponent="1" scale="4" multiplier="8.64"/>
+        </listOfUnits>
+      </unitDefinition>
+      <unitDefinition id="substance">
+        <listOfUnits>
+          <unit kind="gram" exponent="1" scale="-6" multiplier="1"/>
+        </listOfUnits>
+      </unitDefinition>
+      <unitDefinition id="MicroGM">
+        <listOfUnits>
+          <unit kind="gram" exponent="1" scale="-6" multiplier="1"/>
+        </listOfUnits>
+      </unitDefinition>
+      <unitDefinition id="microg">
+        <listOfUnits>
+          <unit kind="gram" exponent="1" scale="-6" multiplier="1"/>
+        </listOfUnits>
+      </unitDefinition>
+      <unitDefinition id="microg_kg">
+        <listOfUnits>
+          <unit kind="gram" exponent="1" scale="-6" multiplier="1"/>
+          <unit kind="gram" exponent="-1" scale="3" multiplier="1"/>
+        </listOfUnits>
+      </unitDefinition>
+      <unitDefinition id="volume">
+        <listOfUnits>
+          <unit kind="litre" exponent="1" scale="0" multiplier="1"/>
+        </listOfUnits>
+      </unitDefinition>
+      <unitDefinition id="L">
+        <listOfUnits>
+          <unit kind="litre" exponent="1" scale="0" multiplier="1"/>
+        </listOfUnits>
+      </unitDefinition>
+      <unitDefinition id="kg">
+        <listOfUnits>
+          <unit kind="gram" exponent="1" scale="3" multiplier="1"/>
+        </listOfUnits>
+      </unitDefinition>
+      <unitDefinition id="UNITLESS">
+        <listOfUnits>
+          <unit kind="dimensionless" exponent="1" scale="0" multiplier="1"/>
+        </listOfUnits>
+      </unitDefinition>
+      <unitDefinition id="L_per_day">
+        <listOfUnits>
+          <unit kind="litre" exponent="1" scale="0" multiplier="1"/>
+          <unit kind="second" exponent="-1" scale="4" multiplier="8.64"/>
+        </listOfUnits>
+      </unitDefinition>
+      <unitDefinition id="microg_per_L">
+        <listOfUnits>
+          <unit kind="gram" exponent="1" scale="-6" multiplier="1"/>
+          <unit kind="litre" exponent="-1" scale="0" multiplier="1"/>
+        </listOfUnits>
+      </unitDefinition>
+      <unitDefinition id="microg_per_day">
+        <listOfUnits>
+          <unit kind="gram" exponent="1" scale="-6" multiplier="1"/>
+          <unit kind="second" exponent="-1" scale="4" multiplier="8.64"/>
+        </listOfUnits>
+      </unitDefinition>
+      <unitDefinition id="microg_per_day_per_L">
+        <listOfUnits>
+          <unit kind="gram" exponent="1" scale="-6" multiplier="1"/>
+          <unit kind="second" exponent="-1" scale="4" multiplier="8.64"/>
+          <unit kind="litre" exponent="-1" scale="0" multiplier="1"/>
+        </listOfUnits>
+      </unitDefinition>
+      <unitDefinition id="g">
+        <listOfUnits>
+          <unit kind="gram" exponent="1" scale="0" multiplier="1"/>
+        </listOfUnits>
+      </unitDefinition>
+      <unitDefinition id="per_day">
+        <listOfUnits>
+          <unit kind="second" exponent="-1" scale="4" multiplier="8.64"/>
+        </listOfUnits>
+      </unitDefinition>
+      <unitDefinition id="L_PER_DAY">
+        <listOfUnits>
+          <unit kind="litre" exponent="1" scale="0" multiplier="1"/>
+          <unit kind="second" exponent="-1" scale="4" multiplier="8.64"/>
+        </listOfUnits>
+      </unitDefinition>
+      <unitDefinition id="MicroGM_PER_L">
+        <listOfUnits>
+          <unit kind="gram" exponent="1" scale="-6" multiplier="1"/>
+          <unit kind="litre" exponent="-1" scale="0" multiplier="1"/>
+        </listOfUnits>
+      </unitDefinition>
+      <unitDefinition id="MicroGM_PER_DAY">
+        <listOfUnits>
+          <unit kind="gram" exponent="1" scale="-6" multiplier="1"/>
+          <unit kind="second" exponent="-1" scale="4" multiplier="8.64"/>
+        </listOfUnits>
+      </unitDefinition>
+      <unitDefinition id="PER_DAY">
+        <listOfUnits>
+          <unit kind="second" exponent="-1" scale="0" multiplier="86400"/>
+        </listOfUnits>
+      </unitDefinition>
+    </listOfUnitDefinitions>
+    <listOfCompartments>
+      <compartment metaid="PBK_PFOA.Intestine_lumen" id="Intestine_lumen" name="intestine lumen" spatialDimensions="3" units="L" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.Intestine_lumen">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00478"/>
+                </rdf:Bag>
+              </bqmodel:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </compartment>
+      <compartment metaid="PBK_PFOA.Intestine_tissue" id="Intestine_tissue" name="intestine tissue" spatialDimensions="3" units="L" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.Intestine_tissue">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00477"/>
+                </rdf:Bag>
+              </bqmodel:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </compartment>
+      <compartment metaid="PBK_PFOA.Liver_extracellular" id="Liver_extracellular" name="liver extracellular" spatialDimensions="3" units="L" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.Liver_extracellular">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00558"/>
+                </rdf:Bag>
+              </bqmodel:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </compartment>
+      <compartment metaid="PBK_PFOA.Liver_intracellular" id="Liver_intracellular" name="liver intracellular" spatialDimensions="3" units="L" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.Liver_intracellular">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00558"/>
+                </rdf:Bag>
+              </bqmodel:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </compartment>
+      <compartment metaid="PBK_PFOA.Plasma" id="Plasma" name="plasma" spatialDimensions="3" units="L" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.Plasma">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00488"/>
+                </rdf:Bag>
+              </bqmodel:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </compartment>
+      <compartment metaid="PBK_PFOA.Kidney_proximal_tubule_tissue" id="Kidney_proximal_tubule_tissue" name="kidney proximal tubule tissue" spatialDimensions="3" units="L" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.Kidney_proximal_tubule_tissue">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00557"/>
+                </rdf:Bag>
+              </bqmodel:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </compartment>
+      <compartment metaid="PBK_PFOA.Kidney_proximal_tubule_lumen" id="Kidney_proximal_tubule_lumen" name="kidney proximal tubule lumen" spatialDimensions="3" units="L" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.Kidney_proximal_tubule_lumen">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00557"/>
+                </rdf:Bag>
+              </bqmodel:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </compartment>
+      <compartment metaid="PBK_PFOA.Kidney_rest_tissue" id="Kidney_rest_tissue" name="kidney rest of kidney tissue" spatialDimensions="3" units="L" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.Kidney_rest_tissue">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00557"/>
+                </rdf:Bag>
+              </bqmodel:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </compartment>
+      <compartment metaid="PBK_PFOA.Kidney_rest_lumen" id="Kidney_rest_lumen" name="kidney rest of kidney lumen" spatialDimensions="3" units="L" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.Kidney_rest_lumen">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00557"/>
+                </rdf:Bag>
+              </bqmodel:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </compartment>
+      <compartment metaid="PBK_PFOA.Adipose" id="Adipose" name="adipose" spatialDimensions="3" units="L" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.Adipose">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00460"/>
+                </rdf:Bag>
+              </bqmodel:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </compartment>
+      <compartment metaid="PBK_PFOA.Rest" id="Rest" name="restbody" spatialDimensions="3" units="L" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.Rest">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00450"/>
+                </rdf:Bag>
+              </bqmodel:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </compartment>
+      <compartment metaid="PBK_PFOA.Feces" id="Feces" name="feces" spatialDimensions="3" size="1" units="L" constant="true">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.Feces">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00555"/>
+                </rdf:Bag>
+              </bqmodel:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </compartment>
+      <compartment metaid="PBK_PFOA.Urine" id="Urine" name="urine" spatialDimensions="3" size="1" units="L" constant="true">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.Urine">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00556"/>
+                </rdf:Bag>
+              </bqmodel:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </compartment>
+      <compartment id="Menstrual" name="menstrual plasma" spatialDimensions="3" size="1" units="L" constant="true"/>
+    </listOfCompartments>
+    <listOfSpecies>
+      <species metaid="PBK_PFOA.AIntestine_lumen" id="AIntestine_lumen" name="amount of chemical in intestinal lumen" compartment="Intestine_lumen" initialAmount="0" substanceUnits="MicroGM" hasOnlySubstanceUnits="true" boundaryCondition="false" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.AIntestine_lumen">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00496"/>
+                </rdf:Bag>
+              </bqmodel:is>
+              <bqbiol:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/CHEBI_35549"/>
+                </rdf:Bag>
+              </bqbiol:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </species>
+      <species metaid="PBK_PFOA.AIntestine_tissue" id="AIntestine_tissue" name="amount of chemical in intestinal tissue" compartment="Intestine_tissue" initialAmount="0" substanceUnits="MicroGM" hasOnlySubstanceUnits="true" boundaryCondition="false" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.AIntestine_tissue">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00496"/>
+                </rdf:Bag>
+              </bqmodel:is>
+              <bqbiol:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/CHEBI_35549"/>
+                </rdf:Bag>
+              </bqbiol:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </species>
+      <species metaid="PBK_PFOA.ALiver_extracellular" id="ALiver_extracellular" name="amount of chemical in liver extracellular" compartment="Liver_extracellular" initialAmount="0" substanceUnits="MicroGM" hasOnlySubstanceUnits="true" boundaryCondition="false" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.ALiver_extracellular">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00497"/>
+                </rdf:Bag>
+              </bqmodel:is>
+              <bqbiol:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/CHEBI_35549"/>
+                </rdf:Bag>
+              </bqbiol:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </species>
+      <species metaid="PBK_PFOA.ALiver_intracellular" id="ALiver_intracellular" name="amount of chemical in liver intracellular" compartment="Liver_intracellular" initialAmount="0" substanceUnits="MicroGM" hasOnlySubstanceUnits="true" boundaryCondition="false" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.ALiver_intracellular">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00497"/>
+                </rdf:Bag>
+              </bqmodel:is>
+              <bqbiol:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/CHEBI_35549"/>
+                </rdf:Bag>
+              </bqbiol:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </species>
+      <species metaid="PBK_PFOA.APlasma" id="APlasma" name="amount of chemical in plasma" compartment="Plasma" initialAmount="0" substanceUnits="MicroGM" hasOnlySubstanceUnits="true" boundaryCondition="false" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.APlasma">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00502"/>
+                </rdf:Bag>
+              </bqmodel:is>
+              <bqbiol:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/CHEBI_35549"/>
+                </rdf:Bag>
+              </bqbiol:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </species>
+      <species metaid="PBK_PFOA.AKidney_proximal_tubule_tissue" id="AKidney_proximal_tubule_tissue" name="amount of chemical in kidney tubule tissue" compartment="Kidney_proximal_tubule_tissue" initialAmount="0" substanceUnits="MicroGM" hasOnlySubstanceUnits="true" boundaryCondition="false" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.AKidney_proximal_tubule_tissue">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00498"/>
+                </rdf:Bag>
+              </bqmodel:is>
+              <bqbiol:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/CHEBI_35549"/>
+                </rdf:Bag>
+              </bqbiol:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </species>
+      <species metaid="PBK_PFOA.AKidney_proximal_tubule_lumen" id="AKidney_proximal_tubule_lumen" name="amount of chemical in kidney tubule lumen" compartment="Kidney_proximal_tubule_lumen" initialAmount="0" substanceUnits="MicroGM" hasOnlySubstanceUnits="true" boundaryCondition="false" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.AKidney_proximal_tubule_lumen">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00498"/>
+                </rdf:Bag>
+              </bqmodel:is>
+              <bqbiol:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/CHEBI_35549"/>
+                </rdf:Bag>
+              </bqbiol:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </species>
+      <species metaid="PBK_PFOA.AKidney_rest_tissue" id="AKidney_rest_tissue" name="amount of chemical in rest kidney tissue" compartment="Kidney_rest_tissue" initialAmount="0" substanceUnits="MicroGM" hasOnlySubstanceUnits="true" boundaryCondition="false" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.AKidney_rest_tissue">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00498"/>
+                </rdf:Bag>
+              </bqmodel:is>
+              <bqbiol:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/CHEBI_35549"/>
+                </rdf:Bag>
+              </bqbiol:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </species>
+      <species metaid="PBK_PFOA.AKidney_rest_lumen" id="AKidney_rest_lumen" name="amount of chemical in rest kidney lumen" compartment="Kidney_rest_lumen" initialAmount="0" substanceUnits="MicroGM" hasOnlySubstanceUnits="true" boundaryCondition="false" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.AKidney_rest_lumen">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00498"/>
+                </rdf:Bag>
+              </bqmodel:is>
+              <bqbiol:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/CHEBI_35549"/>
+                </rdf:Bag>
+              </bqbiol:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </species>
+      <species metaid="PBK_PFOA.AAdipose" id="AAdipose" name="amount of chemical in adipose" compartment="Adipose" initialAmount="0" substanceUnits="MicroGM" hasOnlySubstanceUnits="true" boundaryCondition="false" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.AAdipose">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00550"/>
+                </rdf:Bag>
+              </bqmodel:is>
+              <bqbiol:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/CHEBI_35549"/>
+                </rdf:Bag>
+              </bqbiol:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </species>
+      <species metaid="PBK_PFOA.ARest" id="ARest" name="amount of chemical in restbody" compartment="Rest" initialAmount="0" substanceUnits="MicroGM" hasOnlySubstanceUnits="true" boundaryCondition="false" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.ARest">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00501"/>
+                </rdf:Bag>
+              </bqmodel:is>
+              <bqbiol:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/CHEBI_35549"/>
+                </rdf:Bag>
+              </bqbiol:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </species>
+      <species metaid="PBK_PFOA.AFeces" id="AFeces" name="cumulative amount of chemical in feces" compartment="Feces" initialAmount="0" substanceUnits="MicroGM" hasOnlySubstanceUnits="true" boundaryCondition="false" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.AFeces">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00273"/>
+                </rdf:Bag>
+              </bqmodel:is>
+              <bqbiol:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/CHEBI_35549"/>
+                </rdf:Bag>
+              </bqbiol:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </species>
+      <species metaid="PBK_PFOA.AUrine" id="AUrine" name="cumulative amount of chemical in urine" compartment="Urine" initialAmount="0" substanceUnits="MicroGM" hasOnlySubstanceUnits="true" boundaryCondition="false" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.AUrine">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00272"/>
+                </rdf:Bag>
+              </bqmodel:is>
+              <bqbiol:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/CHEBI_35549"/>
+                </rdf:Bag>
+              </bqbiol:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </species>
+      <species metaid="PBK_PFOA.AMenstrual" id="AMenstrual" name="cumulative amount of chemical in menstrual plasma" compartment="Menstrual" initialAmount="0" substanceUnits="MicroGM" hasOnlySubstanceUnits="true" boundaryCondition="false" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.AMenstrual">
+              <bqbiol:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/CHEBI_35549"/>
+                </rdf:Bag>
+              </bqbiol:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </species>
+    </listOfSpecies>
+    <listOfParameters>
+      <parameter metaid="PBK_PFOA.VIntestine_lumen" id="VIntestine_lumen" name="volume of intestine lumen" units="L" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.VIntestine_lumen">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00524"/>
+                </rdf:Bag>
+              </bqmodel:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+      <parameter metaid="PBK_PFOA.VIntestine_tissue" id="VIntestine_tissue" name="volume of intestine tissue" units="L" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.VIntestine_tissue">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00524"/>
+                </rdf:Bag>
+              </bqmodel:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+      <parameter metaid="PBK_PFOA.VLiver_extracellular" id="VLiver_extracellular" name="volume of liver extracellular" units="L" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.VLiver_extracellular">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00077"/>
+                </rdf:Bag>
+              </bqmodel:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+      <parameter metaid="PBK_PFOA.VLiver_intracellular" id="VLiver_intracellular" name="volume of liver intracellular" units="L" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.VLiver_intracellular">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00077"/>
+                </rdf:Bag>
+              </bqmodel:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+      <parameter metaid="PBK_PFOA.VPlasma" id="VPlasma" name="volume of plasma" units="L" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.VPlasma">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00103"/>
+                </rdf:Bag>
+              </bqmodel:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+      <parameter metaid="PBK_PFOA.VKidney_proximal_tubule_tissue" id="VKidney_proximal_tubule_tissue" name="volume of kidney proximal tubule tissue" units="L" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.VKidney_proximal_tubule_tissue">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00079"/>
+                </rdf:Bag>
+              </bqmodel:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+      <parameter metaid="PBK_PFOA.VKidney_proximal_tubule_lumen" id="VKidney_proximal_tubule_lumen" name="volume of kidney proximal tubule lumen" units="L" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.VKidney_proximal_tubule_lumen">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00079"/>
+                </rdf:Bag>
+              </bqmodel:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+      <parameter metaid="PBK_PFOA.VKidney_rest_tissue" id="VKidney_rest_tissue" name="volume of rest of kidney tissue" units="L" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.VKidney_rest_tissue">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00079"/>
+                </rdf:Bag>
+              </bqmodel:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+      <parameter metaid="PBK_PFOA.VKidney_rest_lumen" id="VKidney_rest_lumen" name="volume of rest of kidney lumen" units="L" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.VKidney_rest_lumen">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00079"/>
+                </rdf:Bag>
+              </bqmodel:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+      <parameter metaid="PBK_PFOA.VAdipose" id="VAdipose" name="volume of adipose tissue" units="L" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.VAdipose">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00085"/>
+                </rdf:Bag>
+              </bqmodel:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+      <parameter metaid="PBK_PFOA.VRest" id="VRest" name="volume of restbody" units="L" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.VRest">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00105"/>
+                </rdf:Bag>
+              </bqmodel:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+      <parameter metaid="PBK_PFOA.BW" id="BW" name="bodyweight" value="80.126" units="L" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.BW">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00008"/>
+                </rdf:Bag>
+              </bqmodel:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+      <parameter metaid="PBK_PFOA.QC" id="QC" name="Plasma cardiac output" value="5388.262" units="L_PER_DAY" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.QC">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00528"/>
+                </rdf:Bag>
+              </bqmodel:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+      <parameter metaid="PBK_PFOA.HCT" id="HCT" name="hematocrit" value="0.427" units="UNITLESS" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.HCT">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00527"/>
+                </rdf:Bag>
+              </bqmodel:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+      <parameter metaid="PBK_PFOA.VIntestine_lumenc" id="VIntestine_lumenc" name="volume fraction of intestine lumen" value="0.038" units="UNITLESS" constant="true">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.VIntestine_lumenc">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00070"/>
+                </rdf:Bag>
+              </bqmodel:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+      <parameter metaid="PBK_PFOA.VIntestine_tissuec" id="VIntestine_tissuec" name="volume fraction of intestine tissue" value="0.014" units="UNITLESS" constant="true">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.VIntestine_tissuec">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00070"/>
+                </rdf:Bag>
+              </bqmodel:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+      <parameter metaid="PBK_PFOA.QIntestine" id="QIntestine" name="plasma flow to intestine" units="L_PER_DAY" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.QIntestine">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00531"/>
+                </rdf:Bag>
+              </bqmodel:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+      <parameter metaid="PBK_PFOA.QIntestinec" id="QIntestinec" name="Blood flow fraction to intestine tissue" units="UNITLESS" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.QIntestinec">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00017"/>
+                </rdf:Bag>
+              </bqmodel:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+      <parameter metaid="PBK_PFOA.VKidney" id="VKidney" name="volume of kidney" units="L" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.VKidney">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00079"/>
+                </rdf:Bag>
+              </bqmodel:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+      <parameter metaid="PBK_PFOA.VKidneyc" id="VKidneyc" name="volume fraction of kidney" value="0.00421" units="UNITLESS" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.VKidneyc">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00080"/>
+                </rdf:Bag>
+              </bqmodel:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+      <parameter metaid="PBK_PFOA.QKidney" id="QKidney" name="plasma flow to kidney" units="L_PER_DAY" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.QKidney">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00026"/>
+                </rdf:Bag>
+              </bqmodel:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+      <parameter metaid="PBK_PFOA.QKidneyc" id="QKidneyc" name="blood fraction to kidney" units="UNITLESS" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.QKidneyc">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00027"/>
+                </rdf:Bag>
+              </bqmodel:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+      <parameter metaid="PBK_PFOA.VAdiposec" id="VAdiposec" name="volume fraction of adipose tissue" units="UNITLESS" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.VAdiposec">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00086"/>
+                </rdf:Bag>
+              </bqmodel:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+      <parameter metaid="PBK_PFOA.MAc" id="MAc" name="Adipose mass" value="2.398" units="UNITLESS" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.MAc">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00086"/>
+                </rdf:Bag>
+              </bqmodel:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+      <parameter id="VAdrenalc" name="volume fraction of adrenal" value="0.0002" units="UNITLESS" constant="false"/>
+      <parameter metaid="PBK_PFOA.VBonec" id="VBonec" name="volume fraction of bone" value="0.032" units="UNITLESS" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.VBonec">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00092"/>
+                </rdf:Bag>
+              </bqmodel:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+      <parameter id="VBonenonperfusedc" name="volution fraction of bone perfused" units="UNITLESS" constant="false"/>
+      <parameter metaid="PBK_PFOA.VBrainc" id="VBrainc" name="volume fraction of brain" units="UNITLESS" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.VBrainc">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00094"/>
+                </rdf:Bag>
+              </bqmodel:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+      <parameter id="VBreastc" name="volume fraction of breast" value="0.000342" units="UNITLESS" constant="false"/>
+      <parameter metaid="PBK_PFOA.VHeartc" id="VHeartc" name="volume fraction of heart" value="0.0045" units="UNITLESS" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.VHeartc">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00084"/>
+                </rdf:Bag>
+              </bqmodel:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+      <parameter id="VMarrowc" name="volume fraction of marrow" value="0.047" units="UNITLESS" constant="false"/>
+      <parameter metaid="PBK_PFOA.VMusclec" id="VMusclec" name="volume fraction of muscle" value="0.39" units="UNITLESS" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.VMusclec">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00082"/>
+                </rdf:Bag>
+              </bqmodel:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+      <parameter metaid="PBK_PFOA.VGonadc" id="VGonadc" name="volume fraction of gonads" value="0.001" units="UNITLESS" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.VGonadc">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00088"/>
+                </rdf:Bag>
+              </bqmodel:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+      <parameter metaid="PBK_PFOA.VPancreasc" id="VPancreasc" name="volume fraction of pancreas" value="0.00192" units="UNITLESS" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.VPancreasc">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00076"/>
+                </rdf:Bag>
+              </bqmodel:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+      <parameter metaid="PBK_PFOA.VSkinc" id="VSkinc" name="volume fraction of skin" value="0.0488" units="UNITLESS" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.VSkinc">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00090"/>
+                </rdf:Bag>
+              </bqmodel:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+      <parameter metaid="PBK_PFOA.VSpleenc" id="VSpleenc" name="volume fraction of spleen" value="0.0021" units="UNITLESS" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.VSpleenc">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00095"/>
+                </rdf:Bag>
+              </bqmodel:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+      <parameter id="VThyroidc" name="volume fraction of thyroid" value="0.000274" units="UNITLESS" constant="false"/>
+      <parameter metaid="PBK_PFOA.VUrinarytractc" id="VUrinarytractc" name="volume fraction of urinary tract" value="0.00104" units="UNITLESS" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.VUrinarytractc">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00508"/>
+                </rdf:Bag>
+              </bqmodel:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+      <parameter metaid="PBK_PFOA.VLungc" id="VLungc" name="volume fraction of lung" value="0.0068" units="UNITLESS" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.VLungc">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00098"/>
+                </rdf:Bag>
+              </bqmodel:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+      <parameter metaid="PBK_PFOA.VStomachc" id="VStomachc" name="volume fraction of stomach" value="0.0021" units="UNITLESS" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.VStomachc">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00068"/>
+                </rdf:Bag>
+              </bqmodel:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+      <parameter metaid="PBK_PFOA.VLiverc" id="VLiverc" name="volume fraction of liver" value="0.0248" units="UNITLESS" constant="true">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.VLiverc">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00078"/>
+                </rdf:Bag>
+              </bqmodel:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+      <parameter metaid="PBK_PFOA.VBloodc" id="VBloodc" name="volume fraction of blood" value="0.0761" units="UNITLESS" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.VBloodc">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00627"/>
+                </rdf:Bag>
+              </bqmodel:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+      <parameter metaid="PBK_PFOA.QAdipose" id="QAdipose" name="plasma flow to adipose" units="L_PER_DAY" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.QAdipose">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00032"/>
+                </rdf:Bag>
+              </bqmodel:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+      <parameter metaid="PBK_PFOA.QAdiposec" id="QAdiposec" name="blood fraction to adipose tissue" units="UNITLESS" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.QAdiposec">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00033"/>
+                </rdf:Bag>
+              </bqmodel:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+      <parameter metaid="PBK_PFOA.VLiver" id="VLiver" name="volume of liver" units="L" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.VLiver">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00077"/>
+                </rdf:Bag>
+              </bqmodel:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+      <parameter metaid="PBK_PFOA.QRest" id="QRest" name="plasma flow to rest of the body" units="L_PER_DAY" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.QRest">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00050"/>
+                </rdf:Bag>
+              </bqmodel:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+      <parameter metaid="PBK_PFOA.QLiver" id="QLiver" name="plasma flow to liver" units="L_PER_DAY" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.QLiver">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00024"/>
+                </rdf:Bag>
+              </bqmodel:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+      <parameter metaid="PBK_PFOA.QLiverc" id="QLiverc" name="blood fraction to liver" units="UNITLESS" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.QLiverc">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00025"/>
+                </rdf:Bag>
+              </bqmodel:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+      <parameter metaid="PBK_PFOA.PIntestine" id="PIntestine" name="Partition coefficient plasma / intestine tissue" value="0.03431731" units="UNITLESS" constant="true">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.PIntestine">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00168"/>
+                </rdf:Bag>
+              </bqmodel:is>
+              <bqbiol:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/CHEBI_35549"/>
+                </rdf:Bag>
+              </bqbiol:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+      <parameter metaid="PBK_PFOA.PKidney" id="PKidney" name="Partition coefficient plasma / kidney" value="0.08494018" units="UNITLESS" constant="true">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.PKidney">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00171"/>
+                </rdf:Bag>
+              </bqmodel:is>
+              <bqbiol:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/CHEBI_35549"/>
+                </rdf:Bag>
+              </bqbiol:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+      <parameter metaid="PBK_PFOA.PLiver" id="PLiver" name="Partition coefficient plasma / liver" value="0.07172916" units="UNITLESS" constant="true">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.PLiver">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00170"/>
+                </rdf:Bag>
+              </bqmodel:is>
+              <bqbiol:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/CHEBI_35549"/>
+                </rdf:Bag>
+              </bqbiol:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+      <parameter metaid="PBK_PFOA.PAdipose" id="PAdipose" name="Partition coefficient plasma / adipose" value="0.09341268" units="UNITLESS" constant="true">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.PAdipose">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00174"/>
+                </rdf:Bag>
+              </bqmodel:is>
+              <bqbiol:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/CHEBI_35549"/>
+                </rdf:Bag>
+              </bqbiol:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+      <parameter metaid="PBK_PFOA.PRest" id="PRest" name="Partition coefficient plasma / Restbody" value="0.04101715" units="UNITLESS" constant="true">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.PRest">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00518"/>
+                </rdf:Bag>
+              </bqmodel:is>
+              <bqbiol:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/CHEBI_35549"/>
+                </rdf:Bag>
+              </bqbiol:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+      <parameter metaid="PBK_PFOA.kabs" id="kabs" name="Intestinal absorption" value="0.694" units="L_PER_DAY" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.kabs">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00142"/>
+                </rdf:Bag>
+              </bqmodel:is>
+              <bqbiol:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/CHEBI_35549"/>
+                </rdf:Bag>
+              </bqbiol:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+      <parameter metaid="PBK_PFOA.VmaxOATP2B1" id="VmaxOATP2B1" name="Limiting rate of OAT P2B1" units="MicroGM_PER_DAY" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.VmaxOATP2B1">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00592"/>
+                </rdf:Bag>
+              </bqmodel:is>
+              <bqbiol:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/CHEBI_35549"/>
+                </rdf:Bag>
+              </bqbiol:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+      <parameter metaid="PBK_PFOA.VmaxOATP2B1c" id="VmaxOATP2B1c" name="Limiting rate of OAT P2B1 relativized by intestinal lumen volume" value="228035946" units="microg_per_day_per_L" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.VmaxOATP2B1c">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00306"/>
+                </rdf:Bag>
+              </bqmodel:is>
+              <bqbiol:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/CHEBI_35549"/>
+                </rdf:Bag>
+              </bqbiol:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+      <parameter metaid="PBK_PFOA.Km_OATP2B1" id="Km_OATP2B1" name="Michaelis-Menten constant" value="61563.93" units="MicroGM_PER_L" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.Km_OATP2B1">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00307"/>
+                </rdf:Bag>
+              </bqmodel:is>
+              <bqbiol:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/CHEBI_35549"/>
+                </rdf:Bag>
+              </bqbiol:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+      <parameter metaid="PBK_PFOA.Vmax_OATP1B1" id="Vmax_OATP1B1" name="Limiting rate of OAT P1B1" units="MicroGM_PER_DAY" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.Vmax_OATP1B1">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00593"/>
+                </rdf:Bag>
+              </bqmodel:is>
+              <bqbiol:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/CHEBI_35549"/>
+                </rdf:Bag>
+              </bqbiol:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+      <parameter metaid="PBK_PFOA.Vmax_OATP1B1c" id="Vmax_OATP1B1c" name="Limiting rate of OAT P1B1 relativized by extracellular liver" value="4123143432" units="microg_per_day_per_L" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.Vmax_OATP1B1c">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00304"/>
+                </rdf:Bag>
+              </bqmodel:is>
+              <bqbiol:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/CHEBI_35549"/>
+                </rdf:Bag>
+              </bqbiol:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+      <parameter metaid="PBK_PFOA.Km_OATP1B1" id="Km_OATP1B1" name="Michaelis_Menten constant" value="21800.79" units="MicroGM_PER_L" constant="true">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.Km_OATP1B1">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00305"/>
+                </rdf:Bag>
+              </bqmodel:is>
+              <bqbiol:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/CHEBI_35549"/>
+                </rdf:Bag>
+              </bqbiol:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+      <parameter metaid="PBK_PFOA.Vmax_OATP1B3" id="Vmax_OATP1B3" name="Limiting rate of OAT P1B3" units="MicroGM_PER_DAY" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.Vmax_OATP1B3">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00593"/>
+                </rdf:Bag>
+              </bqmodel:is>
+              <bqbiol:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/CHEBI_35549"/>
+                </rdf:Bag>
+              </bqbiol:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+      <parameter metaid="PBK_PFOA.Vmax_OATP1B3c" id="Vmax_OATP1B3c" name="Limiting rate of OAT P1B3 relativized by extracellular liver" value="402140177" units="microg_per_day_per_L" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.Vmax_OATP1B3c">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00304"/>
+                </rdf:Bag>
+              </bqmodel:is>
+              <bqbiol:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/CHEBI_35549"/>
+                </rdf:Bag>
+              </bqbiol:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+      <parameter metaid="PBK_PFOA.Km_OATP1B3" id="Km_OATP1B3" name="Michaelis_Menten constant" value="37932.95" units="MicroGM_PER_L" constant="true">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.Km_OATP1B3">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00305"/>
+                </rdf:Bag>
+              </bqmodel:is>
+              <bqbiol:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/CHEBI_35549"/>
+                </rdf:Bag>
+              </bqbiol:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+      <parameter metaid="PBK_PFOA.Vmax_OAT4" id="Vmax_OAT4" name="Limiting rate of OAT4" units="MicroGM_PER_DAY" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.Vmax_OAT4">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00592"/>
+                </rdf:Bag>
+              </bqmodel:is>
+              <bqbiol:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/CHEBI_35549"/>
+                </rdf:Bag>
+              </bqbiol:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+      <parameter metaid="PBK_PFOA.Vmax_OAT4c" id="Vmax_OAT4c" name="Limiting rate of OAT4 relativized by kidney proximal tubule" value="13756588116" units="microg_per_day_per_L" constant="true">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.Vmax_OAT4c">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00306"/>
+                </rdf:Bag>
+              </bqmodel:is>
+              <bqbiol:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/CHEBI_35549"/>
+                </rdf:Bag>
+              </bqbiol:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+      <parameter metaid="PBK_PFOA.Km_OAT4" id="Km_OAT4" name="Michaelis-Menten constant" value="19461.29" units="MicroGM_PER_L" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.Km_OAT4">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00307"/>
+                </rdf:Bag>
+              </bqmodel:is>
+              <bqbiol:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/CHEBI_35549"/>
+                </rdf:Bag>
+              </bqbiol:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+      <parameter metaid="PBK_PFOA.Vmax_BSEP" id="Vmax_BSEP" name="Limiting rate of BSEP" units="MicroGM_PER_DAY" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.Vmax_BSEP">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00592"/>
+                </rdf:Bag>
+              </bqmodel:is>
+              <bqbiol:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/CHEBI_35549"/>
+                </rdf:Bag>
+              </bqbiol:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+      <parameter metaid="PBK_PFOA.Vmax_BSEPc" id="Vmax_BSEPc" name="Limiting rate of BSEP relativized by liver intracellular" value="48535498" units="microg_per_day_per_L" constant="true">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.Vmax_BSEPc">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00306"/>
+                </rdf:Bag>
+              </bqmodel:is>
+              <bqbiol:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/CHEBI_35549"/>
+                </rdf:Bag>
+              </bqbiol:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+      <parameter metaid="PBK_PFOA.Km_BSEP" id="Km_BSEP" name="Michaelis-Menten constant" value="6790.748" units="MicroGM_PER_L" constant="true">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.Km_BSEP">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00307"/>
+                </rdf:Bag>
+              </bqmodel:is>
+              <bqbiol:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/CHEBI_35549"/>
+                </rdf:Bag>
+              </bqbiol:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+      <parameter id="CL_menses" name="Plasma menstrual loss" value="0" units="L_PER_DAY" constant="false"/>
+      <parameter metaid="PBK_PFOA.GFR" id="GFR" name="glomerular filtration rate" value="182.5913" units="L_PER_DAY" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.GFR">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00065"/>
+                </rdf:Bag>
+              </bqmodel:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+      <parameter id="QUrine" name="Urine secretion flow" units="L_PER_DAY" constant="false"/>
+      <parameter id="QTubule" name="proximaltubule fluid flow" units="L_PER_DAY" constant="false"/>
+      <parameter id="SAlb" name="serum albumine concentration" value="45.15337" units="UNITLESS" constant="false"/>
+      <parameter metaid="PBK_PFOA.fup" id="fup" name="fraction unbound in plasma" units="UNITLESS" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.fup">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00591"/>
+                </rdf:Bag>
+              </bqmodel:is>
+              <bqbiol:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/CHEBI_35549"/>
+                </rdf:Bag>
+              </bqbiol:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+      <parameter id="R_L_ec" name="Albumin ratio between plasma and liver extracellular" units="UNITLESS" constant="false"/>
+      <parameter metaid="PBK_PFOA.fu_Liver_intracellular" id="fu_Liver_intracellular" name="fraction unbound in liver intracellular" units="UNITLESS" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.fu_Liver_intracellular">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00154"/>
+                </rdf:Bag>
+              </bqmodel:is>
+              <bqbiol:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/CHEBI_35549"/>
+                </rdf:Bag>
+              </bqbiol:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+      <parameter id="R_PTL" name="Albumin ratio between plasma and proximal tubule lumen" units="UNITLESS" constant="false"/>
+      <parameter metaid="PBK_PFOA.fu_Kidney_proximal_tubule" id="fu_Kidney_proximal_tubule" name="fraction unbound in proximal tubule lumen" units="UNITLESS" constant="false">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.fu_Kidney_proximal_tubule">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00155"/>
+                </rdf:Bag>
+              </bqmodel:is>
+              <bqbiol:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/CHEBI_35549"/>
+                </rdf:Bag>
+              </bqbiol:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+      <parameter metaid="PBK_PFOA.kfe" id="kfe" name="fecal excretion" value="3.36" units="PER_DAY" constant="true">
+        <annotation>
+          <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:dcterms="http://purl.org/dc/terms/" xmlns:vCard="http://www.w3.org/2001/vcard-rdf/3.0#" xmlns:vCard4="http://www.w3.org/2006/vcard/ns#" xmlns:bqbiol="http://biomodels.net/biology-qualifiers/" xmlns:bqmodel="http://biomodels.net/model-qualifiers/">
+            <rdf:Description rdf:about="#PBK_PFOA.kfe">
+              <bqmodel:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/PBPKO_00230"/>
+                </rdf:Bag>
+              </bqmodel:is>
+              <bqbiol:is>
+                <rdf:Bag>
+                  <rdf:li rdf:resource="http://purl.obolibrary.org/obo/CHEBI_35549"/>
+                </rdf:Bag>
+              </bqbiol:is>
+            </rdf:Description>
+          </rdf:RDF>
+        </annotation>
+      </parameter>
+    </listOfParameters>
+    <listOfRules>
+      <assignmentRule variable="Intestine_lumen">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <ci> VIntestine_lumen </ci>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="Intestine_tissue">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <ci> VIntestine_tissue </ci>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="Liver_extracellular">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <ci> VLiver_extracellular </ci>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="Liver_intracellular">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <ci> VLiver_intracellular </ci>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="Plasma">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <ci> VPlasma </ci>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="Kidney_proximal_tubule_tissue">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <ci> VKidney_proximal_tubule_tissue </ci>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="Kidney_proximal_tubule_lumen">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <ci> VKidney_proximal_tubule_lumen </ci>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="Kidney_rest_tissue">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <ci> VKidney_rest_tissue </ci>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="Kidney_rest_lumen">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <ci> VKidney_rest_lumen </ci>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="Adipose">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <ci> VAdipose </ci>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="Rest">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <ci> VRest </ci>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="VIntestine_lumen">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <apply>
+            <times/>
+            <ci> VIntestine_lumenc </ci>
+            <ci> BW </ci>
+          </apply>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="VIntestine_tissue">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <apply>
+            <times/>
+            <ci> VIntestine_tissuec </ci>
+            <ci> BW </ci>
+          </apply>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="VLiver_extracellular">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <apply>
+            <times/>
+            <ci> VLiver </ci>
+            <apply>
+              <minus/>
+              <cn type="integer"> 1 </cn>
+              <cn> 0.573 </cn>
+            </apply>
+          </apply>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="VLiver_intracellular">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <apply>
+            <times/>
+            <ci> VLiver </ci>
+            <cn> 0.573 </cn>
+          </apply>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="VPlasma">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <apply>
+            <times/>
+            <ci> VBloodc </ci>
+            <apply>
+              <minus/>
+              <cn type="integer"> 1 </cn>
+              <ci> HCT </ci>
+            </apply>
+            <ci> BW </ci>
+          </apply>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="VKidney_proximal_tubule_tissue">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <apply>
+            <times/>
+            <cn> 0.398 </cn>
+            <ci> VKidney </ci>
+            <apply>
+              <plus/>
+              <apply>
+                <times/>
+                <cn> 0.137 </cn>
+                <apply>
+                  <minus/>
+                  <cn type="integer"> 1 </cn>
+                  <ci> HCT </ci>
+                </apply>
+              </apply>
+              <cn> 0.46 </cn>
+            </apply>
+          </apply>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="VKidney_proximal_tubule_lumen">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <apply>
+            <times/>
+            <cn> 0.398 </cn>
+            <ci> VKidney </ci>
+            <cn> 0.403 </cn>
+          </apply>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="VKidney_rest_tissue">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <apply>
+            <minus/>
+            <apply>
+              <minus/>
+              <apply>
+                <minus/>
+                <ci> VKidney </ci>
+                <ci> VKidney_proximal_tubule_tissue </ci>
+              </apply>
+              <ci> VKidney_proximal_tubule_lumen </ci>
+            </apply>
+            <ci> VKidney_rest_lumen </ci>
+          </apply>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="VKidney_rest_lumen">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <apply>
+            <times/>
+            <apply>
+              <minus/>
+              <ci> VKidney </ci>
+              <apply>
+                <times/>
+                <cn> 0.398 </cn>
+                <ci> VKidney </ci>
+              </apply>
+            </apply>
+            <cn> 0.283 </cn>
+          </apply>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="VAdipose">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <apply>
+            <plus/>
+            <apply>
+              <divide/>
+              <apply>
+                <times/>
+                <ci> VAdiposec </ci>
+                <ci> BW </ci>
+              </apply>
+              <cn> 0.9 </cn>
+            </apply>
+            <apply>
+              <divide/>
+              <ci> MAc </ci>
+              <cn> 0.9 </cn>
+            </apply>
+          </apply>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="VRest">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <apply>
+            <minus/>
+            <apply>
+              <times/>
+              <cn> 0.94 </cn>
+              <ci> BW </ci>
+            </apply>
+            <apply>
+              <plus/>
+              <ci> VIntestine_tissue </ci>
+              <ci> VLiver </ci>
+              <ci> VKidney </ci>
+              <ci> VAdipose </ci>
+              <ci> VPlasma </ci>
+            </apply>
+          </apply>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="BW">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <cn> 80.126 </cn>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="QC">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <cn> 5388.262 </cn>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="HCT">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <cn> 0.427 </cn>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="QIntestine">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <apply>
+            <times/>
+            <apply>
+              <divide/>
+              <ci> QIntestinec </ci>
+              <cn> 0.96 </cn>
+            </apply>
+            <ci> QC </ci>
+          </apply>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="QIntestinec">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <apply>
+            <times/>
+            <apply>
+              <divide/>
+              <ci> VIntestine_tissuec </ci>
+              <cn> 0.014 </cn>
+            </apply>
+            <cn> 0.144 </cn>
+          </apply>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="VKidney">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <apply>
+            <times/>
+            <ci> VKidneyc </ci>
+            <ci> BW </ci>
+          </apply>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="VKidneyc">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <cn> 0.00421 </cn>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="QKidney">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <apply>
+            <times/>
+            <apply>
+              <divide/>
+              <ci> QKidneyc </ci>
+              <cn> 0.96 </cn>
+            </apply>
+            <ci> QC </ci>
+          </apply>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="QKidneyc">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <apply>
+            <times/>
+            <apply>
+              <divide/>
+              <ci> VKidneyc </ci>
+              <cn> 0.00421 </cn>
+            </apply>
+            <cn> 0.196 </cn>
+          </apply>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="VAdiposec">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <apply>
+            <minus/>
+            <apply>
+              <minus/>
+              <apply>
+                <minus/>
+                <apply>
+                  <minus/>
+                  <apply>
+                    <minus/>
+                    <apply>
+                      <minus/>
+                      <apply>
+                        <minus/>
+                        <apply>
+                          <minus/>
+                          <apply>
+                            <minus/>
+                            <apply>
+                              <minus/>
+                              <apply>
+                                <minus/>
+                                <apply>
+                                  <minus/>
+                                  <apply>
+                                    <minus/>
+                                    <apply>
+                                      <minus/>
+                                      <apply>
+                                        <minus/>
+                                        <apply>
+                                          <minus/>
+                                          <apply>
+                                            <minus/>
+                                            <apply>
+                                              <minus/>
+                                              <apply>
+                                                <minus/>
+                                                <apply>
+                                                  <minus/>
+                                                  <cn> 0.96 </cn>
+                                                  <ci> VAdrenalc </ci>
+                                                </apply>
+                                                <ci> VBonec </ci>
+                                              </apply>
+                                              <ci> VBonenonperfusedc </ci>
+                                            </apply>
+                                            <ci> VBrainc </ci>
+                                          </apply>
+                                          <ci> VBreastc </ci>
+                                        </apply>
+                                        <ci> VHeartc </ci>
+                                      </apply>
+                                      <ci> VMarrowc </ci>
+                                    </apply>
+                                    <ci> VMusclec </ci>
+                                  </apply>
+                                  <ci> VGonadc </ci>
+                                </apply>
+                                <ci> VPancreasc </ci>
+                              </apply>
+                              <ci> VSkinc </ci>
+                            </apply>
+                            <ci> VSpleenc </ci>
+                          </apply>
+                          <ci> VThyroidc </ci>
+                        </apply>
+                        <ci> VUrinarytractc </ci>
+                      </apply>
+                      <ci> VKidneyc </ci>
+                    </apply>
+                    <ci> VLungc </ci>
+                  </apply>
+                  <ci> VIntestine_tissuec </ci>
+                </apply>
+                <ci> VStomachc </ci>
+              </apply>
+              <ci> VLiverc </ci>
+            </apply>
+            <ci> VBloodc </ci>
+          </apply>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="MAc">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <cn> 2.398 </cn>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="VAdrenalc">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <cn> 0.0002 </cn>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="VBonec">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <cn> 0.032 </cn>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="VBonenonperfusedc">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <apply>
+            <minus/>
+            <cn> 0.095 </cn>
+            <ci> VBonec </ci>
+          </apply>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="VBrainc">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <apply>
+            <divide/>
+            <cn> 1.45 </cn>
+            <ci> BW </ci>
+          </apply>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="VBreastc">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <cn> 0.000342 </cn>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="VHeartc">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <cn> 0.0045 </cn>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="VMarrowc">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <cn> 0.047 </cn>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="VMusclec">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <cn> 0.39 </cn>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="VGonadc">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <cn> 0.001 </cn>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="VPancreasc">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <cn> 0.00192 </cn>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="VSkinc">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <cn> 0.0488 </cn>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="VSpleenc">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <cn> 0.0021 </cn>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="VThyroidc">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <cn> 0.000274 </cn>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="VUrinarytractc">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <cn> 0.00104 </cn>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="VLungc">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <cn> 0.0068 </cn>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="VStomachc">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <cn> 0.0021 </cn>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="VBloodc">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <cn> 0.0761 </cn>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="QAdipose">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <apply>
+            <times/>
+            <apply>
+              <divide/>
+              <ci> QAdiposec </ci>
+              <cn> 0.96 </cn>
+            </apply>
+            <ci> QC </ci>
+          </apply>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="QAdiposec">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <apply>
+            <times/>
+            <apply>
+              <divide/>
+              <ci> VAdiposec </ci>
+              <cn> 0.2 </cn>
+            </apply>
+            <cn> 0.052 </cn>
+          </apply>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="VLiver">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <apply>
+            <times/>
+            <ci> VLiverc </ci>
+            <ci> BW </ci>
+          </apply>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="QRest">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <apply>
+            <minus/>
+            <ci> QC </ci>
+            <apply>
+              <plus/>
+              <ci> QAdipose </ci>
+              <ci> QIntestine </ci>
+              <ci> QKidney </ci>
+              <ci> QLiver </ci>
+            </apply>
+          </apply>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="QLiver">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <apply>
+            <times/>
+            <apply>
+              <divide/>
+              <ci> QLiverc </ci>
+              <cn> 0.96 </cn>
+            </apply>
+            <ci> QC </ci>
+          </apply>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="QLiverc">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <apply>
+            <times/>
+            <apply>
+              <divide/>
+              <ci> VLiverc </ci>
+              <cn> 0.0247 </cn>
+            </apply>
+            <cn> 0.065 </cn>
+          </apply>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="kabs">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <cn> 0.694 </cn>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="VmaxOATP2B1">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <apply>
+            <times/>
+            <ci> VmaxOATP2B1c </ci>
+            <ci> VIntestine_lumen </ci>
+          </apply>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="VmaxOATP2B1c">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <cn type="integer"> 228035946 </cn>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="Km_OATP2B1">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <cn> 61563.93 </cn>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="Vmax_OATP1B1">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <apply>
+            <times/>
+            <ci> Vmax_OATP1B1c </ci>
+            <ci> VLiver_extracellular </ci>
+          </apply>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="Vmax_OATP1B1c">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <cn> 4123143432 </cn>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="Vmax_OATP1B3">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <apply>
+            <times/>
+            <ci> Vmax_OATP1B3c </ci>
+            <ci> VLiver_extracellular </ci>
+          </apply>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="Vmax_OATP1B3c">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <cn type="integer"> 402140177 </cn>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="Vmax_OAT4">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <apply>
+            <times/>
+            <ci> Vmax_OAT4c </ci>
+            <ci> VKidney_proximal_tubule_tissue </ci>
+          </apply>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="Km_OAT4">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <cn> 19461.29 </cn>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="Vmax_BSEP">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <apply>
+            <times/>
+            <ci> Vmax_BSEPc </ci>
+            <ci> VLiver_intracellular </ci>
+          </apply>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="CL_menses">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <cn type="integer"> 0 </cn>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="GFR">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <cn> 182.5913 </cn>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="QUrine">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <apply>
+            <times/>
+            <cn> 0.022 </cn>
+            <ci> BW </ci>
+          </apply>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="QTubule">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <apply>
+            <times/>
+            <cn> 0.36 </cn>
+            <ci> GFR </ci>
+          </apply>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="SAlb">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <cn> 45.15337 </cn>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="fup">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <apply>
+            <divide/>
+            <cn type="integer"> 1 </cn>
+            <apply>
+              <plus/>
+              <cn type="integer"> 1 </cn>
+              <apply>
+                <times/>
+                <cn> 41071.34 </cn>
+                <apply>
+                  <divide/>
+                  <apply>
+                    <times/>
+                    <ci> SAlb </ci>
+                    <cn> 0.001 </cn>
+                  </apply>
+                  <apply>
+                    <minus/>
+                    <apply>
+                      <minus/>
+                      <cn type="integer"> 1 </cn>
+                      <apply>
+                        <times/>
+                        <ci> SAlb </ci>
+                        <apply>
+                          <power/>
+                          <cn type="integer"> 10 </cn>
+                          <cn type="integer"> -3 </cn>
+                        </apply>
+                      </apply>
+                    </apply>
+                    <cn> 0.031 </cn>
+                  </apply>
+                </apply>
+              </apply>
+              <apply>
+                <times/>
+                <cn> 173.4528 </cn>
+                <apply>
+                  <divide/>
+                  <cn> 0.031 </cn>
+                  <apply>
+                    <minus/>
+                    <apply>
+                      <minus/>
+                      <cn type="integer"> 1 </cn>
+                      <apply>
+                        <times/>
+                        <ci> SAlb </ci>
+                        <cn> 0.001 </cn>
+                      </apply>
+                    </apply>
+                    <cn> 0.031 </cn>
+                  </apply>
+                </apply>
+              </apply>
+            </apply>
+          </apply>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="R_L_ec">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <apply>
+            <divide/>
+            <ci> SAlb </ci>
+            <cn type="e-notation"> 1.2 <sep/> -6 </cn>
+          </apply>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="fu_Liver_intracellular">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <apply>
+            <divide/>
+            <apply>
+              <times/>
+              <ci> R_L_ec </ci>
+              <ci> fup </ci>
+            </apply>
+            <apply>
+              <plus/>
+              <cn type="integer"> 1 </cn>
+              <apply>
+                <times/>
+                <apply>
+                  <minus/>
+                  <ci> R_L_ec </ci>
+                  <cn type="integer"> 1 </cn>
+                </apply>
+                <ci> fup </ci>
+              </apply>
+            </apply>
+          </apply>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="R_PTL">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <apply>
+            <divide/>
+            <ci> SAlb </ci>
+            <cn> 0.0144 </cn>
+          </apply>
+        </math>
+      </assignmentRule>
+      <assignmentRule variable="fu_Kidney_proximal_tubule">
+        <math xmlns="http://www.w3.org/1998/Math/MathML">
+          <apply>
+            <divide/>
+            <apply>
+              <times/>
+              <ci> R_PTL </ci>
+              <ci> fup </ci>
+            </apply>
+            <apply>
+              <plus/>
+              <cn type="integer"> 1 </cn>
+              <apply>
+                <times/>
+                <apply>
+                  <minus/>
+                  <ci> R_PTL </ci>
+                  <cn type="integer"> 1 </cn>
+                </apply>
+                <ci> fup </ci>
+              </apply>
+            </apply>
+          </apply>
+        </math>
+      </assignmentRule>
+    </listOfRules>
+    <listOfReactions>
+      <reaction id="J1_" reversible="true">
+        <listOfReactants>
+          <speciesReference species="AIntestine_lumen" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="AIntestine_tissue" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+              <plus/>
+              <apply>
+                <times/>
+                <ci> kabs </ci>
+                <apply>
+                  <divide/>
+                  <ci> AIntestine_lumen </ci>
+                  <ci> VIntestine_lumen </ci>
+                </apply>
+              </apply>
+              <apply>
+                <times/>
+                <apply>
+                  <divide/>
+                  <ci> VmaxOATP2B1 </ci>
+                  <apply>
+                    <plus/>
+                    <ci> Km_OATP2B1 </ci>
+                    <apply>
+                      <divide/>
+                      <ci> AIntestine_lumen </ci>
+                      <ci> VIntestine_lumen </ci>
+                    </apply>
+                  </apply>
+                </apply>
+                <apply>
+                  <divide/>
+                  <ci> AIntestine_lumen </ci>
+                  <ci> VIntestine_lumen </ci>
+                </apply>
+              </apply>
+            </apply>
+          </math>
+        </kineticLaw>
+      </reaction>
+      <reaction id="J2_" reversible="true">
+        <listOfReactants>
+          <speciesReference species="AIntestine_tissue" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="ALiver_extracellular" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+              <times/>
+              <ci> QIntestine </ci>
+              <apply>
+                <divide/>
+                <apply>
+                  <divide/>
+                  <ci> AIntestine_tissue </ci>
+                  <ci> VIntestine_tissue </ci>
+                </apply>
+                <ci> PIntestine </ci>
+              </apply>
+            </apply>
+          </math>
+        </kineticLaw>
+      </reaction>
+      <reaction id="J3_" reversible="true">
+        <listOfReactants>
+          <speciesReference species="ALiver_extracellular" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="ALiver_intracellular" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+              <plus/>
+              <apply>
+                <times/>
+                <apply>
+                  <divide/>
+                  <ci> Vmax_OATP1B1 </ci>
+                  <apply>
+                    <plus/>
+                    <ci> Km_OATP1B1 </ci>
+                    <apply>
+                      <times/>
+                      <apply>
+                        <divide/>
+                        <ci> ALiver_extracellular </ci>
+                        <ci> VLiver_extracellular </ci>
+                      </apply>
+                      <ci> fup </ci>
+                    </apply>
+                  </apply>
+                </apply>
+                <apply>
+                  <divide/>
+                  <ci> ALiver_extracellular </ci>
+                  <ci> VLiver_extracellular </ci>
+                </apply>
+                <ci> fup </ci>
+              </apply>
+              <apply>
+                <times/>
+                <apply>
+                  <divide/>
+                  <ci> Vmax_OATP1B3 </ci>
+                  <apply>
+                    <plus/>
+                    <ci> Km_OATP1B3 </ci>
+                    <apply>
+                      <times/>
+                      <apply>
+                        <divide/>
+                        <ci> ALiver_extracellular </ci>
+                        <ci> VLiver_extracellular </ci>
+                      </apply>
+                      <ci> fup </ci>
+                    </apply>
+                  </apply>
+                </apply>
+                <apply>
+                  <divide/>
+                  <ci> ALiver_extracellular </ci>
+                  <ci> VLiver_extracellular </ci>
+                </apply>
+                <ci> fup </ci>
+              </apply>
+            </apply>
+          </math>
+        </kineticLaw>
+      </reaction>
+      <reaction id="J4_" reversible="true">
+        <listOfReactants>
+          <speciesReference species="ALiver_intracellular" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="AIntestine_lumen" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+              <times/>
+              <apply>
+                <divide/>
+                <ci> Vmax_BSEP </ci>
+                <apply>
+                  <plus/>
+                  <ci> Km_BSEP </ci>
+                  <apply>
+                    <times/>
+                    <apply>
+                      <divide/>
+                      <ci> ALiver_intracellular </ci>
+                      <ci> VLiver_intracellular </ci>
+                    </apply>
+                    <ci> fu_Liver_intracellular </ci>
+                  </apply>
+                </apply>
+              </apply>
+              <apply>
+                <divide/>
+                <ci> ALiver_intracellular </ci>
+                <ci> VLiver_intracellular </ci>
+              </apply>
+              <ci> fu_Liver_intracellular </ci>
+            </apply>
+          </math>
+        </kineticLaw>
+      </reaction>
+      <reaction id="J5_" reversible="true">
+        <listOfReactants>
+          <speciesReference species="ALiver_extracellular" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="APlasma" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+              <times/>
+              <apply>
+                <plus/>
+                <ci> QIntestine </ci>
+                <ci> QLiver </ci>
+              </apply>
+              <apply>
+                <divide/>
+                <apply>
+                  <divide/>
+                  <ci> ALiver_extracellular </ci>
+                  <ci> VLiver_extracellular </ci>
+                </apply>
+                <ci> PLiver </ci>
+              </apply>
+            </apply>
+          </math>
+        </kineticLaw>
+      </reaction>
+      <reaction id="J6_" reversible="true">
+        <listOfReactants>
+          <speciesReference species="APlasma" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="ALiver_extracellular" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+              <times/>
+              <ci> QLiver </ci>
+              <apply>
+                <divide/>
+                <ci> APlasma </ci>
+                <ci> VPlasma </ci>
+              </apply>
+            </apply>
+          </math>
+        </kineticLaw>
+      </reaction>
+      <reaction id="J7_" reversible="true">
+        <listOfReactants>
+          <speciesReference species="APlasma" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="AIntestine_tissue" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+              <times/>
+              <ci> QIntestine </ci>
+              <apply>
+                <divide/>
+                <ci> APlasma </ci>
+                <ci> VPlasma </ci>
+              </apply>
+            </apply>
+          </math>
+        </kineticLaw>
+      </reaction>
+      <reaction id="J8_" reversible="true">
+        <listOfReactants>
+          <speciesReference species="APlasma" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="AKidney_proximal_tubule_tissue" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+              <times/>
+              <ci> QKidney </ci>
+              <apply>
+                <divide/>
+                <ci> APlasma </ci>
+                <ci> VPlasma </ci>
+              </apply>
+            </apply>
+          </math>
+        </kineticLaw>
+      </reaction>
+      <reaction id="J9_" reversible="true">
+        <listOfReactants>
+          <speciesReference species="APlasma" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="AAdipose" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+              <times/>
+              <ci> QAdipose </ci>
+              <apply>
+                <divide/>
+                <ci> APlasma </ci>
+                <ci> VPlasma </ci>
+              </apply>
+            </apply>
+          </math>
+        </kineticLaw>
+      </reaction>
+      <reaction id="J10_" reversible="true">
+        <listOfReactants>
+          <speciesReference species="APlasma" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="ARest" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+              <times/>
+              <ci> QRest </ci>
+              <apply>
+                <divide/>
+                <ci> APlasma </ci>
+                <ci> VPlasma </ci>
+              </apply>
+            </apply>
+          </math>
+        </kineticLaw>
+      </reaction>
+      <reaction id="J11_" reversible="true">
+        <listOfReactants>
+          <speciesReference species="APlasma" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="AKidney_proximal_tubule_lumen" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+              <times/>
+              <ci> GFR </ci>
+              <apply>
+                <divide/>
+                <ci> APlasma </ci>
+                <ci> VPlasma </ci>
+              </apply>
+              <ci> fup </ci>
+            </apply>
+          </math>
+        </kineticLaw>
+      </reaction>
+      <reaction id="J12_" reversible="true">
+        <listOfReactants>
+          <speciesReference species="AAdipose" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="APlasma" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+              <times/>
+              <ci> QAdipose </ci>
+              <apply>
+                <divide/>
+                <apply>
+                  <divide/>
+                  <ci> AAdipose </ci>
+                  <ci> VAdipose </ci>
+                </apply>
+                <ci> PAdipose </ci>
+              </apply>
+            </apply>
+          </math>
+        </kineticLaw>
+      </reaction>
+      <reaction id="J13_" reversible="true">
+        <listOfReactants>
+          <speciesReference species="ARest" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="APlasma" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+              <times/>
+              <ci> QRest </ci>
+              <apply>
+                <divide/>
+                <apply>
+                  <divide/>
+                  <ci> ARest </ci>
+                  <ci> VRest </ci>
+                </apply>
+                <ci> PRest </ci>
+              </apply>
+            </apply>
+          </math>
+        </kineticLaw>
+      </reaction>
+      <reaction id="J14_" reversible="true">
+        <listOfReactants>
+          <speciesReference species="AKidney_rest_tissue" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="APlasma" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+              <times/>
+              <ci> QKidney </ci>
+              <apply>
+                <divide/>
+                <apply>
+                  <divide/>
+                  <ci> AKidney_rest_tissue </ci>
+                  <ci> VKidney_rest_tissue </ci>
+                </apply>
+                <ci> PKidney </ci>
+              </apply>
+            </apply>
+          </math>
+        </kineticLaw>
+      </reaction>
+      <reaction id="J15_" reversible="true">
+        <listOfReactants>
+          <speciesReference species="AKidney_proximal_tubule_tissue" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="AKidney_rest_tissue" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+              <times/>
+              <ci> QKidney </ci>
+              <apply>
+                <divide/>
+                <ci> AKidney_proximal_tubule_tissue </ci>
+                <ci> VKidney_proximal_tubule_tissue </ci>
+              </apply>
+            </apply>
+          </math>
+        </kineticLaw>
+      </reaction>
+      <reaction id="J16_" reversible="true">
+        <listOfReactants>
+          <speciesReference species="AKidney_proximal_tubule_lumen" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="AKidney_rest_lumen" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+              <times/>
+              <ci> QTubule </ci>
+              <apply>
+                <divide/>
+                <ci> AKidney_proximal_tubule_lumen </ci>
+                <ci> VKidney_proximal_tubule_lumen </ci>
+              </apply>
+            </apply>
+          </math>
+        </kineticLaw>
+      </reaction>
+      <reaction id="J17_" reversible="true">
+        <listOfReactants>
+          <speciesReference species="AKidney_proximal_tubule_lumen" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="AKidney_proximal_tubule_tissue" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+              <times/>
+              <apply>
+                <divide/>
+                <ci> Vmax_OAT4 </ci>
+                <apply>
+                  <plus/>
+                  <ci> Km_OAT4 </ci>
+                  <apply>
+                    <times/>
+                    <apply>
+                      <divide/>
+                      <ci> AKidney_proximal_tubule_lumen </ci>
+                      <ci> VKidney_proximal_tubule_lumen </ci>
+                    </apply>
+                    <ci> fu_Kidney_proximal_tubule </ci>
+                  </apply>
+                </apply>
+              </apply>
+              <apply>
+                <divide/>
+                <ci> AKidney_proximal_tubule_lumen </ci>
+                <ci> VKidney_proximal_tubule_lumen </ci>
+              </apply>
+              <ci> fu_Kidney_proximal_tubule </ci>
+            </apply>
+          </math>
+        </kineticLaw>
+      </reaction>
+      <reaction id="J18_" reversible="true">
+        <listOfReactants>
+          <speciesReference species="AIntestine_lumen" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="AFeces" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+              <times/>
+              <ci> kfe </ci>
+              <ci> AIntestine_lumen </ci>
+            </apply>
+          </math>
+        </kineticLaw>
+      </reaction>
+      <reaction id="J19_" reversible="true">
+        <listOfReactants>
+          <speciesReference species="AKidney_rest_lumen" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="AUrine" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+              <times/>
+              <ci> QUrine </ci>
+              <apply>
+                <divide/>
+                <ci> AKidney_rest_lumen </ci>
+                <ci> VKidney_rest_lumen </ci>
+              </apply>
+            </apply>
+          </math>
+        </kineticLaw>
+      </reaction>
+      <reaction id="J20_" reversible="true">
+        <listOfReactants>
+          <speciesReference species="APlasma" stoichiometry="1" constant="true"/>
+        </listOfReactants>
+        <listOfProducts>
+          <speciesReference species="AMenstrual" stoichiometry="1" constant="true"/>
+        </listOfProducts>
+        <kineticLaw>
+          <math xmlns="http://www.w3.org/1998/Math/MathML">
+            <apply>
+              <times/>
+              <ci> CL_menses </ci>
+              <apply>
+                <divide/>
+                <ci> APlasma </ci>
+                <ci> VPlasma </ci>
+              </apply>
+            </apply>
+          </math>
+        </kineticLaw>
+      </reaction>
+    </listOfReactions>
+  </model>
+</sbml>

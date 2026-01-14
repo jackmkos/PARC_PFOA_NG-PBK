@@ -1,7 +1,25 @@
+# VSCode
+.vscode/*
+
 .Rproj.user
 .Rhistory
 .RData
 .Ruserdata
-/Output/
 /Quarto/
 ExperienceFull.RData
+
+# Output files
+**/[Oo]utput/
+**/[Oo]utputs/
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Cache files
+.cache/
+
+# Log files
+*.log
+

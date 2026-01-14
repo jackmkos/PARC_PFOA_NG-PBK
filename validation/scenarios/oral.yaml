@@ -1,0 +1,99 @@
+id: oral
+label: oral
+model_instances:
+  - id: NG_PBK_PFOA
+    label: NG_PBK_PFOA
+    model_path: ./model/PBK_model_Antimony.sbml
+    target_mappings:
+      AOral: AIntestine_lumen
+      APlasma: APlasma
+
+scenarios:
+  - id: oral_single
+    label: Oral single dose
+    duration: 4
+    evaluation_resolution: 24
+    time_unit: DAY
+    amount_unit: MICROGRAMS
+    initial_states:
+      - target: APlasma
+        amount: 100
+    dosing_events:
+      - type: single_bolus
+        target: AOral
+        amount: 1
+        time: 1
+    outputs:
+      - id: AIntestine_lumen
+        label: Amount in intestinal lumen
+        output: AIntestine_lumen
+      - id: AIntestine_tissue
+        output: AIntestine_tissue
+      - id: ALiver_extracellular
+        output: ALiver_extracellular
+      - id: ALiver_intracellular
+        output: ALiver_intracellular
+      - id: APlasma
+        label: Amount in plasma
+        output: APlasma
+      - id: AKidney_proximal_tubule_tissue
+        output: AKidney_proximal_tubule_tissue
+      - id: AKidney_proximal_tubule_lumen
+        output: AKidney_proximal_tubule_lumen
+      - id: AKidney_rest_tissue
+        output: AKidney_rest_tissue
+      - id: AKidney_rest_lumen
+        output: AKidney_rest_lumen
+      - id: AAdipose
+        output: AAdipose
+      - id: ARest
+        output: ARest
+      - id: AFeces
+        output: AFeces
+      - id: AUrine
+        output: AUrine
+      - id: AMenstrual
+        output: AMenstrual
+  - id: oral_repeated
+    label: Oral repeated dosing
+    time_unit: DAY
+    amount_unit: MICROGRAMS
+    duration: 10
+    evaluation_resolution: 24
+    dosing_events:
+      - type: repeated_bolus
+        target: AOral
+        amount: 100
+        time: 0
+        interval: 1
+    outputs:
+      - id: AIntestine_lumen
+        label: Amount in intestinal lumen
+        output: AIntestine_lumen
+      - id: AIntestine_tissue
+        output: AIntestine_tissue
+      - id: ALiver_extracellular
+        output: ALiver_extracellular
+      - id: ALiver_intracellular
+        output: ALiver_intracellular
+      - id: APlasma
+        label: Amount in plasma
+        output: APlasma
+      - id: AKidney_proximal_tubule_tissue
+        output: AKidney_proximal_tubule_tissue
+      - id: AKidney_proximal_tubule_lumen
+        output: AKidney_proximal_tubule_lumen
+      - id: AKidney_rest_tissue
+        output: AKidney_rest_tissue
+      - id: AKidney_rest_lumen
+        output: AKidney_rest_lumen
+      - id: AAdipose
+        output: AAdipose
+      - id: ARest
+        output: ARest
+      - id: AFeces
+        output: AFeces
+      - id: AUrine
+        output: AUrine
+      - id: AMenstrual
+        output: AMenstrual
