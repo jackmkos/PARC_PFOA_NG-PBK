@@ -335,20 +335,16 @@ POST.Run <- function(exposure_type,
   Lit.HalfLifes <- read_csv(here("Input", "HalfLifes.csv"))
   
   ## Plot Mass Balance/Error ####
-  MB.df <- PBK_OUTPUT %>% select(time, Ain, Atot, MB)  # change days to years if needed
-  MB.df$MB <- round(MB.df$MB, 10) # rounding significance points
+  MB.df <- PBK_OUTPUT %>% select(time, Ain, Atot, MB)  # change days to years ?!
+  MB.df$MB <- round(MB.df$MB, 10) 
   MB.df$ERROR <- (MB.df$Ain - MB.df$Atot) / MB.df$Atot * 100
-  MB.df$ERROR <- round(MB.df$ERROR, 10) # rounding significance points
+  MB.df$ERROR <- round(MB.df$ERROR, 10) 
   MB_plot <- ggplot(data = MB.df)+
     geom_line(aes(x = time, y = ERROR, color = "ERROR")) +
     geom_line(aes(x = time, y = MB, color = "MB")) +
     scale_color_manual(values = c("ERROR" = "blue", "MB" = "black"), 
                        name = NULL) +
-    # ylim(0,1) +
     CP_theme +
-    # theme(axis.text = element_text(size = 10),
-    #       axis.title = element_text(size = 12)
-    # )+
     ylab("MB / ERROR")
   MB_plot
   
@@ -377,8 +373,6 @@ POST.Run <- function(exposure_type,
   VL_ecc <- RawData$CALC_Parameters$VL_ecc
   VL_ec <- VL_ecc * VL              # L, Volume liver extracellular
 
-  
-  # Create df with organ concentrations
   C_organs.df <- switch (exposure_type,
                          "Oral" = PBK_OUTPUT %>% 
                            transmute(
@@ -454,11 +448,7 @@ POST.Run <- function(exposure_type,
     labs(title = "PFOA organ concentrations",
          x = "Time (years)", # check that time is indeed in days and not years
          y = "Concentration (ng/ml)") +
-    CP_theme #+
-  # theme(
-  #   axis.text = element_text(size = 10),
-  #   axis.title = element_text(size = 12)
-  # )
+    CP_theme 
   Plot_C_organs
   
   ## Calculate AUC and Half life ####
@@ -553,32 +543,26 @@ Pers.POST.Run <- function(exposure_type,
   
   ## Plot Mass Balance/Error ####
   MB.df <- PBK_OUTPUT %>% select(time, Ain, Atot, MB)  # change days to years if needed
-  MB.df$MB <- round(MB.df$MB, 10) # rounding significance points
+  MB.df$MB <- round(MB.df$MB, 10) 
   MB.df$ERROR <- (MB.df$Ain - MB.df$Atot) / MB.df$Atot * 100
-  MB.df$ERROR <- round(MB.df$ERROR, 10) # rounding significance points
+  MB.df$ERROR <- round(MB.df$ERROR, 10) 
   MB_plot <- ggplot(data = MB.df)+
     geom_line(aes(x = time, y = ERROR, color = "ERROR")) +
     geom_line(aes(x = time, y = MB, color = "MB")) +
     scale_color_manual(values = c("ERROR" = "blue", "MB" = "black"), 
                        name = NULL) +
-    # ylim(0,1) +
     CP_theme +
-    # theme(axis.text = element_text(size = 10),
-    #       axis.title = element_text(size = 12)
-    # )+
     ylab("MB / ERROR")
   MB_plot
   
   ## Plot organ concentrations ####
-  # Create df with organ concentrations
- 
   C_organs.df <- switch (exposure_type,
                          "Oral" = PBK_OUTPUT %>% 
                            transmute(
                              time = time,
                              CI = CI,
-                             CL = CL_ic,
-                             CK = CPTT, 
+                             CK = (((CPTT*VPTT) + (CRKT*VRKT) + (CPTL*VPTL) + (CRKL*VRKL))/(VPTT + VRKT + VPTL + VRKL)), 
+                             CL = (((CL_ic*VL_ic) + (CL_ec*VL_ec))/(VL_ic + VL_ec)),
                              CA, CR, CP  
                            ) %>% 
                            rename("Intestine" = CI, 
@@ -592,8 +576,8 @@ Pers.POST.Run <- function(exposure_type,
                            transmute(
                              time = time,
                              CI = CI,
-                             CL = CL_ic,
-                             CK = CPTT, 
+                             CK = (((CPTT*VPTT) + (CRKT*VRKT) + (CPTL*VPTL) + (CRKL*VRKL))/(VPTT + VRKT + VPTL + VRKL)), 
+                             CL = (((CL_ic*VL_ic) + (CL_ec*VL_ec))/(VL_ic + VL_ec)),
                              CSk, CA, CR, CP  
                            ) %>% 
                            rename("Intestine" = CI, 
@@ -608,8 +592,8 @@ Pers.POST.Run <- function(exposure_type,
                            transmute(
                              time = time,
                              CI = CI,
-                             CL = CL_ic, 
-                             CK = CPTT, 
+                             CK = (((CPTT*VPTT) + (CRKT*VRKT) + (CPTL*VPTL) + (CRKL*VRKL))/(VPTT + VRKT + VPTL + VRKL)), 
+                             CL = (((CL_ic*VL_ic) + (CL_ec*VL_ec))/(VL_ic + VL_ec)),
                              CSk, CA, CR, CP  
                            ) %>% 
                            rename("Intestine" = CI, 
@@ -624,8 +608,8 @@ Pers.POST.Run <- function(exposure_type,
                            transmute(
                              time = time,
                              CI = CI,
-                             CL = CL_ic, 
-                             CK = CPTT, 
+                             CK = (((CPTT*VPTT) + (CRKT*VRKT) + (CPTL*VPTL) + (CRKL*VRKL))/(VPTT + VRKT + VPTL + VRKL)), 
+                             CL = (((CL_ic*VL_ic) + (CL_ec*VL_ec))/(VL_ic + VL_ec)),
                              CLu, CA, CR, CP  
                            ) %>% 
                            rename("Intestine" = CI, 
@@ -638,7 +622,6 @@ Pers.POST.Run <- function(exposure_type,
                            pivot_longer(cols = Intestine:Plasma, names_to = "Organ", values_to = "Concentration")
   ) %>% mutate(time = time/365) #transforming time in years
   
-  
   # Plot organ concentrations
   Plot_C_organs <- C_organs.df %>% 
     ggplot(aes(time, Concentration)) +
@@ -647,11 +630,7 @@ Pers.POST.Run <- function(exposure_type,
     labs(title = "PFOA organ concentrations",
          x = "Time (years)", # check that time is indeed in days and not years
          y = "Concentration (ng/ml)") +
-    CP_theme #+
-    # theme(
-    #   axis.text = element_text(size = 10),
-    #   axis.title = element_text(size = 12)
-    # )
+    CP_theme 
   Plot_C_organs
 
   ## Calculate AUC and Half life ####
@@ -907,7 +886,6 @@ Pop.POST.Run <- function(Input,
   Plot_GFR_vs_P_CP <- PredictedObserved %>% 
     ggplot() +
     geom_point(aes(GFR, CP_predicted), color = "black", size = 1) +
-    # geom_point(aes(GFR.ff, CP_predicted), color = "blue", size = 1) +
     CP_theme +
     labs(title="Glomerular filtration rate vs predicted plasma concentration",
          x="\n GFR (L/d)", 
@@ -916,7 +894,6 @@ Pop.POST.Run <- function(Input,
   Plot_GFR_vs_P_HL <- PredictedObserved %>% 
     ggplot() +
     geom_point(aes(GFR, HL_predicted), color = "black", size = 1) +
-    # geom_point(aes(GFR.ff, HL_predicted), color = "blue", size = 1) +
     CP_theme +
     labs(title="Glomerular filtration rate vs predicted half life",
          x="\n GFR (L/d)", 

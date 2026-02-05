@@ -1,8 +1,6 @@
-A mechanistic PBK model for PFOA that can be used together with biomonitoring data with information regarding oral, dermal (or inhalation) exposure. 
+[![DOI](https://zenodo.org/badge/942016407.svg)](https://doi.org/10.5281/zenodo.17427865)
 
-Git-hub branches structure:
-- **main** branch is the branch to be used together with HBM data
-- All other branches will be archived uppon publication
+A mechanistic PBK model for PFOA that can be used together with biomonitoring data with information regarding oral, dermal (or inhalation) exposure. 
   
 # Git-hub file structure:
 ## Input folder contains:

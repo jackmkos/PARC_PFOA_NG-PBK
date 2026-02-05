@@ -1,5 +1,5 @@
 # --------------------------------------------------------------------------- #
-# SCRIPT FOR CALCULATING BASE PARAMETERS
+# SCRIPT FOR CALCULATING THE PBK MODEL PARAMETERS
 # By: Chrysanthi Pachoulide
 # Date: 14-04-2025
 # --------------------------------------------------------------------------- #

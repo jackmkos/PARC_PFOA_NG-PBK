@@ -1,7 +1,7 @@
 # --------------------------------------------------------------------------- #
 # SCRIPT FOR CALCULATING PHYSIOLOGICAL CONSTANTS 
 # Note: Actually not needed to run the model as exported csv file is used as input
-# By: Chrysanthi Pachoulide, Joost Westernhout initial ref. A. Ratier et al. 2024 doi: 10.1016/j.envint.2024.108621
+# By: Chrysanthi Pachoulide, Joost Westernhout, Jack Koster initial ref. A. Ratier et al. 2024 doi: 10.1016/j.envint.2024.108621
 # Date: 14-04-2025
 # --------------------------------------------------------------------------- #
 
@@ -475,27 +475,45 @@ ggsave(filename = here("OrganFlows.png"),
 
 
 ggplot() +
-  geom_path(data = Variables_df, aes(age, GFR_M, linetype = "Male")) +
-  geom_path(data = Variables_df, aes(age, GFR_F, linetype = "Female")) +
-  # geom_path(data = Flows, aes(age, FGFR_M, linetype = "Filtration fraction", color = "Male")) +
-  # geom_path(data = Flows, aes(age, FGFR_F, linetype = "Filtration fraction", color = "Female")) +
-  # scale_linetype_manual(values = c("Creatinine" = "dashed",
-  #                                "Filtration fraction" = "solid"),
-  #                     name = "") +
-  scale_color_manual(values = c("Male" = "dashed",
-                                "Female" = "solide"),
-                                name = "")+
+  # geom_path(data = Variables_df, aes(age, GFR_M), linetype = "dashed", color = "blue") +
+  # geom_path(data = Variables_df, aes(age, GFR_F), linetype = "solid", color = "blue") + 
+  # geom_path(data = Flows, aes(age, FGFR_M), linetype = "dashed", color = "grey") + 
+  # geom_path(data = Flows, aes(age, FGFR_F), linetype = "solid", color = "grey") + 
+  geom_path(data = Variables_df, aes(age, GFR_M, linetype = "Male", color = "FAS_equation")) +
+  geom_path(data = Variables_df, aes(age, GFR_F, linetype = "Female", color = "FAS_equation")) +
+  geom_path(data = Flows, aes(age, FGFR_M, linetype = "Male", color = "Fraction_filtrated")) +
+  geom_path(data = Flows, aes(age, FGFR_F, linetype = "Female", color = "Fraction_filtrated")) +
+  # Manually set colors and line types
+  scale_color_manual(
+    name = "Method",
+    values = c("FAS_equation" = "blue", "Fraction_filtrated" = "grey"),
+    labels = c("FAS_equation", "Fraction_filtrated")
+  ) +
+  scale_linetype_manual(
+    name = "Sex",
+    values = c("Male" = "dashed", "Female" = "solid"),
+    labels = c("Male", "Female")
+  ) +
+  # Combine legends
+  guides(
+    color = guide_legend(title = "Method"),
+    linetype = guide_legend(title = "Sex")
+  ) +
   CP_theme +
   ylab("GFR (ml/min)") +
-  xlab("Age (years)")
-  # theme(axis.title = element_text(size = 15),
-  #       axis.text = element_text(size = 14),
-  #       legend.position = "bottom",
-  #       legend.text = element_text(size = 14))
+  xlab("Age (years)") +
+  theme(legend.position = c(1, 1),       
+        legend.justification = c(1, 1), 
+        legend.text = element_text(size = 40),
+        legend.title = element_blank(),
+        legend.key.size = unit(0.5, "lines"),
+        legend.spacing.y = unit(0, "cm"),
+        legend.margin = margin(0, 0, 0, 0))
+
 ggsave(filename = here("GFR.png"),
        dpi = 600,
-       width = 10,
-       height = 8,
+       width = 9,
+       height = 9,
        units = "cm")
 
 ggplot() +
