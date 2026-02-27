@@ -1,6 +1,6 @@
 # --------------------------------------------------------------------------- #
-# SCRIPT FOR RUNNING THE MODEL WITH VARIOUS PFAS IN SERIES 
-# By: Jack Koster 
+# SCRIPT FOR RUNNING THE MODEL WITH VARIOUS PFAS IN SERIES
+# By: Jack Koster
 # Date: 22-05-2025
 # --------------------------------------------------------------------------- #
 

@@ -43,16 +43,20 @@
   Lifestage = "Yes" 
   
   # Choose to include population or individual exposure ("Yes" to include population based and "No" to only run the model for one person)
-  Population = "No" 
+  Population = "Yes" 
   
   # Choose study from input file, or ID_range
-  Test_study = "Correlation" #Arvidsjaur, EFSA, EffectOfLifestageEq, Olsen, dummy, "Ratier"
+  Test_study = "EffectOfLifestageEq" #Arvidsjaur, EFSA, EffectOfLifestageEq, Olsen, dummy, "Ratier"
   
   # Load files
   Physio.c <- read_csv(here("Input", "PhysioVariables.csv"))
   Tissue.c <- read_csv(here("Input", "TissueComposition.csv"))
   source(here("Script", "RUN_and_OUTPUT.R"))
-  
+
+  # Choose PFAS compound ("PFOA", "PFOS", "PFNA", or "PFHxS")
+  if (!exists("Mix")) { # Override for running All_PFAS
+    PFAS = "PFOA"
+  }
 
   # Load input ----
   
