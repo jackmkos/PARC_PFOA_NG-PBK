@@ -22,8 +22,8 @@ format:
     fig-align: center
 params:
   Lifestage: "Yes"  
-  Population: "Yes"  
-  Test_study: "dummy"
+  Population: "No"  
+  Test_study: "Correlation"
 ---
 
 ```{r}
@@ -189,7 +189,12 @@ if (params$Population == "Yes") {
   PredObs <- Pop.POST.RUN_RESULTS[[9]]
   PredObs <- PredObs %>% 
     mutate(across(everything(), ~as.numeric(.))) %>% 
-    mutate(across(where(is.numeric), ~round(., 2)))  } else {  } 
+    mutate(across(where(is.numeric), ~round(., 2))) 
+# PredObs <- do.call(rbind, lapply(Pop.POST.RUN_RESULTS, function(x) x$ANALYSED_data)) # Can be used insead of mutates
+
+} else if  (params$Population == "No") {
+    PredObs <- Pers.POST.RUN_RESULTS$ANALYSED_data
+}
 
 if (knitr::is_html_output()) {
 
