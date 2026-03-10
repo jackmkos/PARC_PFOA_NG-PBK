@@ -4,7 +4,9 @@
   # Date: 14-04-2025
   # --------------------------------------------------------------------------- #
   
-  rm(list=ls()) 
+  if (!exists("Mix")) { # check for DO_Mix.R
+    rm(list = ls())
+  }
   
   # Packages
   library(readxl)
